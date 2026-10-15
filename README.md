@@ -7,12 +7,14 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 ## How to play
 
 - **Heal the party.** Click a hero in the battle scene or a party frame to target them, then click a spell or press its number. Hovering a frame and pressing a key casts on that frame. `Esc` cancels a cast.
+- **Targeting.** A gold ring marks who your next spell will hit. While you cast, a green glow builds on the ally about to receive the heal.
+- **Mana.** Spell costs grow with your healing power. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one.
 - **Dungeons.** Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **You lose** if you die or the rest of the party dies. Rewards from stages you cleared are kept. With *Repeat dungeon* on, the run starts again by itself.
 
 ## Why heal actively
 
-- **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold, experience and loot from every stage, from ×0.5 when you idle up to ×3.
+- **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold, experience and loot from every stage, from ×0.5 when you idle up to ×3. It fades slowly on its own and gains less the higher it gets, so steady, efficient healing holds it around ×1.5–2. Reaching ×3 takes a lot of work.
 - **Heals pay income.** Every heal that actually restores health pays a few seconds of your buildings' gold per second, so healing keeps pace as your income grows. Tithe upgrades raise it from 1 second to 20.
 - **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
 
@@ -38,7 +40,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
   Examples include Shield Bash, Execute, Cleave, poison stacks, Pyroblast and splash damage.
 - **Gear.** Each companion has three gear slots (weapon, armor, charm), with damage, health, attack speed and critical stats. When you select party gear in the Armory, it shows the change in damage per second or health for each companion.
-- **Training.** Every companion has Weapon Training (+12% damage per rank) and Endurance Training (+10% health per rank) with no rank limit. Each rank costs 60% more than the last, so gold always has a use.
+- **Training.** Every companion has Weapon Training (+2% damage per rank) and Endurance Training (+2% health per rank). There's no rank limit, and ranks add up, so 10 ranks is +20%. Each rank costs 50% more than the last, which keeps training roughly level with the companion's talents.
 
 ## Other progression
 

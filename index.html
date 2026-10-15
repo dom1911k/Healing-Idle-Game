@@ -724,7 +724,7 @@ BUILDINGS.forEach(b => TIER_AT.forEach((n, ti) => UPGRADES.push({
 UPGRADES.push(
   { id: 'tithe1',    icon: 'coin',    name: 'Tithe Box',             desc: 'Each heal also pays 2 more seconds of your gold income.', cost: 400, req: () => prog() >= 3 },
   { id: 'plea1',     icon: 'scroll',  name: 'Attentive Ear',         desc: 'Pleas for help come 30% more often.',                cost: 2500,   req: () => prog() >= 5 },
-  { id: 'devo1',     icon: 'scroll',  name: 'Fervent Hearts',        desc: 'Devotion drains half as fast.',                      cost: 8000,   req: () => prog() >= 9 },
+  { id: 'devo1',     icon: 'scroll',  name: 'Fervent Hearts',        desc: 'Devotion fades 40% slower.',                      cost: 8000,   req: () => prog() >= 9 },
   { id: 'plea2',     icon: 'coin',    name: 'Generous Saints',       desc: 'Plea rewards are twice as strong.',                  cost: 50000,  req: () => prog() >= 16 },
   { id: 'tithe3',    icon: 'coin',    name: 'Reliquary of Coin',     desc: 'Each heal pays 12 more seconds of income.',           cost: 2e6,    req: () => prog() >= 32 },
   { id: 'bags',      icon: 'chest',   name: 'Deep Satchel',          desc: 'Your bag holds 12 more items.',                       cost: 3000,   req: () => prog() >= 6 },
@@ -832,11 +832,14 @@ const statVal = (it, k) => (it.stats[k] || 0) * (1 + 0.1 * (it.up || 0));
 const xpNeed = lv => Math.round(40 * Math.pow(1.22, lv - 1));
 const lvMult = i => Math.pow(1.07, S.heroes[i].lv - 1);
 const skillPoints = () => pointsOf('cleric');
-const memberMax = i => Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * Math.pow(1.1, S.kit[i].a) * D.cs[i].hpMul);
+// Training: small additive bonuses per rank, costs that grow like Cookie Clicker buildings
+const TRAIN_PCT = 0.02, TRAIN_GROWTH = 1.5;
+const memberMax = i => Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * (1 + TRAIN_PCT * S.kit[i].a) * D.cs[i].hpMul);
 const modIs = (...m) => m.includes(DUNGEONS[S.dun.current].mod);
 const berserkAt = () => modIs('tide') ? 70 : 120;
-const hpScale = (d, s) => Math.pow(2.2, d) * (1 + 0.12 * (s - 1));
-const dmgScale = (d, s) => Math.pow(1.8, d) * (1 + 0.1 * (s - 1));
+const HP_STEP = 3.5, DMG_STEP = 3.0; // how much tougher each dungeon is
+const hpScale = (d, s) => Math.pow(HP_STEP, d) * (1 + 0.12 * (s - 1));
+const dmgScale = (d, s) => Math.pow(DMG_STEP, d) * (1 + 0.1 * (s - 1));
 const rewardScale = (d, s) => Math.pow(2.1, d) * (1 + 0.12 * (s - 1));
 const ilvlFor = (d, s) => d * 7 + s;
 const suggestedLv = d => 1 + d * 5;
@@ -861,7 +864,7 @@ function compGear(i, over) {
 }
 function makeCs(i, over) {
   const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
-  return { ...c, dmg: p.dmg * lvMult(i) * Math.pow(1.12, S.kit[i].w) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
+  return { ...c, dmg: p.dmg * lvMult(i) * (1 + TRAIN_PCT * S.kit[i].w) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
     spd: gf('spd') + ge.spd / 100, crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow') };
 }
@@ -878,9 +881,9 @@ function recalc() {
   D.gear = s;
   const clv = S.heroes[YOU].lv, base = (30 + s.power) * Math.pow(1.04, clv - 1);
   D.heal = base * (has('scripture') ? 1.2 : 1) * (modIs('thorns', 'eclipse') ? 0.8 : 1) * Math.max(0.1, 1 + t('healAll'));
-  D.costMult = Math.max(1, Math.sqrt(base / 36));
-  D.maxMana = (100 + s.mana) * Math.pow(1.03, clv - 1) * Math.max(0.3, 1 + t('mana'));
-  D.regen = (3 + s.regen) * (has('meditate') ? 1.5 : 1) * (1 + t('regen') + 0.04 * K('spring'));
+  D.costMult = Math.max(1, base / 33); // spells cost more as they heal more, so mana matters later
+  D.maxMana = (100 + s.mana) * Math.pow(1.04, clv - 1) * Math.max(0.3, 1 + t('mana'));
+  D.regen = (2.75 + s.regen) * Math.pow(1.04, clv - 1) * (has('meditate') ? 1.5 : 1) * (1 + t('regen') + 0.04 * K('spring'));
   D.crit = Math.min(60, 5 + s.crit + t('crit') + 1.5 * K('focus')) / 100;
   D.haste = Math.min(150, s.haste + t('haste') + 2 * K('celerity')) / 100;
   D.clarity = t('clarity');
@@ -1004,9 +1007,9 @@ function makeFoes(d, s) {
   const dg = DUNGEONS[d];
   if (s === dg.stages) {
     const b = BOSSES[d];
-    const hp = Math.round(1500 * Math.pow(2.2, d) * (1 + 0.06 * (s - 1)));
+    const hp = Math.round(1500 * Math.pow(HP_STEP, d) * (1 + 0.06 * (s - 1)));
     return [{ boss: true, name: b.name, title: b.title, kind: b.kind, c: b.c, abil: b.abil, max: hp, hp,
-      dmg: 38 * Math.pow(1.8, d) * (1 + 0.05 * (s - 1)), atk: 1.6, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
+      dmg: 38 * Math.pow(DMG_STEP, d) * (1 + 0.05 * (s - 1)), atk: 1.6, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
       x: BOSS_SLOT.x, y: BOSS_SLOT.y, alive: true, enter: 0.7, lunge: -1, flash: 0, die: 0, h: 60, seed: 0 }];
   }
   const n = clamp(2 + Math.floor((s - 1) / 2) + (Math.random() < 0.3 ? 1 : 0), 2, 4);
@@ -1087,7 +1090,7 @@ function heal(i, amt, critBonus = 0) {
   if (eff > 0) {
     addGold(eff * D.healGold * devMult());
     C.devQuiet = 0;
-    if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 1);
+    if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 0.5 * (1 - C.dev / 110));
   }
   if (C.inCast) C.castAmt += amt;
   floatTxt(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal');
@@ -1143,7 +1146,7 @@ function finishCast(sp, t) {
   RUN_SPELL[sp.id](t);
   C.inCast = false;
   if (C.castEff > 0) {
-    C.dev = Math.min(100, C.dev + (C.castEff >= C.castAmt * 0.5 ? 8 : 4));
+    C.dev = Math.min(100, C.dev + (C.castEff >= C.castAmt * 0.5 ? 8 : 3) * (1 - C.dev / 110));
     // each heal that matters pays a few seconds of income, like a click in Cookie Clicker
     const g = D.healSecs * D.gps * devMult();
     if (g >= 1) { addGold(g); goldFx(g); }
@@ -1210,7 +1213,10 @@ function stepFight(dt) {
   C.buff.bless = Math.max(0, C.buff.bless - dt);
   C.devQuiet += dt;
   // Devotion only drains while someone needs healing and you aren't providing it
-  if (C.devQuiet > 4 && C.party.some(m => m.alive && m.hp / m.max < 0.85)) C.dev = Math.max(0, C.dev - 4 * dt * (has('devo1') ? 0.5 : 1));
+  // Devotion fades on its own (about half every 35s) and faster when hurt allies go unhealed
+  const devSlow = has('devo1') ? 0.6 : 1;
+  C.dev = Math.max(0, C.dev - C.dev * 0.02 * dt * devSlow);
+  if (C.devQuiet > 4 && C.party.some(m => m.alive && m.hp / m.max < 0.85)) C.dev = Math.max(0, C.dev - 3 * dt * devSlow);
   stepPlea(dt);
 
   C.party.forEach((m, i) => {
@@ -1958,6 +1964,20 @@ function renderScene(dt) {
       cx.fillRect(p.x - 5, 0, 11, p.y); cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
       if (Math.random() < dt * 14) FX.push({ t: 'p', x: p.x + rand(-7, 7), y: p.y - rand(0, 22), vx: 0, vy: -14, g: 0, life: 0.6, max: 0.6, col: '#ffd36b', s: 1 });
     }
+    if (fighting && i === (C.hover ?? C.target)) {
+      // selection ring under the feet of whoever your next spell will hit
+      cx.globalAlpha = 0.75 + 0.25 * Math.sin(sceneT * 6); cx.strokeStyle = '#e4b75c'; cx.lineWidth = 1;
+      cx.beginPath(); cx.ellipse(p.x, p.y, 11, 4, 0, 0, Math.PI * 2); cx.stroke();
+      cx.globalAlpha = 0.18; cx.fillStyle = '#e4b75c'; cx.fill(); cx.globalAlpha = 1;
+    }
+    const incoming = C.cast && !C.cast.sp.group && !C.cast.sp.self && C.cast.t === i ? C.cast.el / C.cast.dur : 0;
+    if (incoming) {
+      // the heal you're casting gathers on its target
+      cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = 0.15 + 0.45 * incoming; cx.fillStyle = '#86dcb8';
+      cx.beginPath(); cx.ellipse(p.x, p.y - 10, 10 + 4 * incoming, 15 + 4 * incoming, 0, 0, Math.PI * 2); cx.fill();
+      cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if (Math.random() < dt * 30 * incoming) FX.push({ t: 'p', x: p.x + rand(-9, 9), y: p.y - rand(0, 4), vx: 0, vy: -rand(14, 26), g: 0, life: 0.5, max: 0.5, col: '#bff5dd', s: 1 });
+    }
     blit((X, Y) => drawHero(i, X, Y, sceneT, casting), p.x + dx, p.y + walk, { flash: a.flash });
     if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
     miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
@@ -1967,7 +1987,7 @@ function renderScene(dt) {
     }
     if (m.hots.length && Math.random() < dt * 3) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(0, 14), vx: 0, vy: -10, g: 0, life: 0.6, max: 0.6, col: '#8fdc6a', s: 1 });
     if (m.dots.length && Math.random() < dt * 4) FX.push({ t: 'p', x: p.x + rand(-5, 5), y: p.y - rand(4, 16), vx: 0, vy: -6, g: 0, life: 0.5, max: 0.5, col: '#a3c45c', s: 1 });
-    if (C.target === i && fighting) {
+    if (fighting && i === (C.hover ?? C.target)) {
       cx.fillStyle = '#e4b75c'; const by = p.y - 33 + Math.round(Math.sin(sceneT * 5));
       cx.fillRect(p.x - 2, by, 5, 1); cx.fillRect(p.x - 1, by + 1, 3, 1); cx.fillRect(p.x, by + 2, 1, 1);
     }
@@ -2211,7 +2231,7 @@ function renderDungeons() {
       return `<div class="dun ${cur ? 'cur' : ''} ${locked ? 'locked' : ''}">
         <span class="emb" style="background:${dg.bg[0]};color:${dg.bg[5]}">${roman(i + 1)}</span>
         <h4>${dg.name}${cur ? ' <span class="label">· you are here</span>' : ''}</h4>
-        <span class="meta"><span>${dg.stages} stages</span><span class="threat">threat ×${fmt(Math.pow(2.2, i))}</span><span>suggested level ${suggestedLv(i)}</span><span>boss: ${BOSSES[i].name}</span></span>
+        <span class="meta"><span>${dg.stages} stages</span><span class="threat">threat ×${fmt(Math.pow(HP_STEP, i))}</span><span>suggested level ${suggestedLv(i)}</span><span>boss: ${BOSSES[i].name}</span></span>
         <span class="modt"><b>${MODS[dg.mod].name}.</b> ${MODS[dg.mod].desc} <span class="label">· ${status}</span></span>
         ${btn}</div>`;
     }).join('')}</div>`;
@@ -2284,7 +2304,7 @@ function renderTalents() {
     <div class="actions"><button class="btn" data-treset="cleric" ${spentIn('cleric') ? '' : 'disabled'}>Reset all Cleric talents</button><span class="label">Free</span></div>`;
 }
 
-const kitCost = (i, k) => Math.round((k === 'w' ? 30 : 40) * Math.pow(1.6, S.kit[i][k]));
+const kitCost = (i, k) => Math.round((k === 'w' ? 25 : 30) * Math.pow(TRAIN_GROWTH, S.kit[i][k]));
 const attackInterval = i => {
   const cs = D.cs[i], m = C.party[i];
   return PARTY[i].spd / (1 + cs.spd + (cs.bloodlust && m && m.hp / m.max < 0.5 ? 0.35 : 0) + (cs.rampage ? 0.02 * (C.ramp[i] || 0) : 0));
@@ -2302,10 +2322,10 @@ function renderParty() {
     <div class="statgrid" id="pstats"></div>
     ${comp ? `<div class="section-h"><h3>Equipment</h3><span class="label">Change it in the Armory</span></div>
     <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(cs.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
-    <div class="section-h"><h3>Training</h3><span class="label">Each rank costs 60% more</span></div>
+    <div class="section-h"><h3>Training</h3><span class="label">Each rank costs 50% more</span></div>
     <div class="rows">
-      ${comp ? kitRow('w', 'Weapon Training', 'sword', `+12% damage per rank for ${p.name}.`) : ''}
-      ${kitRow('a', 'Endurance Training', 'chest', `+10% health per rank for ${p.name}.`)}
+      ${comp ? kitRow('w', 'Weapon Training', 'sword', `+2% damage per rank for ${p.name}. Ranks add up: 10 ranks is +20%.`) : ''}
+      ${kitRow('a', 'Endurance Training', 'chest', `+2% health per rank for ${p.name}. Ranks add up: 10 ranks is +20%.`)}
       <button class="row" data-train="regen">${img('bandage')}<span class="nm">Field Dressings</span><span class="owned" data-own></span>
         <span class="ds">The whole party regenerates 0.4% of max health per second per rank.</span><span class="meta"><span class="cost" data-cost></span></span></button>
     </div>
@@ -2575,6 +2595,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, kitCost, BUILDINGS, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
 addEventListener('hashchange', syncDev);
 syncDev();
 

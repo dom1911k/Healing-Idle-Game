@@ -20,6 +20,7 @@
   color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font:15px/1.4 var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
@@ -117,6 +118,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .spell .sp-meta{font-size:.68rem;color:var(--muted)}
 .spell .cd{position:absolute;left:0;right:0;bottom:0;height:0;background:#0009;pointer-events:none}
 .hint{margin:0;font-size:.82rem;color:var(--muted)}
+.dev{border:1px dashed var(--gold-dim);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.dev .actions{gap:6px}.dev .btn{padding:4px 10px;font-size:.82rem}
+.dev .btn[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
 .hint kbd{font-family:var(--mono);font-size:.75rem;border:1px solid var(--line);border-radius:3px;padding:0 4px}
 
 .overlay{position:absolute;inset:0;display:grid;place-items:center;background:#17151fcc;backdrop-filter:blur(2px);text-align:center;padding:20px;z-index:3}
@@ -230,6 +234,16 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       </div>
       <div class="spells" id="spells"></div>
       <p class="hint">Click a party member to target them, then tap a spell or press <kbd>1</kbd>–<kbd>5</kbd>. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Healing earns gold.</p>
+      <div class="dev" id="dev" hidden>
+        <div class="section-h"><span class="label">Playtest tools</span><span class="label">Remove #dev from the address to hide</span></div>
+        <div class="actions" id="devSpeed"><span class="label" style="align-self:center">Speed</span>
+          <button class="btn" data-speed="1">1×</button><button class="btn" data-speed="3">3×</button><button class="btn" data-speed="10">10×</button></div>
+        <div class="actions">
+          <button class="btn" data-dev="gold">+1K gold</button><button class="btn" data-dev="gold10">Gold ×10</button>
+          <button class="btn" data-dev="win">Win fight</button><button class="btn" data-dev="stage">Skip 5 stages</button>
+          <button class="btn" data-dev="loot">Drop item</button><button class="btn" data-dev="mana">Infinite mana</button>
+        </div>
+      </div>
 
       <div class="overlay" id="overlay" hidden></div>
     </section>
@@ -948,6 +962,29 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Escape' && C.cast) C.cast = null;
 });
 
+/* ---------- Playtest tools (open the page with #dev) ---------- */
+const DEV = { speed: 1, mana: false };
+function syncDev() {
+  $('#dev').hidden = location.hash !== '#dev';
+  document.querySelectorAll('[data-speed]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.speed === DEV.speed));
+  $('[data-dev="mana"]').setAttribute('aria-pressed', DEV.mana);
+  if ($('#dev').hidden) { DEV.speed = 1; DEV.mana = false; }
+}
+$('#dev').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.speed) DEV.speed = +b.dataset.speed;
+  const a = b.dataset.dev;
+  if (a === 'gold') addGold(1000);
+  else if (a === 'gold10') addGold(Math.max(1000, S.gold * 9));
+  else if (a === 'win' && C.phase === 'fight') C.boss.hp = 0;
+  else if (a === 'stage') { S.maxStage += 5; S.stage = S.maxStage; startFight(); }
+  else if (a === 'loot') { const it = genItem(S.stage); const n = addToBag(it); toast(`Dropped ${it.name}${n ? ' (' + n + ')' : ''}.`); }
+  else if (a === 'mana') DEV.mana = !DEV.mana;
+  shopDirty = true; syncDev();
+});
+addEventListener('hashchange', syncDev);
+syncDev();
+
 let toastT = 0;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; toastT = 2.6; }
 
@@ -970,8 +1007,11 @@ function frame(now) {
   const real = Math.max(0, (now - last) / 1000); last = now;
   const dt = Math.min(real, 0.25);
   S.stats.played += real;
-  addGold(D.gps * real);
-  if (C.phase === 'fight') stepFight(dt); else stepPhase(dt);
+  addGold(D.gps * real * DEV.speed);
+  for (let k = 0; k < DEV.speed; k++) {
+    if (DEV.mana) C.mana = D.maxMana;
+    if (C.phase === 'fight') stepFight(dt); else stepPhase(dt);
+  }
   renderArena();
   $('#gold').textContent = fmt(Math.floor(S.gold));
   $('#gps').textContent = `${fmt(D.gps)}/s`;

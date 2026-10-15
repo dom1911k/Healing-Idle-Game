@@ -21,12 +21,13 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 ## Spells
 
-- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of two new spells. The one you pass on stays on offer for your next first clear. In order, the spells come up as Flash Heal, Renew, Purify, Ward, Meditate, Prayer, Sanctuary and Blessing.
+- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in the trees: Flash Heal, Purify and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing.
 - With *Repeat dungeon* on, the next run waits until you've chosen. You can also choose from the Talents tab, which always shows which spells your next first clear will offer.
 
 ## Cleric talents
 
-- Talents improve the spells you know. Each spell sits in its tree as a marker, with its upgrades right next to and below it.
+- Spells aren't in the trees. Talents with a small spell icon improve that spell and open once you know it; until then they show which spell they need. Every row also has talents that work without any new spell, and each tree ends in a capstone (Miracle, Inner Fortress, Zealot).
+- New talents: **Lifeline** (stronger heals on allies below 40% health), **Miracle** (critical heals refund mana), **Steadfast Faith** (Devotion fades slower), **Last Rites** (once per stage, an ally survives a killing blow) and **War Chant** (companions attack faster).
 - Three WoW-style trees: **Holy** (Heal, Flash Heal, Prayer), **Discipline** (Ward, Purify, Sanctuary, the tank) and **Devotion** (mana, Renew, Meditate, Blessing).
 - Most talents take 5–10 ranks of small bonuses. Ranks 1–5 cost 1 point and later ranks cost 2. Major talents (2–3 points) sit between them.
 - Deeper rows need points spent in that tree first: 2 per row.
@@ -35,6 +36,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 ## The party
 
 - Companions attack on their own timers. Every hit has its own damage, attack speed, critical chance and critical damage. Melee hits land at the end of a swing; Vess's arrows and Ilda's fireballs land when they arrive.
+- The Party tab shows each member as a portrait card in their class color, with a badge when they have talent points to spend. The party frames in the arena show the same portraits and colors.
 - Each companion levels up separately and earns a talent point every 2 levels. Each one has two specs:
 
   | Companion | Specs |

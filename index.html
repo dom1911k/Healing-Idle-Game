@@ -254,6 +254,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .pill.ok{color:var(--r1);border-color:var(--r1)}
 
 .ttabs{display:flex;gap:6px;flex-wrap:wrap}
+.portrait{image-rendering:pixelated;display:block}
+.portrait.fr{display:inline-block;height:16px;width:auto;vertical-align:-3px;margin-right:4px}
+.frame{border-left:3px solid var(--rc,var(--line))}
+.pcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+@media (max-width:520px){.pcards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.pcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-bottom:3px solid var(--rc);border-radius:8px;padding:8px 4px 6px;color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+.pcard .portrait{height:40px;width:auto;margin-bottom:2px}
+.pcard b{font-size:.9rem}.pcard small{font-size:.7rem;color:var(--muted);text-align:center}
+.pcard:hover{background:#2f2a3d}
+.pcard[aria-pressed="true"]{border-color:var(--rc);box-shadow:0 0 0 1px var(--rc) inset;background:#2c2638}
+.pcard .pts{position:absolute;top:4px;right:4px;background:var(--xp);color:#1b1622;border-radius:999px;font:700 .68rem var(--mono);padding:0 5px}
+.phead{display:flex;align-items:center;gap:12px;margin-top:12px;padding:8px 10px;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--rc) 18%,transparent),transparent)}
+.phead h3{margin:0;color:var(--rc)}.phead .portrait{height:56px;width:auto}
 .chipbtn{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.88rem;display:flex;gap:6px;align-items:baseline}
 .chipbtn small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
 .chipbtn[aria-pressed="true"]{border-color:var(--sc,var(--gold));box-shadow:0 0 0 1px var(--sc,var(--gold)) inset}
@@ -266,10 +279,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .tcell.spell{background:#262036}
 .spellpick{background:#1f1a2c;border:1px solid var(--gold-dim);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;text-align:left;margin:6px 0}
 .spellpick h4{margin:0;color:var(--gold)}
-.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.pickcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:center;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:var(--ink);font:inherit;cursor:pointer}
-.pickcard:hover{border-color:var(--gold);background:#2f283d}.pickcard img,.pickcard canvas{grid-row:span 2}.pickcard span{font-size:.82rem;color:var(--muted)}
+.picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.pickcard{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 8px;color:var(--ink);font:inherit;cursor:pointer}
+.pickcard:hover{border-color:var(--gold);background:#2f283d}.pickcard span{font-size:.78rem;color:var(--muted);line-height:1.25}
 .nextspell{display:flex;align-items:center;gap:6px;background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.88rem;margin:6px 0}
+.tcell .needs{position:absolute;top:3px;right:3px;line-height:0;opacity:.9}
+.tcell.sealed{opacity:.55;border-style:dashed}.tcell.sealed .rk{color:var(--muted)}
+.ico.xs{width:12px;height:12px}
 .tcell.ability{background:#2e2228;border-width:2px}
 .tcell.locked{opacity:.38}
 .tcell.avail{border-color:var(--sc)}
@@ -508,6 +524,7 @@ const PARTY = [
   { name: 'You',  role: 'Cleric',     hp: 210, dmg: 6,  spd: 3.0, ranged: true, you: true },
 ];
 const YOU = 4;
+const ROLE_COL = ['#7ba3ee', '#e0605a', '#8fdc6a', '#ff9f43', '#f3ead8'];
 
 const MODS = {
   none:    { name: 'Calm',          desc: 'No special rules.' },
@@ -588,79 +605,73 @@ const SP = Object.fromEntries(SPELLS.map(s => [s.id, s]));
    Major talents and new spells take one rank and cost more. fx values are per rank. */
 const TIER_GATE = 2;
 const T_ = (id, row, col, name, icon, max, per, fx, extra = {}) => ({ id, row, col, name, icon, max, per, fx, kind: max > 1 ? 'minor' : 'major', ...extra });
-// Spell cells show where a spell's upgrades live; the spell itself is learned from first dungeon clears, not with points
-const SPELLNODE = (id, row, col) => ({ id, row, col, name: SP_NAMES[id], icon: 's_' + id, max: 1, per: SP_DESC[id], fx: {}, kind: 'spell', spell: id, cost: 0 });
-// Each first clear of a dungeon offers the next two spells in this order; the one you pass on stays on offer
-const SPELL_ORDER = ['flash', 'renew', 'purify', 'ward', 'meditate', 'prayer', 'sanctuary', 'blessing'];
 const SP_NAMES = { flash: 'Flash Heal', renew: 'Renew', ward: 'Ward', purify: 'Purify', meditate: 'Meditate', prayer: 'Prayer', sanctuary: 'Sanctuary', blessing: 'Blessing' };
-const SP_DESC = {
-  flash: 'Learn Flash Heal: a fast, costly heal for emergencies.', renew: 'Learn Renew: heals one ally over 10 seconds.',
-  ward: 'Learn Ward: shields one ally from incoming damage.', purify: 'Learn Purify: removes poisons and curses, then heals a little.',
-  meditate: 'Learn Meditate: restores 35% of your mana over 5 seconds.', prayer: 'Learn Prayer: heals the whole party.',
-  sanctuary: 'Learn Sanctuary: the party takes 30% less damage for 6 seconds.', blessing: 'Learn Blessing: party damage +40% for 10 seconds.',
-};
 // Cleric minor ranks cost 1 point for ranks 1-5, then 2 points each.
 const clericRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 5 ? 1 : 2;
 const compRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 3 ? 1 : 2;
 
 const CLERIC_TREES = [
-  { id: 'holy', name: 'Holy', col: '#86dcb8', desc: 'Single-target healing, Flash Heal and Prayer', nodes: [
+  { id: 'holy', name: 'Holy', col: '#86dcb8', desc: 'Heal, Flash Heal and Prayer, critical heals and saving allies in trouble', nodes: [
     T_('h_pow', 0, 0, 'Improved Heal', 's_heal', 10, '+3% Heal healing', { heal_pow: 0.03 }),
     T_('h_cost', 0, 1, 'Thrift', 'coin', 5, '-3% Heal mana cost', { heal_cost: 0.03 }),
     T_('holy', 0, 2, 'Holy Light', 's_prayer', 10, '+2% all healing', { healAll: 0.02 }),
-    SPELLNODE('flash', 1, 0),
+    T_('f_pow', 1, 0, 'Bright Burst', 's_flash', 5, '+5% Flash Heal healing', { flash_pow: 0.05 }, { needs: 'flash' }),
     T_('h_cast', 1, 1, 'Quick Words', 'scroll', 5, '-0.06s Heal cast time', { heal_cast: 0.06 }),
     T_('insight', 1, 2, 'Insight', 's_core', 10, '+0.5% critical heals', { crit: 0.5 }),
-    T_('f_pow', 2, 0, 'Bright Burst', 's_flash', 5, '+5% Flash Heal healing', { flash_pow: 0.05 }, { req: 'flash' }),
+    T_('f_cost', 2, 0, 'Spare Light', 'coin', 5, '-4% Flash Heal mana cost', { flash_cost: 0.04 }, { needs: 'flash', req: 'f_pow' }),
     T_('echo', 2, 1, 'Echo', 's_heal', 1, 'Heal has a 20% chance to also heal the most injured ally for half', { heal_echo: 0.2 }, { cost: 2, req: 'h_cast' }),
-    T_('f_cost', 2, 2, 'Spare Light', 'coin', 5, '-4% Flash Heal mana cost', { flash_cost: 0.04 }, { req: 'flash' }),
-    T_('surge', 3, 0, 'Surge', 's_flash', 1, 'Flash Heal has +15% critical chance', { flash_crit: 0.15 }, { cost: 2, req: 'f_pow' }),
-    T_('h_pow2', 3, 1, 'Divine Fury', 's_heal', 5, '+4% Heal healing', { heal_pow: 0.04 }),
+    T_('h_pow2', 2, 2, 'Divine Fury', 's_heal', 5, '+4% Heal healing', { heal_pow: 0.04 }),
+    T_('surge', 3, 0, 'Surge', 's_flash', 1, 'Flash Heal has +15% critical chance', { flash_crit: 0.15 }, { cost: 2, needs: 'flash', req: 'f_cost' }),
+    T_('pr_pow', 3, 1, 'Choir Voice', 's_prayer', 5, '+5% Prayer healing and -2% Prayer mana cost', { prayer_pow: 0.05, prayer_cost: 0.02 }, { needs: 'prayer' }),
     T_('swift', 3, 2, 'Swift Prayers', 'scroll', 10, '+1% haste', { haste: 1 }),
-    SPELLNODE('prayer', 4, 1),
+    T_('lifeline', 4, 0, 'Lifeline', 's_heal', 5, 'Your heals on allies below 40% health heal 5% more', { low_pow: 0.05 }),
+    T_('pr_cast', 4, 1, 'Quick Psalm', 'scroll', 3, '-0.2s Prayer cast time', { prayer_cast: 0.2 }, { needs: 'prayer', req: 'pr_pow' }),
     T_('martyr', 4, 2, "Martyr's Vow", 's_core', 1, 'All healing +25%, but max mana -20%', { healAll: 0.25, mana: -0.2 }, { cost: 3 }),
-    T_('pr_pow', 5, 1, 'Choir Voice', 's_prayer', 5, '+5% Prayer healing and -2% Prayer mana cost', { prayer_pow: 0.05, prayer_cost: 0.02 }, { req: 'prayer' }),
-    T_('pr_cast', 5, 0, 'Quick Psalm', 'scroll', 3, '-0.2s Prayer cast time', { prayer_cast: 0.2 }, { req: 'prayer' }),
+    T_('miracle', 5, 1, 'Miracle', 's_core', 1, 'Critical heals refund 1% of your max mana', { crit_mana: 0.01 }, { cost: 3 }),
   ] },
-  { id: 'disc', name: 'Discipline', col: '#7ba3ee', desc: 'Shields, cleansing and keeping the tank alive', nodes: [
+  { id: 'disc', name: 'Discipline', col: '#7ba3ee', desc: 'Purify, Ward and Sanctuary, a tougher party and keeping the tank alive', nodes: [
     T_('tank', 0, 0, 'Shieldbearer', 'shield', 10, 'Bram takes 1% less damage', { tankDR: 0.01 }),
     T_('fort', 0, 1, 'Fortify', 'shield', 10, '+2% party health', { partyHp: 0.02 }),
     T_('keen', 0, 2, 'Keen Eye', 's_core', 5, '+1% critical heals', { crit: 1 }),
-    SPELLNODE('purify', 1, 0),
-    SPELLNODE('ward', 1, 1),
-    T_('camp', 1, 2, 'Campfire', 'bandage', 5, 'Resting between stages restores 3% more health and mana', { camp: 0.03 }),
-    T_('pu_pow', 2, 0, 'Cleansing Light', 's_purify', 5, '+12% Purify healing', { purify_pow: 0.12 }, { req: 'purify' }),
-    T_('w_pow', 2, 1, 'Thick Glass', 's_ward', 10, '+4% Ward absorb', { ward_pow: 0.04 }, { req: 'ward' }),
-    T_('w_cd', 2, 2, 'Readiness', 'scroll', 4, '-0.5s Ward cooldown', { ward_cd: 0.5 }, { req: 'ward' }),
-    T_('pu_cd', 3, 0, 'Swift Cleanse', 'scroll', 3, '-0.5s Purify cooldown', { purify_cd: 0.5 }, { req: 'pu_pow' }),
-    T_('mendward', 3, 1, 'Mending Ward', 's_ward', 1, 'When a Ward breaks, it heals for 25% of its size', { ward_mend: 0.25 }, { cost: 2, req: 'w_pow' }),
-    T_('stout', 3, 2, 'Stout Hearts', 'shield', 5, '+3% party health', { partyHp: 0.03 }),
-    SPELLNODE('sanctuary', 4, 1),
-    T_('bulwark', 4, 0, 'Bulwark Doctrine', 's_ward', 1, 'Ward has no cooldown, but costs 60% more mana', { ward_nocd: 1, ward_costUp: 0.6 }, { cost: 3, req: 'mendward' }),
-    T_('sa_str', 5, 1, 'Hallowed Ground', 's_sanctuary', 5, 'Sanctuary blocks 2% more damage', { sanct_amt: 0.02 }, { req: 'sanctuary' }),
-    T_('sa_dur', 5, 2, 'Long Vigil', 'scroll', 4, '+0.5s Sanctuary duration', { sanct_dur: 0.5 }, { req: 'sanctuary' }),
+    T_('pu_pow', 1, 0, 'Cleansing Light', 's_purify', 5, '+12% Purify healing', { purify_pow: 0.12 }, { needs: 'purify' }),
+    T_('camp', 1, 1, 'Campfire', 'bandage', 5, 'Resting between stages restores 3% more health and mana', { camp: 0.03 }),
+    T_('stout', 1, 2, 'Stout Hearts', 'shield', 5, '+3% party health', { partyHp: 0.03 }),
+    T_('pu_cd', 2, 0, 'Swift Cleanse', 'scroll', 3, '-0.5s Purify cooldown', { purify_cd: 0.5 }, { needs: 'purify', req: 'pu_pow' }),
+    T_('w_pow', 2, 1, 'Thick Glass', 's_ward', 10, '+4% Ward absorb', { ward_pow: 0.04 }, { needs: 'ward' }),
+    T_('w_cd', 2, 2, 'Readiness', 'scroll', 4, '-0.5s Ward cooldown', { ward_cd: 0.5 }, { needs: 'ward' }),
+    T_('faith', 3, 0, 'Steadfast Faith', 's_core', 5, 'Devotion fades 6% slower', { devo_slow: 0.06 }),
+    T_('mendward', 3, 1, 'Mending Ward', 's_ward', 1, 'When a Ward breaks, it heals for 25% of its size', { ward_mend: 0.25 }, { cost: 2, needs: 'ward', req: 'w_pow' }),
+    T_('rites', 3, 2, 'Last Rites', 'shield', 1, 'Once per stage, an ally who would die survives with 1 health', { lastrites: 1 }, { cost: 2 }),
+    T_('sa_str', 4, 0, 'Hallowed Ground', 's_sanctuary', 5, 'Sanctuary blocks 2% more damage', { sanct_amt: 0.02 }, { needs: 'sanctuary' }),
+    T_('bulwark', 4, 1, 'Bulwark Doctrine', 's_ward', 1, 'Ward has no cooldown, but costs 60% more mana', { ward_nocd: 1, ward_costUp: 0.6 }, { cost: 3, needs: 'ward', req: 'mendward' }),
+    T_('sa_dur', 4, 2, 'Long Vigil', 'scroll', 4, '+0.5s Sanctuary duration', { sanct_dur: 0.5 }, { needs: 'sanctuary' }),
+    T_('bastion', 5, 1, 'Inner Fortress', 'shield', 1, '+15% party health', { partyHp: 0.15 }, { cost: 3 }),
   ] },
-  { id: 'devo', name: 'Devotion', col: '#a98cf0', desc: 'Mana, Renew, Meditate and empowering the party', nodes: [
+  { id: 'devo', name: 'Devotion', col: '#a98cf0', desc: 'Renew, Meditate and Blessing, mana and empowering the party', nodes: [
     T_('well', 0, 0, 'Inner Well', 's_meditate', 10, '+3% max mana', { mana: 0.03 }),
     T_('still', 0, 1, 'Still Waters', 's_meditate', 10, '+3% mana regeneration', { regen: 0.03 }),
     T_('rally', 0, 2, 'Battle Hymn', 'sword', 10, '+2% party damage', { partyDps: 0.02 }),
-    SPELLNODE('renew', 1, 0),
-    SPELLNODE('meditate', 1, 1),
-    T_('scholar', 1, 2, 'Scholar', 'scroll', 5, '+3% party experience and +3% gold find', { xp: 0.03, gold: 0.03 }),
-    T_('r_pow', 2, 0, 'Sap', 's_renew', 10, '+4% Renew healing', { renew_pow: 0.04 }, { req: 'renew' }),
-    T_('m_amt', 2, 1, 'Deep Breath', 's_meditate', 5, 'Meditate restores 3% more of your mana', { med_amt: 0.03 }, { req: 'meditate' }),
-    T_('clarity', 2, 2, 'Clarity', 's_core', 5, '1% chance a spell costs no mana', { clarity: 0.01 }),
-    T_('r_dur', 3, 0, 'Long Roots', 's_renew', 5, '+1s Renew duration', { renew_dur: 1 }, { req: 'renew' }),
-    T_('m_cd', 3, 1, 'Calm Mind', 'scroll', 4, '-4s Meditate cooldown', { med_cd: 4 }, { req: 'meditate' }),
-    SPELLNODE('blessing', 3, 2),
-    T_('bloom', 4, 0, 'Bloom', 's_renew', 1, 'Renew heals 20% of its total instantly', { renew_bloom: 0.2 }, { cost: 2, req: 'r_pow' }),
-    T_('deepwell', 4, 1, 'Deep Well', 's_meditate', 1, '+15% max mana', { mana: 0.15 }, { cost: 2 }),
-    T_('bl_amt', 4, 2, 'Zeal', 's_blessing', 5, 'Blessing grants 4% more damage', { bless_amt: 0.04 }, { req: 'blessing' }),
-    T_('ascetic', 5, 0, 'Ascetic', 's_meditate', 1, 'Mana regeneration +60%, but max mana -30%', { regen: 0.6, mana: -0.3 }, { cost: 3 }),
-    T_('zealot', 5, 1, 'Zealot', 'sword', 1, 'Party damage +30%, but all healing -10%', { partyDps: 0.3, healAll: -0.1 }, { cost: 3, req: 'rally' }),
-    T_('bl_dur', 5, 2, 'Fervor', 's_blessing', 4, '+1s Blessing duration', { bless_dur: 1 }, { req: 'blessing' }),
+    T_('r_pow', 1, 0, 'Sap', 's_renew', 10, '+4% Renew healing', { renew_pow: 0.04 }, { needs: 'renew' }),
+    T_('scholar', 1, 1, 'Scholar', 'scroll', 5, '+3% party experience and +3% gold find', { xp: 0.03, gold: 0.03 }),
+    T_('clarity', 1, 2, 'Clarity', 's_core', 5, '1% chance a spell costs no mana', { clarity: 0.01 }),
+    T_('r_dur', 2, 0, 'Long Roots', 's_renew', 5, '+1s Renew duration', { renew_dur: 1 }, { needs: 'renew', req: 'r_pow' }),
+    T_('m_amt', 2, 1, 'Deep Breath', 's_meditate', 5, 'Meditate restores 3% more of your mana', { med_amt: 0.03 }, { needs: 'meditate' }),
+    T_('m_cd', 2, 2, 'Calm Mind', 'scroll', 4, '-4s Meditate cooldown', { med_cd: 4 }, { needs: 'meditate' }),
+    T_('bloom', 3, 0, 'Bloom', 's_renew', 1, 'Renew heals 20% of its total instantly', { renew_bloom: 0.2 }, { cost: 2, needs: 'renew', req: 'r_dur' }),
+    T_('deepwell', 3, 1, 'Deep Well', 's_meditate', 1, '+15% max mana', { mana: 0.15 }, { cost: 2 }),
+    T_('kindred', 3, 2, 'War Chant', 'sword', 5, 'Companions attack 2% faster', { partySpd: 0.02 }),
+    T_('bl_amt', 4, 0, 'Zeal', 's_blessing', 5, 'Blessing grants 4% more damage', { bless_amt: 0.04 }, { needs: 'blessing' }),
+    T_('ascetic', 4, 1, 'Ascetic', 's_meditate', 1, 'Mana regeneration +60%, but max mana -30%', { regen: 0.6, mana: -0.3 }, { cost: 3 }),
+    T_('bl_dur', 4, 2, 'Fervor', 's_blessing', 4, '+1s Blessing duration', { bless_dur: 1 }, { needs: 'blessing' }),
+    T_('zealot', 5, 1, 'Zealot', 'sword', 1, 'Party damage +30%, but all healing -10%', { partyDps: 0.3, healAll: -0.1 }, { cost: 3 }),
   ] },
 ];
+// Spells are offered in the order their talents open up in the trees (shallowest row first)
+const SPELL_ORDER = (() => {
+  const at = {};
+  CLERIC_TREES.forEach((tr, ti) => tr.nodes.forEach(n => { if (n.needs) { const k = n.row * 10 + ti; at[n.needs] = Math.min(at[n.needs] ?? 99, k); } }));
+  return Object.keys(at).sort((a, b) => at[a] - at[b]);
+})();
 
 /* Companion trees: two specs each. Companions earn their own points (one every 2 levels). */
 const COMP_TREES = [
@@ -901,12 +912,12 @@ const totalCost = (n, r) => { let c = 0; for (let k = 1; k <= r; k++) c += rankC
 const spentIn = (o, treeId) => OWNERS[o].filter(t => !treeId || t.id === treeId).reduce((a, t) => a + t.nodes.reduce((b, n) => b + totalCost(n, rankOf(o, n.id)), 0), 0);
 const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
 const known = id => id === 'heal' || S.spells.includes(id);
-const spellOffer = () => SPELL_ORDER.filter(id => !known(id)).slice(0, 2);
+const spellOffer = () => SPELL_ORDER.filter(id => !known(id)).slice(0, 3);
 const picksLeft = () => spellOffer().length ? Math.max(0, S.dun.clears.filter(c => c > 0).length - S.spells.length) : 0;
 function pickHtml() {
   const offer = spellOffer();
   return `<div class="spellpick"><h4>Choose a new spell</h4><div class="picks">${offer.map(id => `<button class="pickcard" type="button" data-pick="${id}">${img('s_' + id)}<b>${SP_NAMES[id]}</b><span>${esc(SP[id].desc)}</span></button>`).join('')}</div>
-    ${offer.length > 1 ? `<p class="label">The other stays on offer for your next first clear.</p>` : ''}</div>`;
+    ${offer.length > 1 ? `<p class="label">The others stay on offer for your next first clear.</p>` : ''}</div>`;
 }
 function learnSpell(id) {
   if (!picksLeft() || !spellOffer().includes(id)) return;
@@ -948,7 +959,7 @@ function compGear(i, over) {
 function makeCs(i, over) {
   const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
   return { ...c, dmg: p.dmg * lvMult(i) * (1 + TRAIN_PCT * S.kit[i].w) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
-    spd: gf('spd') + ge.spd / 100, crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
+    spd: gf('spd') + ge.spd / 100 + (i === YOU ? 0 : D.partySpd || 0), crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow') };
 }
 const csDps = (i, cs) => cs.dmg * (1 + Math.min(1, cs.crit) * (cs.critDmg - 1)) * (1 + cs.spd) / PARTY[i].spd;
@@ -976,7 +987,8 @@ function recalc() {
   D.camp = t('camp');
   D.restHp = 0.25 + D.camp + 0.04 * lvl('infirmary');
   D.revive = 0.2 + 0.05 * lvl('infirmary');
-  D.devFade = (has('devo1') ? 0.6 : 1) * (1 - 0.06 * lvl('chapel'));
+  D.devFade = (has('devo1') ? 0.6 : 1) * (1 - 0.06 * lvl('chapel')) * (1 - t('devo_slow'));
+  D.lowPow = t('low_pow'); D.critMana = t('crit_mana'); D.lastRites = t('lastrites'); D.partySpd = t('partySpd');
   const aL = lvl('cloister');
   D.aco = aL ? { pow: 0.3 + 0.1 * (aL - 1), every: 3.2 - 0.15 * (aL - 1), eff: 0.2 + 0.05 * (aL - 1) } : null;
   D.tankDR = t('tankDR');
@@ -1132,7 +1144,7 @@ function enterDungeon(d) {
 function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
-  C.buff = { sanct: 0, bless: 0 };
+  C.buff = { sanct: 0, bless: 0 }; C.ritesUsed = false;
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach(m => { if (m.alive) m.dots = [{ rate: m.max * 0.012, left: 12, acc: 0 }]; });
   C.foes.forEach(f => { f.hitBy = {}; f.poison = null; });
@@ -1163,6 +1175,7 @@ function hit(i, amt) {
   floatTxt(i, '-' + fmt(amt), 'dmg');
   pnumFx(i, '-' + fmt(amt), '#ff8a7a');
   heroAnim[i].flash = 0.12;
+  if (m.hp <= 0 && D.lastRites && !C.ritesUsed) { m.hp = 1; C.ritesUsed = true; floatTxt(i, 'Last Rites', 'heal'); fxRingAt(i, '#fff2a8'); log(`Last Rites kept <b>${PARTY[i].name}</b> standing.`); }
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
     log(`<b>${PARTY[i].name}</b> has fallen.`);
@@ -1172,8 +1185,9 @@ function hit(i, amt) {
 function heal(i, amt, critBonus = 0, npc = false) {
   const m = C.party[i];
   if (!m || !m.alive) return 0;
+  if (!npc && D.lowPow && m.hp / m.max < 0.4) amt *= 1 + D.lowPow;
   const crit = Math.random() < D.crit + critBonus;
-  if (crit) { amt *= 1.5; S.stats.crits++; }
+  if (crit) { amt *= 1.5; S.stats.crits++; if (!npc && D.critMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.critMana); }
   const eff = Math.min(amt, m.max - m.hp);
   m.hp += eff;
   S.stats.healed += eff; S.stats.overheal += amt - eff;
@@ -1793,6 +1807,21 @@ const HERO_ART = [
     '..WW...WW.....',
   ] },
 ];
+// Head-and-shoulders portrait of a hero, outlined like the battle sprites
+const portraitCache = {};
+function portrait(i) {
+  if (portraitCache[i]) return portraitCache[i];
+  const art = HERO_ART[i], w = art.map[0].length + 2, h = 14;
+  const a = document.createElement('canvas'); a.width = w; a.height = h;
+  const prev = P; P = a.getContext('2d'); sprite(art.map, art.pal, w >> 1, art.map.length + 1); P = prev;
+  const o = document.createElement('canvas'); o.width = w; o.height = h;
+  const x = o.getContext('2d');
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) x.drawImage(a, dx, dy);
+  x.globalCompositeOperation = 'source-in'; x.fillStyle = '#0b0910'; x.fillRect(0, 0, w, h);
+  x.globalCompositeOperation = 'source-over'; x.drawImage(a, 0, 0);
+  return (portraitCache[i] = o.toDataURL());
+}
+const portraitImg = (i, cls = '') => `<img class="portrait ${cls}" src="${portrait(i)}" alt="">`;
 function drawHero(i, X, Y, t, castPose) {
   const bob = Math.sin(t * 3 + i * 1.7) > 0.4 ? 1 : 0;
   const art = HERO_ART[i];
@@ -2346,7 +2375,8 @@ function buildArena() {
   PARTY.forEach((d, i) => {
     const f = document.createElement('button');
     f.className = 'frame'; f.type = 'button';
-    f.innerHTML = `<div class="fr-top"><span class="fr-name">${d.name}</span><span class="fr-role"><b class="lv"></b> ${d.role}</span></div>
+    f.style.setProperty('--rc', ROLE_COL[i]);
+    f.innerHTML = `<div class="fr-top"><span class="fr-name">${portraitImg(i, 'fr')}${d.name}</span><span class="fr-role" title="${d.role}"><b class="lv"></b></span></div>
       <div class="bar hp"><i class="fill"></i><i class="shield"></i><span class="txt"></span></div>
       <div class="bar xp"><i class="fill xpf"></i></div>
       <div class="fr-fx"></div><div class="floats"></div>`;
@@ -2435,7 +2465,7 @@ function wireActionBar() {
   });
   $('#bindBtn').addEventListener('click', () => { editBinds = !editBinds; picked = null; barKey = ''; });
 }
-const METER_COL = ['#7ba3ee', '#e0605a', '#8fdc6a', '#ff9f43', '#f3ead8'];
+const METER_COL = ROLE_COL;
 let meterT = 0;
 function updateMeter(dt) {
   const box = $('#meterRows'); if (!box || !C.meter) return;
@@ -2603,25 +2633,24 @@ function renderDungeons() {
 /* ---------- Talent grids (Cleric in Talents, companions in Party) ---------- */
 let talTree = 'holy', partySel = 0, tSel = null;
 function canLearn(n) {
-  if (n.kind === 'spell') return known(n.spell) ? 'Known.' : 'Spells are learned from first dungeon clears.';
   const o = n.owner, r = rankOf(o, n.id);
   if (r >= n.max) return 'Fully learned.';
   const tr = OWNERS[o].find(t => t.id === n.tree), need = n.row * TIER_GATE, have = spentIn(o, n.tree);
   if (have < need) return `Needs ${need} points spent in ${tr.name} (${have} so far).`;
-  if (n.req && o === 'cleric' && SP[n.req]) { if (!known(n.req)) return `Needs the ${SP_NAMES[n.req]} spell, learned from a first dungeon clear.`; }
-  else if (n.req && rankOf(o, n.req) < 1) return `Needs ${TNODE[o + '|' + n.req].name} first.`;
+  if (n.needs && !known(n.needs)) return `Needs the ${SP_NAMES[n.needs]} spell. Each first dungeon clear lets you choose a new spell.`;
+  if (n.req && rankOf(o, n.req) < 1) return `Needs ${TNODE[o + '|' + n.req].name} first.`;
   const c = rankCost(n, r + 1);
   if (pointsOf(o) < c) return `Needs ${c} talent point${c > 1 ? 's' : ''}.`;
   return true;
 }
 function cellHtml(n) {
-  const o = n.owner, r = n.kind === 'spell' ? +known(n.spell) : rankOf(o, n.id), key = o + '|' + n.id;
+  const o = n.owner, r = rankOf(o, n.id), key = o + '|' + n.id, sealed = n.needs && !known(n.needs);
   const st = r >= n.max ? 'max' : canLearn(n) === true ? 'avail' : r > 0 ? 'part' : 'locked';
   const pre = n.req && TNODE[o + '|' + n.req];
   const link = pre && pre.col === n.col && pre.row === n.row - 1 ? 'link' : '';
-  const rk = n.kind === 'spell' ? (r ? 'Known' : 'From a clear') : n.kind === 'minor' ? `${r}/${n.max}` : r ? 'Learned' : n.kind === 'spell' ? 'Spell' : n.kind === 'ability' ? 'Attack' : 'Major';
-  return `<button class="tcell ${n.kind} ${st} ${link} ${tSel === key ? 'sel' : ''}" style="grid-row:${n.row + 1};grid-column:${n.col + 2}" data-tal="${key}" title="${esc(n.name)}: ${esc(n.per)}">
-    ${img(n.icon, 0, 'sm')}<b>${esc(n.name)}</b><span class="rk">${rk}</span></button>`;
+  const rk = sealed ? `Needs ${SP_NAMES[n.needs]}` : n.kind === 'minor' ? `${r}/${n.max}` : r ? 'Learned' : n.kind === 'ability' ? 'Attack' : 'Major';
+  return `<button class="tcell ${n.kind} ${st} ${sealed ? 'sealed' : ''} ${link} ${tSel === key ? 'sel' : ''}" style="grid-row:${n.row + 1};grid-column:${n.col + 2}" data-tal="${key}" title="${esc(n.name)}: ${esc(n.per)}">
+    ${img(n.icon, 0, 'sm')}${n.needs ? `<i class="needs" title="Improves ${SP_NAMES[n.needs]}">${img('s_' + n.needs, 0, 'xs')}</i>` : ''}<b>${esc(n.name)}</b><span class="rk">${rk}</span></button>`;
 }
 function gridHtml(tr, cols) {
   const rows = Math.max(...tr.nodes.map(n => n.row)) + 1;
@@ -2632,13 +2661,11 @@ function talDetailHtml() {
   const n = tSel && TNODE[tSel];
   if (!n) return '<p class="empty">Click a talent to see what it does. Double-click learns it.</p>';
   const o = n.owner, r = rankOf(o, n.id), c = canLearn(n), tr = OWNERS[o].find(t => t.id === n.tree);
-  if (n.kind === 'spell') return `<div class="tdh"><span class="swatch" style="background:${tr.col}"></span><b>${esc(n.name)}</b><span class="label">${tr.name} · Spell</span></div>
-    <p>${esc(SP[n.spell].desc)}</p><p class="sub">${known(n.spell) ? 'Known. The talents below and beside it improve it.' : 'Learned from a first dungeon clear: each one lets you choose one of two new spells. The talents below improve it once you know it.'}</p>`;
-  const kind = n.kind === 'spell' ? 'New spell' : n.kind === 'ability' ? 'New attack' : n.kind === 'major' ? 'Major talent' : `Rank ${r} of ${n.max}`;
+  const kind = n.kind === 'ability' ? 'New attack' : n.kind === 'major' ? 'Major talent' : `Rank ${r} of ${n.max}`;
   const nc = r < n.max ? rankCost(n, r + 1) : 0, pts = `${nc} point${nc > 1 ? 's' : ''}`;
   const per = esc(n.per.replace(/\.$/, ''));
   const eff = n.kind === 'minor' ? `<p>Each rank: ${per}.</p><p class="sub">Ranks 1–${o === 'cleric' ? 5 : 3} cost 1 point; later ranks cost 2.</p>` : `<p>${per}.</p>`;
-  const label = n.kind === 'spell' ? 'Learn spell' : n.kind === 'ability' ? 'Learn attack' : n.kind === 'major' ? 'Learn' : `Learn rank ${r + 1}`;
+  const label = n.kind === 'ability' ? 'Learn attack' : n.kind === 'major' ? 'Learn' : `Learn rank ${r + 1}`;
   const btn = r >= n.max ? '<span class="label">Fully learned</span>'
     : c === true ? `<button class="btn primary" data-learn="${tSel}">${label} · ${pts}</button>`
     : `<button class="btn" disabled>${label} · ${pts}</button><span class="label">${esc(c)}</span>`;
@@ -2654,7 +2681,6 @@ function learnTal(key) {
   const n = TNODE[key]; if (!n || canLearn(n) !== true) return;
   const rk = ranksOf(n.owner); rk[n.id] = (rk[n.id] || 0) + 1;
   recalc();
-  if (n.spell) { log(`<span class="x">Learned ${n.name}.</span>`); toast(`Learned ${n.name}. It's on your action bar.`); }
   if (n.kind === 'ability') { log(`<span class="x">${PARTY[n.owner].name} learned ${n.name}.</span>`); toast(`${PARTY[n.owner].name} learned ${n.name}.`); }
   tSel = key; shopDirty = true; renderPane();
 }
@@ -2663,7 +2689,7 @@ pane.addEventListener('dblclick', e => { const b = e.target.closest('[data-tal]'
 function nextSpellHtml() {
   const offer = spellOffer(); if (!offer.length) return '<p class="intro lvl">You know every spell.</p>';
   const d = S.dun.clears.findIndex(c => !(c > 0)), where = d < 0 ? 'your next first clear' : `the first clear of <b>${DUNGEONS[d].name}</b>`;
-  return `<div class="nextspell">${offer.map(id => img('s_' + id, 0, 'sm')).join('')}<span>Next spell: ${where} lets you choose ${offer.map(id => `<b>${SP_NAMES[id]}</b>`).join(' or ')}.</span></div>`;
+  return `<div class="nextspell">${offer.map(id => img('s_' + id, 0, 'sm')).join('')}<span>Next spell: ${where} lets you choose ${offer.map(id => `<b>${SP_NAMES[id]}</b>`).join(', ').replace(/, ([^,]*)$/, ' or $1')}.</span></div>`;
 }
 function renderTalents() {
   const pts = pointsOf('cleric'), tr = CLERIC_TREES.find(t => t.id === talTree) || CLERIC_TREES[0];
@@ -2671,7 +2697,7 @@ function renderTalents() {
   pane.innerHTML = `
     <div class="section-h"><h3>Cleric talents</h3><span class="label">Talent points <b style="color:var(--xp);font-family:var(--mono)">${pts}</b></span></div>
     ${picksLeft() ? pickHtml() : nextSpellHtml()}
-    <p class="intro">You earn a talent point every 2 Cleric levels and one on each first dungeon clear. New spells don't cost points: each first dungeon clear lets you choose one of two. Talents improve the spells you know. Most take many ranks of small bonuses; major talents cost more. Deeper rows need points spent in that tree first (the number on the left).</p>
+    <p class="intro">You earn a talent point every 2 Cleric levels and one on each first dungeon clear. New spells don't cost points: each first dungeon clear lets you choose one of three. Talents marked with a spell icon improve that spell and open once you know it. Most take many ranks of small bonuses; major talents cost more. Deeper rows need points spent in that tree first (the number on the left).</p>
     <div class="ttabs" role="group" aria-label="Talent trees">${CLERIC_TREES.map(t => `<button class="chipbtn" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">${t.name} <small>${spentIn('cleric', t.id)}</small></button>`).join('')}</div>
     <p class="intro">${tr.desc}.</p>
     ${gridHtml(tr, 3)}
@@ -2700,8 +2726,8 @@ function renderParty() {
   const kitRow = (k, name, icon, desc) => `<button class="row" data-kit="${k}:${i}">${img(icon)}<span class="nm">${name}</span><span class="owned" data-own></span>
     <span class="ds">${desc}</span><span class="meta"><span class="cost" data-cost></span></span></button>`;
   pane.innerHTML = `
-    <div class="ttabs" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="chipbtn" data-comp="${k}" aria-pressed="${k === i}">${q.name} <small>Lv ${S.heroes[k].lv}${k !== YOU && pointsOf(k) > 0 ? ' · ' + pointsOf(k) + ' pt' : ''}</small></button>`).join('')}</div>
-    <div class="section-h"><h3>${p.name} · ${p.role}</h3><span class="label">Level ${S.heroes[i].lv}</span></div>
+    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${q.role} · Lv ${S.heroes[k].lv}</small>${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
+    <div class="phead" style="--rc:${ROLE_COL[i]}">${portraitImg(i, 'lg')}<div><h3>${p.name}</h3><span class="label">${p.role} · Level ${S.heroes[i].lv}${comp ? ` · ${fmt(memberDps(i))} damage per second` : ''}</span></div></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
     <div class="statgrid" id="pstats"></div>
     ${comp ? `<div class="section-h"><h3>Equipment</h3><span class="label">Change it in the Armory</span></div>

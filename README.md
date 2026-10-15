@@ -29,17 +29,26 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 ## The party
 
-- Companions attack on their own timers. Every hit has its own damage, attack speed, critical chance and critical damage. Melee hits land at the end of a swing; Ilda's fireballs land when they arrive.
+- Companions attack on their own timers. Every hit has its own damage, attack speed, critical chance and critical damage. Melee hits land at the end of a swing; Vess's arrows and Ilda's fireballs land when they arrive.
 - Each companion levels up separately and earns a talent point every 2 levels. Each one has two specs:
 
   | Companion | Specs |
   |---|---|
   | Bram (Guardian) | Bulwark or Vengeance |
   | Rook (Warrior) | Berserker or Executioner |
-  | Vess (Rogue) | Assassin or Poisoner |
-  | Ilda (Pyromancer) | Inferno or Ember Storm |
+  | Vess (Hunter) | Marksman or Venom |
+  | Ilda (Mage) | Fire or Frost |
 
   Examples include Shield Bash, Execute, Cleave, poison stacks, Pyroblast and splash damage.
+- **Companion attacks.** The third column of every spec is a new attack the companion fires on its own cooldown, on top of their normal hits. Learn it (2 points), then improve it with the talents right below: more damage, a shorter cooldown, and a major upgrade at the bottom.
+
+  | Companion | Attacks | Major upgrade |
+  |---|---|---|
+  | Bram | Shield Slam (200%, Bram takes 20% less damage for 4s) · Thunder Clap (130% to every enemy) | Concussion stuns and interrupts · Aftershock slows enemy attacks |
+  | Rook | Whirlwind (3 spins of 70% to every enemy) · Mortal Strike (300%) | Bladestorm: 5 spins · Decapitate: triple damage below 35% health |
+  | Vess | Aimed Shot (300%, always critical) · Venom Volley (80% to every enemy plus 2 poison stacks) | Piercing Shot hits every enemy · Rain of Arrows fires a second wave |
+  | Ilda | Flamestrike (150% to every enemy, then a burn) · Frostbolt (200%, slows attacks by 30%) | Wildfire doubles the burn · Deep Freeze freezes and interrupts |
+- **Damage meter.** Under the action bar, the damage meter ranks the party by damage per second over the current run, with each member's share. Use it to spot who is falling behind and push their gear, training or talents.
 - **Gear.** Each companion has three gear slots (weapon, armor, charm), with damage, health, attack speed and critical stats. When you select party gear in the Armory, it shows the change in damage per second or health for each companion.
 - **Training.** Every companion has Weapon Training (+2% damage per rank) and Endurance Training (+2% health per rank). There's no rank limit, and ranks add up, so 10 ranks is +20%. Each rank costs 50% more than the last, which keeps training roughly level with the companion's talents.
 

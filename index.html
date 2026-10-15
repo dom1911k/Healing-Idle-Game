@@ -270,6 +270,30 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .ddiff{font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px}.ddiff.easy{background:#25402c;color:#8fdc9a}.ddiff.fair{background:#3a3520;color:#e8d07a}.ddiff.hard{background:#4a2c1c;color:#f0a060}.ddiff.deadly{background:#4a1c22;color:#ff7a80}
 .dfirst{font-size:.72rem;color:var(--gold)}
 .drow .act{margin-left:auto}
+.hintbox{display:flex;align-items:center;gap:10px;background:#2a2440;border:1px solid #6b5aa0;border-radius:8px;padding:8px 10px;font-size:.86rem;animation:hintin .3s ease-out}
+.hintbox .hb-i{width:22px;height:22px;flex:none;border-radius:50%;background:#6b5aa0;color:#fff;display:grid;place-items:center;font-weight:700}
+.hintbox span:nth-child(2){flex:1}
+@keyframes hintin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.nextstep{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:transparent;border:1px dashed var(--gold-dim);border-radius:8px;padding:5px 10px;color:var(--ink);font:inherit;font-size:.84rem;cursor:pointer}
+.nextstep:hover{background:#e4b75c12;border-color:var(--gold)}
+.nextstep span{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:700}
+.setn{color:#3fe0b0!important}
+.setbox{background:#14261f;border:1px solid #2f6a55;border-radius:8px;padding:8px 10px;font-size:.84rem}
+.setbox ul{margin:4px 0;padding-left:16px;color:var(--muted)}.setbox li.on{color:#3fe0b0}.setbox p{margin:2px 0;color:var(--muted)}.setbox p.on{color:#c8f5e4}
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:10px}
+.ach{position:relative;display:flex;flex-direction:column;gap:2px;padding:8px 10px 8px 30px;border-radius:8px;background:#1a1722;border:1px solid var(--line);font-size:.8rem;opacity:.7}
+.ach.done{opacity:1;border-color:#6a5a2a;background:linear-gradient(135deg,#2a2414,#1a1722)}
+.ach .am{position:absolute;left:9px;top:8px;color:var(--muted)}.ach.done .am{color:var(--gold)}
+.ach b{font-size:.86rem}.ach.done b{color:var(--gold)}.ach span{color:var(--muted)}.ach small{color:#9fd8b8;font-size:.72rem}
+.ap{display:block;height:3px;background:#ffffff12;border-radius:2px;overflow:hidden;margin-top:3px}.ap i{display:block;height:100%;background:var(--gold)}
+.sound{display:flex;align-items:center;gap:6px}
+.iconbtn{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem;line-height:1}
+#volume{width:72px;accent-color:var(--gold)}
+.wreport{text-align:left;margin:6px auto;padding-left:18px;max-width:440px;font-size:.88rem;display:flex;flex-direction:column;gap:5px}
+.peril{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:#ff9a8a;background:#3a1c22;border-radius:999px;padding:1px 4px 1px 9px}
+.peril b{font-family:var(--mono);color:#fff}.peril .muted{color:#a07a80;font-family:var(--mono)}
+.pbtn{width:20px;height:20px;border-radius:50%;border:1px solid #6a3a44;background:#22141a;color:#ffb0a4;cursor:pointer;line-height:1;padding:0}.pbtn:disabled{opacity:.35;cursor:default}
+.dmod .p2{color:#ff8a7a}.perilfx{color:#ffb0a4}
 .dun{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .dun.cur{border-color:var(--gold)}
 .dun.locked{opacity:.5}
@@ -438,6 +462,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div><span class="label">Gold</span><b id="gold">0</b></div>
       <div><span class="label">Talent points</span><b id="tpts" class="tp">0</b></div>
       <div><span class="label">Item level</span><b id="pilvl" class="il">0</b></div>
+      <div class="sound"><button class="iconbtn" type="button" id="muteBtn" title="Sound on or off" aria-pressed="true">🔊</button><input type="range" id="volume" min="0" max="100" value="60" aria-label="Volume"></div>
     </div>
   </header>
 
@@ -457,6 +482,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
         <div class="bar bcast" id="bcast"><i class="fill" id="bcastFill"></i><span class="txt" id="bcastTxt"></span></div>
       </div>
       <div class="tags" id="tags"></div>
+      <div class="hintbox" id="hint" hidden><span class="hb-i">?</span><span id="hintTxt"></span><button class="btn small" type="button" id="hintOk">Got it</button></div>
+      <button class="nextstep" type="button" id="nextStep" hidden></button>
 
       <div class="scenewrap"><canvas class="scene" id="scene" width="320" height="160" aria-label="Battle scene. Click a hero to target them."></canvas></div>
 
@@ -643,14 +670,22 @@ const DUNGEONS = [
   { name: 'Eclipse Spire',  stages: 10, mobs: ['imp', 'cultist', 'wisp'],  mobC: ['#8e5fc0', '#3b2a55', '#ffd36b'], mod: 'eclipse', amb: 'mote',  bg: ['#221d36','#191529','#110e1c','#2e2846','#221d36','#e4b75c'] },
 ];
 const BOSSES = [
-  { name: 'Gnasher',        title: 'King of the Sewer Rats',  kind: 'rat',      c: ['#6e5f52','#a8977f','#e48a9a'], abil: ['bolt','rot'] },
-  { name: 'The Mire Hag',   title: 'Brewer of Bog Fevers',    kind: 'hag',      c: ['#3d2f4f','#7fa35a','#5e4a78'], abil: ['rot','wave'] },
-  { name: 'Grave Warden',   title: 'Keeper of the Ossuary',   kind: 'skeleton', c: ['#e2dccb','#9a9384','#6fd1ff'], abil: ['cleave','bolt'] },
-  { name: 'Ashjaw',         title: 'Drake of the Cinder Pit', kind: 'drake',    c: ['#a8402f','#e07a3a','#ffd36b'], abil: ['wave','cleave'] },
-  { name: 'Thornmother',    title: 'Root of the Black Wood',  kind: 'tree',     c: ['#4a3424','#6e4e32','#8fcf5a'], abil: ['rot','rot','cleave','doom'] },
-  { name: 'Iron Penitent',  title: 'Chained Executioner',     kind: 'knight',   c: ['#5d6372','#8d95a8','#c9504a'], abil: ['cleave','frenzy','doom'] },
-  { name: 'Leviathan',      title: 'Under the Drowned Nave',  kind: 'serpent',  c: ['#2f6f7a','#4fa3a8','#c8f0e0'], abil: ['wave','frenzy','bolt','doom'] },
-  { name: 'Eclipse Seraph', title: 'The Light Turned Away',   kind: 'seraph',   c: ['#f3ead8','#e4b75c','#1b1622'], abil: ['bolt','wave','rot','frenzy','doom'] },
+  { p2: { name: 'Call the Swarm', desc: 'two sewer rats join the fight', adds: ['rat', 2] },
+    name: 'Gnasher',        title: 'King of the Sewer Rats',  kind: 'rat',      c: ['#6e5f52','#a8977f','#e48a9a'], abil: ['bolt','rot'] },
+  { p2: { name: 'Bog Miasma', desc: 'poisons the whole party and casts faster', poison: true, haste: 1.2 },
+    name: 'The Mire Hag',   title: 'Brewer of Bog Fevers',    kind: 'hag',      c: ['#3d2f4f','#7fa35a','#5e4a78'], abil: ['rot','wave'] },
+  { p2: { name: 'Raise the Dead', desc: 'two skeletons claw out of the floor', adds: ['skeleton', 2] },
+    name: 'Grave Warden',   title: 'Keeper of the Ossuary',   kind: 'skeleton', c: ['#e2dccb','#9a9384','#6fd1ff'], abil: ['cleave','bolt'] },
+  { p2: { name: 'Molten Floor', desc: 'the arena burns everyone and Ashjaw attacks faster', heat: true, haste: 1.2 },
+    name: 'Ashjaw',         title: 'Drake of the Cinder Pit', kind: 'drake',    c: ['#a8402f','#e07a3a','#ffd36b'], abil: ['wave','cleave'] },
+  { p2: { name: 'Bloom of Thorns', desc: 'wisps bloom and all healing is 20% weaker', adds: ['wisp', 2], thorns: true },
+    name: 'Thornmother',    title: 'Root of the Black Wood',  kind: 'tree',     c: ['#4a3424','#6e4e32','#8fcf5a'], abil: ['rot','rot','cleave','doom'] },
+  { p2: { name: 'Final Judgement', desc: 'casts Doom at once and acts 35% faster', doom: true, haste: 1.35 },
+    name: 'Iron Penitent',  title: 'Chained Executioner',     kind: 'knight',   c: ['#5d6372','#8d95a8','#c9504a'], abil: ['cleave','frenzy','doom'] },
+  { p2: { name: 'Riptide', desc: 'a wisp surfaces and the Leviathan strikes faster', adds: ['wisp', 1], haste: 1.3 },
+    name: 'Leviathan',      title: 'Under the Drowned Nave',  kind: 'serpent',  c: ['#2f6f7a','#4fa3a8','#c8f0e0'], abil: ['wave','frenzy','bolt','doom'] },
+  { p2: { name: 'Totality', desc: 'the light burns, wisps gather and Doom falls', adds: ['wisp', 2], heat: true, doom: true, haste: 1.3 },
+    name: 'Eclipse Seraph', title: 'The Light Turned Away',   kind: 'seraph',   c: ['#f3ead8','#e4b75c','#1b1622'], abil: ['bolt','wave','rot','frenzy','doom'] },
 ];
 const MOBS = {
   rat:      { name: 'Sewer Rat', hp: 0.8, dmg: 0.7, atk: 1.2, tgt: 'tank',   h: 11 },
@@ -1049,6 +1084,57 @@ function itemName(base, fam, ilvl, rarity, key, who) {
   const mat = FAMILY[fam][Math.min(7, Math.floor((ilvl - 1) / 7))];
   return `${mat} ${base} ${pick(SUFFIXES[key] || ['of Note'])}`;
 }
+const SETS = {
+  bram: { who: 0, name: 'Bulwark of the Unbroken', pieces: { cweapon: 'Unbroken Mace', carmor: 'Unbroken Plate', ccharm: 'Unbroken Oath' },
+    b2: '+15% health', b3: "Bram's hits sunder armor: +10% damage taken from everyone for 8s" },
+  rook: { who: 1, name: 'The Red Harvest', pieces: { cweapon: 'Harvester Greataxe', carmor: 'Harvester Scale', ccharm: 'Harvester Horn' },
+    b2: '+10% attack speed', b3: 'Rook always lands critical hits on slowed, stunned or frozen enemies' },
+  vess: { who: 2, name: 'Garb of the Grey Fox', pieces: { cweapon: 'Grey Fox Longbow', carmor: 'Grey Fox Leathers', ccharm: 'Grey Fox Quiver' },
+    b2: '+10% critical chance', b3: "Vess's critical hits mark enemies: +12% damage taken from everyone for 8s" },
+  ilda: { who: 3, name: 'Regalia of the Frozen Star', pieces: { cweapon: 'Frozen Star Spellstaff', carmor: 'Frozen Star Mantle', ccharm: 'Frozen Star Orb' },
+    b2: '+15% damage', b3: "Ilda's fireballs chill their target: it attacks 30% slower for 3s" },
+  cleric: { who: null, name: "Lamplighter's Vestments", pieces: { staff: "Lamplighter's Crook", chest: "Lamplighter's Cassock", head: "Lamplighter's Cowl" },
+    b2: '+10% healing', b3: 'Heals on allies below 40% health also shield them for 20% of the heal' },
+};
+const setFor = who => Object.keys(SETS).find(k => SETS[k].who === (who == null ? null : who));
+// how many pieces of a set are worn (optionally pretending an item is swapped in)
+const ACH = [
+  { id: 'flawless', name: 'Not On My Watch', desc: 'Clear a dungeon without anyone falling', ok: () => (S.stats.flawless || 0) >= 1, fx: { healAll: 0.02 }, rw: '+2% healing' },
+  { id: 'fast', name: 'Swift Pilgrimage', desc: 'Clear a dungeon in under 2 minutes of fighting', ok: () => (S.stats.fast || 0) >= 1, fx: { partyDps: 0.03 }, rw: '+3% party damage' },
+  { id: 'devout', name: 'True Believer', desc: 'Defeat a boss with Devotion at ×2 or more', ok: () => (S.stats.devout || 0) >= 1, fx: { greed: 0.03 }, rw: '+3% gold find' },
+  { id: 'cleanse', name: 'Clean Hands', desc: 'Cleanse 50 debuffs', ok: () => (S.stats.cleansed || 0) >= 50, prog: () => [S.stats.cleansed || 0, 50], fx: { mana: 0.03 }, rw: '+3% max mana' },
+  { id: 'clutch', name: 'Just In Time', desc: 'Heal an ally below 10% health 25 times', ok: () => (S.stats.clutch || 0) >= 25, prog: () => [S.stats.clutch || 0, 25], fx: { regen: 0.03 }, rw: '+3% mana regeneration' },
+  { id: 'elites', name: 'Elite Hunter', desc: 'Slay 10 elite monsters', ok: () => (S.stats.elites || 0) >= 10, prog: () => [S.stats.elites || 0, 10], fx: { partyDps: 0.03 }, rw: '+3% party damage' },
+  { id: 'bosses', name: 'Kingslayer', desc: 'Defeat five different bosses', ok: () => S.dun.clears.filter(c => c > 0).length >= 5, prog: () => [S.dun.clears.filter(c => c > 0).length, 5], fx: { pts: 1 }, rw: '+1 Cleric talent point' },
+  { id: 'peril', name: 'Into the Fire', desc: 'Clear a dungeon at Peril 3', ok: () => (S.dun.perilBest || []).some(p => p >= 3), fx: { xp: 0.05 }, rw: '+5% experience' },
+  { id: 'champion', name: 'Champions All', desc: 'Promote anyone to Champion', ok: () => PARTY.some((_, i) => promoRank(i) >= 3), fx: { partyHp: 0.03 }, rw: '+3% party health' },
+  { id: 'set', name: 'Matched Set', desc: 'Wear all three pieces of a set', ok: () => Object.keys(SETS).some(k => setCount(k) >= 3), fx: { partyDps: 0.03 }, rw: '+3% party damage' },
+  { id: 'legend', name: 'Stuff of Legend', desc: 'Find a legendary item', ok: () => !!S.stats.legend, fx: { crit: 1 }, rw: '+1% critical heals' },
+  { id: 'town', name: 'Founder', desc: 'Build every building in the Town', ok: () => TOWN.every(b => lvl(b.id) > 0), prog: () => [TOWN.filter(b => lvl(b.id) > 0).length, TOWN.length], fx: { xp: 0.05 }, rw: '+5% experience' },
+  { id: 'crits', name: 'Blessed Hands', desc: 'Land 500 critical heals', ok: () => S.stats.crits >= 500, prog: () => [S.stats.crits, 500], fx: { crit: 1 }, rw: '+1% critical heals' },
+  { id: 'healer', name: 'A Million Mended', desc: 'Restore 1,000,000 health', ok: () => S.stats.healed >= 1e6, prog: () => [S.stats.healed, 1e6], fx: { healAll: 0.02 }, rw: '+2% healing' },
+  { id: 'hoard', name: 'Tithe Collector', desc: 'Earn 100,000 gold', ok: () => S.goldTotal >= 1e5, prog: () => [S.goldTotal, 1e5], fx: { greed: 0.03 }, rw: '+3% gold find' },
+];
+function achFx() {
+  const t = { healAll: 0, mana: 0, regen: 0, crit: 0, greed: 0, partyDps: 0, partyHp: 0, xp: 0, pts: 0 };
+  ACH.forEach(a => { if (S.ach && S.ach[a.id]) for (const k in a.fx) t[k] += a.fx[k]; });
+  return t;
+}
+let achT = 0;
+function checkAch(real) {
+  if ((achT -= real) > 0) return; achT = 1;
+  if (!S.ach) S.ach = {};
+  for (const a of ACH) if (!S.ach[a.id] && a.ok()) {
+    S.ach[a.id] = Date.now(); recalc(); shopDirty = true;
+    log(`<span class="g">Achievement: ${a.name}</span> (${a.rw}).`); toast(`Achievement unlocked: ${a.name}! ${a.rw}`);
+    if (typeof sfx === 'function') sfx('ach');
+  }
+}
+function setCount(id, over) {
+  const st = SETS[id], worn = st.who == null ? S.equip : S.cequip[st.who];
+  return Object.keys(st.pieces).filter(sl => { const it = over && over.slot === sl ? over.item : worn[sl]; return it && it.set === id; }).length;
+}
+const nameCls = it => `rar${it.rarity}${it.set ? ' setn' : ''}`;
 const itemIcon = it => it.icon || it.slot;
 const isComp = it => !!CSLOT[it.slot];
 const statDef = (it, k) => (isComp(it) ? CSTATS : STATS)[k];
@@ -1060,7 +1146,7 @@ const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last A
    ========================================================= */
 function newState() {
   return {
-    v: 8, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
+    v: 8, hints: {}, ach: {}, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
     town: {}, mats: [], upgrades: {}, promo: PARTY.map(() => 0), elixir: {}, lootFilter: 0, autoGear: false,
     equip: { head: null, chest: null, hands: null, staff: makeStarter(), ring: null, trinket: null },
     inv: [], nextId: 2,
@@ -1090,7 +1176,7 @@ const rankOf = (o, id) => ranksOf(o)[id] || 0;
 const rankCost = (n, r) => n.owner === 'cleric' ? clericRankCost(n, r) : compRankCost(n, r);
 const totalCost = (n, r) => { let c = 0; for (let k = 1; k <= r; k++) c += rankCost(n, k); return c; };
 const spentIn = (o, treeId) => OWNERS[o].filter(t => !treeId || t.id === treeId).reduce((a, t) => a + t.nodes.reduce((b, n) => b + totalCost(n, rankOf(o, n.id)), 0), 0);
-const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts + (perk('library', 3) ? 1 : 0) + (perk('library', 7) ? 1 : 0) - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
+const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts + achFx().pts + (perk('library', 3) ? 1 : 0) + (perk('library', 7) ? 1 : 0) - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
 const known = id => id === 'heal' || S.spells.includes(id);
 const spellOffer = () => SPELL_ORDER.filter(id => !known(id)).slice(0, perk('library', 5) ? 4 : 3);
 const picksLeft = () => spellOffer().length ? Math.max(0, S.dun.clears.filter(c => c > 0).length - S.spells.length) : 0;
@@ -1101,7 +1187,7 @@ function pickHtml() {
 }
 function learnSpell(id) {
   if (!picksLeft() || !spellOffer().includes(id)) return;
-  S.spells.push(id); recalc(); barKey = ''; shopDirty = true;
+  S.spells.push(id); recalc(); barKey = ''; shopDirty = true; sfx('ach');
   log(`<span class="x">Learned ${SP_NAMES[id]}.</span>`); toast(`Learned ${SP_NAMES[id]}. It's on your action bar.`);
   document.querySelectorAll('.spellpick').forEach(el => { el.outerHTML = picksLeft() ? pickHtml() : `<p class="lvl">Learned ${SP_NAMES[id]}. It's on your action bar.</p>`; });
 }
@@ -1119,6 +1205,13 @@ const berserkAt = () => modIs('tide') ? 70 : 120;
 const HP_STEP = 3.5, DMG_STEP = 3.0; // how much tougher each dungeon is
 const hpScale = (d, s) => Math.pow(HP_STEP, d) * (1 + 0.12 * (s - 1));
 const dmgScale = (d, s) => Math.pow(DMG_STEP, d) * (1 + 0.1 * (s - 1));
+// Peril: replay a cleared dungeon at higher difficulty for more rewards and materials.
+// Capped so its rewards stay below those of your deepest unlocked dungeon.
+const PERIL_HP = 1.6, PERIL_DMG = 1.5, PERIL_REW = 1.3, PERIL_MAX = 10;
+const maxPeril = d => !(S.dun.clears[d] > 0) || d >= S.dun.unlocked ? 0 : Math.min(PERIL_MAX, Math.floor(Math.log(0.85 * Math.pow(2.1, S.dun.unlocked - d)) / Math.log(PERIL_REW)));
+const perilOf = d => Math.min((S.dun.peril || [])[d] || 0, maxPeril(d));
+const perilIlvl = (d, s) => Math.min(ilvlFor(d, s) + 2 * (C.peril || 0), ilvlFor(S.dun.unlocked, 1));
+const perilRew = () => Math.pow(PERIL_REW, C.peril || 0);
 const rewardScale = (d, s) => Math.pow(2.1, d) * (1 + 0.12 * (s - 1));
 const ilvlFor = (d, s) => d * 7 + s;
 const suggestedLv = d => 1 + d * 5;
@@ -1137,10 +1230,14 @@ function compGear(i, over) {
 }
 function makeCs(i, over) {
   const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
-  return { ...c, dmg: p.dmg * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
+  const o = { ...c, dmg: p.dmg * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
     spd: gf('spd') + ge.spd / 100 + (i === YOU ? 0 : D.partySpd || 0), crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow'),
     vsCC: gf('vsCC') + ge.vscc / 100, vsDot: gf('vsDot') + ge.vsdot / 100 };
+  const sid = i === YOU ? null : setFor(i), n = sid ? setCount(sid, over) : 0;
+  if (n >= 2) { if (i === 0) o.hpMul *= 1.15; if (i === 1) o.spd += 0.1; if (i === 2) o.crit += 0.1; if (i === 3) o.dmg *= 1.15; }
+  if (n >= 3) { if (i === 0) { o.sunder = Math.max(o.sunder || 0, 0.1); o.sunderDur = 8; } if (i === 1) o.ccCrit = true; if (i === 2) { o.markCrit = Math.max(o.markCrit || 0, 0.12); o.markDur = 8; } if (i === 3) o.chillHit = true; }
+  return o;
 }
 const csDps = (i, cs) => cs.dmg * (1 + Math.min(1, cs.crit) * (cs.critDmg - 1)) * (1 + cs.spd) / PARTY[i].spd;
 function partyIlvl() {
@@ -1177,6 +1274,12 @@ function recalc() {
   D.xpMult = 1 + 0.05 * K('scholar') + t('xp') + 0.06 * lvl('library') + (perk('barracks', 4) ? 0.2 : 0);
   D.partyHp = (1 + D.vigor) * (1 + t('partyHp') + 0.03 * K('fort'));
   D.partyDps = ({ agg: 1.15, bal: 1, def: 0.9 })[stance()] * (elixirOn('might') ? 1.25 : 1) * (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
+  const cset = setCount('cleric');
+  if (cset >= 2) D.heal *= 1.1;
+  D.lowWard = cset >= 3;
+  const A = achFx();
+  D.heal *= 1 + A.healAll; D.maxMana *= 1 + A.mana; D.regen *= 1 + A.regen; D.crit += A.crit / 100;
+  D.greed += A.greed; D.partyDps *= 1 + A.partyDps; D.partyHp *= 1 + A.partyHp; D.xpMult += A.xp;
   D.cs = PARTY.map((p, i) => makeCs(i));
   // party-wide vulnerabilities come from whichever companion has the talent
   for (const k of ['vulnStun', 'vulnChill', 'vulnPoison']) D[k] = D.cs.reduce((a, c) => a + (c[k] || 0), 0);
@@ -1223,8 +1326,18 @@ function genItem(ilvl, minRarity = 0) {
   while (keys.length < R.stats) { const k = pick(pool); if (!keys.includes(k)) keys.push(k); }
   const stats = {};
   keys.forEach(k => { stats[k] = TBL[k].roll(ilvl) * R.mult * rand(0.85, 1.15); });
+  if (rarity === 4) S.stats.legend = 1;
+  const who = comp ? Math.floor(Math.random() * 4) : null, sid = setFor(who);
+  // rare-or-better drops sometimes come from a set; set pieces are at least epic
+  if (rarity >= 2 && sid && SETS[sid].pieces[slot.id] && Math.random() < 0.15) {
+    const R2 = RARITY[Math.max(3, rarity)];
+    while (keys.length < R2.stats) { const k = pick(pool); if (!keys.includes(k)) keys.push(k); }
+    const st = {}; keys.forEach(k => { st[k] = TBL[k].roll(ilvl) * R2.mult * rand(0.9, 1.15); });
+    const icon = comp ? CBASES[who][slot.id][0][2] : null;
+    return ensureItem({ id: S.nextId++, slot: slot.id, who: who ?? undefined, base: SETS[sid].pieces[slot.id].split(' ').pop(), icon: icon || undefined, set: sid, rarity: Math.max(3, rarity), ilvl, up: 0, name: SETS[sid].pieces[slot.id], stats: st });
+  }
   if (comp) {
-    const who = Math.floor(Math.random() * 4), [base, fam, icon] = pick(CBASES[who][slot.id]);
+    const [base, fam, icon] = pick(CBASES[who][slot.id]);
     return ensureItem({ id: S.nextId++, slot: slot.id, who, base, icon, rarity, ilvl, up: 0, name: itemName(base, fam, ilvl, rarity, keys[0], who), stats });
   }
   const base = pick(slot.bases);
@@ -1256,6 +1369,10 @@ function ensureItem(it) {
 }
 function score(it) {
   if (!it) return 0;
+  if (it.set) return scoreRaw(it) * 1.12;
+  return scoreRaw(it);
+}
+function scoreRaw(it) {
   const ref = Math.max(1, ilvlFor(S.dun.current, 1));
   let t = 0;
   for (const k in it.stats) t += statVal(it, k) / statDef(it, k).roll(ref) * statDef(it, k).w;
@@ -1314,20 +1431,37 @@ function makeFoes(d, s) {
   const dg = DUNGEONS[d];
   if (s === dg.stages) {
     const b = BOSSES[d];
-    const hp = Math.round(1500 * Math.pow(HP_STEP, d) * (1 + 0.06 * (s - 1)));
+    const hp = Math.round(1500 * Math.pow(HP_STEP, d) * (1 + 0.06 * (s - 1)) * Math.pow(PERIL_HP, C.peril || 0));
     return [{ boss: true, name: b.name, title: b.title, kind: b.kind, c: b.c, abil: b.abil, max: hp, hp,
-      dmg: 38 * Math.pow(DMG_STEP, d) * (1 + 0.05 * (s - 1)), atk: 1.6, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
+      dmg: 38 * Math.pow(DMG_STEP, d) * (1 + 0.05 * (s - 1)) * Math.pow(PERIL_DMG, C.peril || 0), atk: 1.6, p2: false, d, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
       x: BOSS_SLOT.x, y: BOSS_SLOT.y, alive: true, enter: 0.7, lunge: -1, flash: 0, die: 0, h: 60, seed: 0 }];
   }
   const n = clamp(2 + Math.floor((s - 1) / 2) + (Math.random() < 0.3 ? 1 : 0), 2, 4);
-  return Array.from({ length: n }, (_, k) => {
-    const ki = Math.floor(Math.random() * dg.mobs.length), kind = dg.mobs[ki], m = MOBS[kind];
-    const hp = Math.round(300 * m.hp * hpScale(d, s));
-    const slot = FOE_SLOTS[k];
-    return { kind, name: m.name, c: dg.mobC[ki], max: hp, hp, dmg: 12 * m.dmg * dmgScale(d, s), atk: m.atk, atkT: m.atk * rand(0.6, 1.2) + 0.6,
-      tgt: m.tgt, spell: m.spell, spT: m.spell ? rand(2, m.spell.every) : 0, cast: null, frenzy: 0, h: m.h,
-      x: slot.x, y: slot.y, alive: true, enter: 0.6 + k * 0.12, lunge: -1, flash: 0, die: 0, seed: Math.random() * 6 };
-  });
+  const eliteAt = Math.random() < 0.12 + 0.03 * (C.peril || 0) ? Math.floor(Math.random() * n) : -1;
+  return Array.from({ length: n }, (_, k) => k === eliteAt ? makeElite(mobAt(d, s, k)) : mobAt(d, s, k));
+}
+// Elite monsters: tougher, with one affix, and much better loot
+const AFFIX = {
+  shielded: { name: 'Shielded', desc: 'a barrier soaks damage first' },
+  enraged:  { name: 'Enraged',  desc: 'attacks 50% faster below half health' },
+  mender:   { name: 'Mender',   desc: 'heals its allies every 4 seconds' },
+  venomous: { name: 'Venomous', desc: 'its hits poison' },
+};
+function makeElite(f) {
+  const a = pick(Object.keys(AFFIX));
+  f.max = f.hp = Math.round(f.max * 4); f.dmg *= 1.6; f.elite = a; f.name = `${AFFIX[a].name} ${f.name}`;
+  if (a === 'shielded') f.eshield = f.max * 0.3;
+  if (a === 'mender') f.mendT = 4;
+  return f;
+}
+function mobAt(d, s, k) {
+  const dg = DUNGEONS[d];
+  const ki = Math.floor(Math.random() * dg.mobs.length), kind = dg.mobs[ki], m = MOBS[kind];
+  const hp = Math.round(300 * m.hp * hpScale(d, s) * Math.pow(PERIL_HP, C.peril || 0));
+  const slot = FOE_SLOTS[k];
+  return { kind, name: m.name, c: dg.mobC[ki], max: hp, hp, dmg: 12 * m.dmg * dmgScale(d, s) * Math.pow(PERIL_DMG, C.peril || 0), atk: m.atk, atkT: m.atk * rand(0.6, 1.2) + 0.6,
+    tgt: m.tgt, spell: m.spell, spT: m.spell ? rand(2, m.spell.every) : 0, cast: null, frenzy: 0, h: m.h,
+    x: slot.x, y: slot.y, alive: true, enter: 0.6 + k * 0.12, lunge: -1, flash: 0, die: 0, seed: Math.random() * 6 };
 }
 
 function freshParty() {
@@ -1341,7 +1475,7 @@ function enterDungeon(d) {
   C.stage = 1;
   freshParty();
   C.mana = D.maxMana * (modIs('fatigue') ? 0.6 : 1);
-  C.cds = {}; C.medi = null; C.abT = {}; C.slamT = 0;
+  C.cds = {}; C.medi = null; C.abT = {}; C.slamT = 0; C.peril = perilOf(d);
   C.meter = { d: PARTY.map(() => 0), t: 0 };
   C.rstats = { spell: {}, taken: 0, deaths: 0, cleansed: 0, d };
   C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden'); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
@@ -1353,7 +1487,7 @@ function enterDungeon(d) {
 function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
-  C.buff = { sanct: 0, bless: 0 }; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
+  C.buff = { sanct: 0, bless: 0 }; C.bossHeat = false; C.bossThorns = false; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach((m, i) => { if (m.alive) afflict(i, 'poison', m.max * 0.008, 12, { ramp: 0.1 }); });
   C.foes.forEach(f => { f.hitBy = {}; f.poison = null; });
@@ -1385,7 +1519,7 @@ function hit(i, amt) {
     if (m.shield <= 0.5 && m.wardSize) { const ws = m.wardSize; m.wardSize = 0; m.shield = 0; if (D.sp.ward.mend) { C.healSrc = 'ward'; heal(i, ws * D.sp.ward.mend); C.healSrc = null; } }
   }
   if (amt <= 0) return;
-  trackStat('taken', Math.min(amt, m.hp));
+  trackStat('taken', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
   m.hp -= amt;
   floatTxt(i, '-' + fmt(amt), 'dmg');
   pnumFx(i, '-' + fmt(amt), '#ff8a7a');
@@ -1394,8 +1528,8 @@ function hit(i, amt) {
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
     if (perk('infirmary', 6) && !C.windUsed) { C.windUsed = true; m.windT = 3; }
-    log(`<b>${PARTY[i].name}</b> has fallen.`);
-    trackStat('deaths'); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
+    log(`<b>${PARTY[i].name}</b> has fallen.`); sfx('death');
+    trackStat('deaths'); if (C.rstats) (C.rstats.deathLog = C.rstats.deathLog || []).push({ i, by: C.hitLabel || 'enemy attacks' }); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
     burst(HERO_POS[i].x, HERO_POS[i].y - 10, '#9a93a8', 12);
   }
 }
@@ -1404,9 +1538,13 @@ function heal(i, amt, critBonus = 0, npc = false) {
   if (!m || !m.alive) return 0;
   if (!npc && D.lowPow && m.hp / m.max < 0.4) amt *= 1 + D.lowPow;
   const cut = healCut(m); if (cut) amt *= 1 - cut;
+  if (C.bossThorns) amt *= 0.8;
   const crit = Math.random() < D.crit + critBonus;
   if (crit) { amt *= 1.5; S.stats.crits++; if (!npc && D.critMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.critMana); }
+  const wasLow = m.hp / m.max < 0.1;
   const eff = Math.min(amt, m.max - m.hp);
+  if (!npc && D.lowWard && m.hp / m.max < 0.4 && eff > 0) m.shield = Math.min(m.max * 0.3, m.shield + eff * 0.2);
+  if (!npc && wasLow && eff > 0) S.stats.clutch = (S.stats.clutch || 0) + 1;
   m.hp += eff;
   S.stats.healed += eff; S.stats.overheal += amt - eff;
   trackHeal(npc ? 'acolyte' : C.healSrc || 'other', eff, amt - eff);
@@ -1415,6 +1553,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
     if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 0.5 * (1 - C.dev / 110));
   }
   if (C.inCast && !npc) C.castAmt += amt;
+  if (!npc && eff > 0) sfx(crit ? 'crit' : 'heal');
   floatTxt(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal');
   pnumFx(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? '#e9fff4' : '#86dcb8');
   fxHeal(i, crit);
@@ -1479,7 +1618,7 @@ function trackHeal(src, eff, over) { for (const b of statBag()) { const r = (b.s
 function trackCast(src) { for (const b of statBag()) { const r = (b.spell = b.spell || {})[src] = b.spell[src] || { h: 0, o: 0, n: 0 }; r.n++; } }
 function trackStat(k, n = 1) { for (const b of statBag()) b[k] = (b[k] || 0) + n; }
 function oomNotice() {
-  const m = $('#oomMsg'); if (!m) return;
+  const m = $('#oomMsg'); if (!m) return; sfx('oom');
   m.classList.remove('show'); void m.offsetWidth; m.classList.add('show');
   $('#manaBar').classList.remove('bump'); void m.offsetWidth; $('#manaBar').classList.add('bump');
 }
@@ -1535,7 +1674,7 @@ function tickEffects(m, i, dt) {
           // Renew's overhealing jumps to the most injured ally at half strength
           if (e.rate - eff > 1) { const o = aliveIdx().filter(k => k !== i).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0]; if (o != null && C.party[o].hp < C.party[o].max) heal(o, (e.rate - eff) * 0.5); }
           C.healSrc = null;
-        } else { hit(i, e.rate * (1 + (e.ramp || 0) * e.n)); e.n = (e.n || 0) + 1; }
+        } else { C.hitLabel = ({ poison: 'Poison', hex: 'Hex', bleed: 'Bleeding' })[e.kind]; hit(i, e.rate * (1 + (e.ramp || 0) * e.n)); C.hitLabel = null; e.n = (e.n || 0) + 1; }
       }
     }
   }
@@ -1549,12 +1688,17 @@ function foeAct(e, dt) {
   if (e.stun > 0) { e.stun -= dt; return; }
   e.frenzy = Math.max(0, e.frenzy - dt);
   e.slow = Math.max(0, (e.slow || 0) - dt);
-  e.atkT -= dt * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1);
+  const rage = e.elite === 'enraged' && e.hp / e.max < 0.5 ? 1.5 : 1;
+  e.atkT -= dt * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1) * rage * (e.haste || 1);
+  if (e.elite === 'mender' && (e.mendT -= dt) <= 0) {
+    e.mendT = 4; liveFoes().forEach(o => { if (o !== e) { o.hp = Math.min(o.max, o.hp + o.max * 0.06); burst(o.x, o.y - o.h / 2, '#86dcb8', 4, 10); } });
+  }
   if (e.atkT <= 0) {
     e.atkT += e.atk;
     const t = e.boss || e.tgt === 'tank' ? tankOrRandom() : randomAlive();
     if (t != null) {
-      hit(t, eDmg(e)); e.lunge = 0; fxSlash(t, !e.boss);
+      C.hitLabel = e.boss ? e.name + "'s attacks" : e.name; hit(t, eDmg(e)); C.hitLabel = null; e.lunge = 0; fxSlash(t, !e.boss);
+      if (e.elite === 'venomous') afflict(t, 'poison', e.dmg * 0.15, 6, { ramp: 0.2 });
       if (e.kind === 'wolf' && Math.random() < 0.25) afflict(t, 'bleed', e.dmg * 0.3, 5, { ramp: 0.15 });
     }
   }
@@ -1562,16 +1706,16 @@ function foeAct(e, dt) {
     e.cast.el += dt;
     if (e.cast.el >= e.cast.dur) {
       const c = e.cast; e.cast = null;
-      if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e); A.run(e, t); }
+      if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e); C.hitLabel = A.name; A.run(e, t); C.hitLabel = null; }
       else {
         const t = randomAlive(); if (t == null) return;
         if (e.spell.dot) { afflict(t, 'hex', e.dmg * 0.3, 8, { healCut: 0.5 }); fxProj(e, t, e.spell.col, 2); }
-        else { hit(t, eDmg(e) * e.spell.mult); fxProj(e, t, e.spell.col, 3); }
+        else { C.hitLabel = e.spell.name; hit(t, eDmg(e) * e.spell.mult); C.hitLabel = null; fxProj(e, t, e.spell.col, 3); }
       }
     }
   } else if (e.boss) {
-    e.abilT -= dt;
-    if (e.abilT <= 0) { const id = pick(e.abil); e.cast = { id, el: 0, dur: ABIL[id].cast, name: ABIL[id].name, t: ABIL[id].pick ? ABIL[id].pick(e) : null, all: ABIL[id].all }; e.abilT = rand(5.5, 8); }
+    e.abilT -= dt * (e.haste || 1);
+    if (e.abilT <= 0) { const id = pick(e.abil); e.cast = { id, el: 0, dur: ABIL[id].cast, name: ABIL[id].name, t: ABIL[id].pick ? ABIL[id].pick(e) : null, all: ABIL[id].all }; e.abilT = rand(5.5, 8); if (ABIL[id].pick || ABIL[id].all) sfx('warn'); }
   } else if (e.spell) {
     e.spT -= dt;
     if (e.spT <= 0) { e.cast = { el: 0, dur: e.spell.cast, name: e.spell.name }; e.spT = e.spell.every * rand(0.9, 1.2); }
@@ -1618,9 +1762,9 @@ function stepFight(dt) {
     if (!m.alive) return;
     tickEffects(m, i, dt);
   });
-  if (modIs('heat', 'eclipse')) {
+  if (modIs('heat', 'eclipse') || C.bossHeat) {
     C.heatT -= dt;
-    if (C.heatT <= 0) { C.heatT += 4; aliveIdx().forEach(i => hit(i, C.party[i].max * 0.02)); }
+    if (C.heatT <= 0) { C.heatT += 4; C.hitLabel = 'Scorching Air'; aliveIdx().forEach(i => hit(i, C.party[i].max * 0.02)); C.hitLabel = null; }
   }
 
   // each companion swings on their own timer; damage lands when the hit connects
@@ -1645,6 +1789,7 @@ function stepFight(dt) {
   C.hits = C.hits.filter(h => { h.t -= dt; if (h.t > 0) return true; if (h.fn) h.fn(); else landHit(h); return false; });
   C.foes.forEach(e => { if (e.alive && e.poison) tickPoison(e, dt); if (e.alive && e.burn) tickBurn(e, dt); });
   C.meter.t += dt;
+  if (C.rstats) { C.rstats.fightT = (C.rstats.fightT || 0) + dt; if (C.mana < spellCost(SP.heal)) C.rstats.oomT = (C.rstats.oomT || 0) + dt; }
   C.foes.forEach(e => { if (e.alive) foeAct(e, dt); });
 
   if (C.cast) {
@@ -1683,15 +1828,46 @@ function foeVuln(f, i) {
 function dealFoe(f, dmg, col, src) {
   if (!f || !f.alive) return;
   if (src != null && src !== YOU) dmg *= foeVuln(f, src);
+  if (f.eshield > 0) { const a = Math.min(f.eshield, dmg * 0.6); f.eshield -= a; dmg -= a; }
   if (src != null && C.meter) C.meter.d[src] += Math.min(dmg, f.hp);
   f.hp -= dmg; f.flash = 0.06;
   foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
-  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); }
+  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f); }
+  else if (f.boss && !f.p2 && f.hp / f.max < 0.5) bossPhase(f);
 }
 // Every kill pays gold; Devotion (how well you heal) multiplies it
+function eliteLoot(f) {
+  S.stats.elites = (S.stats.elites || 0) + 1;
+  const d = S.dun.current, it = genItem(perilIlvl(d, C.stage) + 1, Math.random() < 0.3 ? 2 : 1), note = addToBag(it, true);
+  S.mats[d] = (S.mats[d] || 0) + 2; if (C.run) C.run.mats += 2;
+  if (C.run) C.run.items.push(`<b class="${nameCls(it)}">${esc(it.name)}</b> <small>(elite)</small>`);
+  log(`Elite slain: looted <b class="${nameCls(it)}">${esc(it.name)}</b>${note ? ' (' + note + ')' : ''}.`);
+  FX.push({ t: 'label', x: f.x, y: f.y - f.h - 18, str: 'Elite loot!', col: '#ffd36b', life: 1.4, max: 1.4 });
+}
+function bossPhase(b) {
+  const P2 = BOSSES[S.dun.current].p2; b.p2 = true;
+  if (P2.haste) b.haste = P2.haste;
+  if (P2.heat) C.bossHeat = true;
+  if (P2.thorns) C.bossThorns = true;
+  if (P2.poison) aliveIdx().forEach(i => afflict(i, 'poison', C.party[i].max * 0.008, 10, { ramp: 0.12 }));
+  if (P2.doom) { const t = ABIL.doom.pick(b); b.cast = { id: 'doom', el: 0, dur: ABIL.doom.cast, name: 'Doom', t }; }
+  if (P2.adds) {
+    const [kind, n] = P2.adds, d = S.dun.current, m = MOBS[kind], dg = DUNGEONS[d], ki = dg.mobs.indexOf(kind);
+    const spots = [{ x: 206, y: 130 }, { x: 214, y: 152 }];
+    for (let k = 0; k < n; k++) {
+      const hp = Math.round(300 * m.hp * hpScale(d, C.stage) * 0.5 * Math.pow(PERIL_HP, C.peril || 0));
+      C.foes.unshift({ kind, name: m.name, c: ki >= 0 ? dg.mobC[ki] : BOSSES[d].c[1], max: hp, hp, dmg: 12 * m.dmg * dmgScale(d, C.stage) * Math.pow(PERIL_DMG, C.peril || 0), atk: m.atk, atkT: m.atk + 0.8,
+        tgt: m.tgt, spell: m.spell, spT: m.spell ? rand(2, m.spell.every) : 0, cast: null, frenzy: 0, h: m.h, add: true,
+        x: spots[k % 2].x, y: spots[k % 2].y, alive: true, enter: 0.5 + k * 0.2, lunge: -1, flash: 0, die: 0, seed: Math.random() * 6, hitBy: {} });
+    }
+  }
+  shake(); burst(b.x, b.y - b.h / 2, '#e0605a', 30, 20); C.phaseFlash = 0.6; sfx('phase');
+  FX.push({ t: 'label', x: b.x - 20, y: b.y - b.h - 16, str: P2.name + '!', col: '#ff8a7a', life: 2.2, max: 2.2 });
+  log(`<b>${b.name}</b>: <span style="color:var(--hurt)">${P2.name}</span>, ${P2.desc}.`);
+}
 function foeGold(f) {
-  const sc = rewardScale(S.dun.current, C.stage) * (1 + D.greed);
-  const g = f.boss ? 120 * sc : 7 * (MOBS[f.kind] ? MOBS[f.kind].hp : 1) * sc;
+  const sc = rewardScale(S.dun.current, C.stage) * perilRew() * (1 + D.greed);
+  const g = (f.boss ? 120 * sc : 7 * (MOBS[f.kind] ? MOBS[f.kind].hp : 1) * sc) * (f.elite ? 5 : f.add ? 0.5 : 1);
   if (C.run) C.run.base.gold += g;
   const got = g * devMult() * (C.goldFrenzy > 0 ? 5 : 1);
   addGold(g * devMult());
@@ -1720,8 +1896,8 @@ function abHit(i, f, mult, crit, col) {
   if (f.boss && cs.bossDmg) dmg *= 1 + cs.bossDmg;
   crit = crit || Math.random() < cs.crit;
   if (crit) dmg *= cs.critDmg;
-  if (crit && cs.markCrit) { f.mark = 4; f.markAmt = cs.markCrit; }
-  if (cs.sunder) { f.sunder = 4; f.sunderAmt = cs.sunder; }
+  if (crit && cs.markCrit) { f.mark = cs.markDur || 4; f.markAmt = cs.markCrit; }
+  if (cs.sunder) { f.sunder = cs.sunderDur || 4; f.sunderAmt = cs.sunder; }
   dealFoe(f, dmg, crit ? 'crit' : col || '', i);
 }
 const ready = () => liveFoes().filter(e => e.enter <= 0);
@@ -1798,12 +1974,13 @@ function landHit(h) {
   if (cs.execute && f.hp / f.max < 0.25) dmg *= 2;
   const big = (cs.bash || cs.pyro) && n % 4 === 0;
   if (big) dmg *= 3;
-  const crit = Math.random() < cs.crit || (cs.ambush && !f.hitBy[h.i]);
+  const crit = Math.random() < cs.crit || (cs.ambush && !f.hitBy[h.i]) || (cs.ccCrit && (f.stun > 0 || f.slow > 0));
+  if (cs.chillHit) f.slow = Math.max(f.slow || 0, 3);
   if (crit) dmg *= cs.critDmg;
   f.hitBy[h.i] = 1;
   const others = liveFoes().filter(e => e !== f && e.enter <= 0);
-  if (cs.sunder) { f.sunder = 4; f.sunderAmt = cs.sunder; }
-  if (crit && cs.markCrit) { f.mark = 4; f.markAmt = cs.markCrit; }
+  if (cs.sunder) { f.sunder = cs.sunderDur || 4; f.sunderAmt = cs.sunder; }
+  if (crit && cs.markCrit) { f.mark = cs.markDur || 4; f.markAmt = cs.markCrit; }
   dealFoe(f, dmg, crit || big ? 'crit' : '', h.i);
   burst(f.x - 4, f.y - f.h * 0.5 + rand(-4, 4), big ? '#ffb347' : '#ffe9b0', big ? 10 : 4);
   if (cs.cleave && others.length) dealFoe(pick(others), dmg * cs.cleave, '', h.i);
@@ -1852,7 +2029,7 @@ function gainXp(amount) {
     h.xp += amount * (C.party[i].alive ? 1 : 0.5) * D.xpMult;
     let n = 0;
     while (h.xp >= xpNeed(h.lv) && h.lv < 99) { h.xp -= xpNeed(h.lv); h.lv++; n++; }
-    if (n) { ups.push(`${PARTY[i].name} ${h.lv}`); heroAnim[i].lvl = 2; log(`<span class="x">${PARTY[i].name} reached level ${h.lv}.</span>${i === YOU ? ' Skill point gained.' : ''}`); }
+    if (n) { ups.push(`${PARTY[i].name} ${h.lv}`); heroAnim[i].lvl = 2; sfx('level'); log(`<span class="x">${PARTY[i].name} reached level ${h.lv}.</span>${i === YOU ? ' Skill point gained.' : ''}`); }
   });
   return ups;
 }
@@ -1866,7 +2043,7 @@ function gainMastery() {
       S.skills[it.skill] = Math.min(SKILL_MAX, before + gain);
       const txt = S.skills[it.skill] > before ? `learned ${sk.name} ${roman(S.skills[it.skill])}` : `${sk.name} is already at its highest rank`;
       learned.push(`${esc(it.name)}: ${txt}`);
-      log(`Mastered <b class="rar${it.rarity}">${esc(it.name)}</b>, ${txt}.`);
+      log(`Mastered <b class="${nameCls(it)}">${esc(it.name)}</b>, ${txt}.`);
     }
   }
   return learned;
@@ -1874,9 +2051,9 @@ function gainMastery() {
 
 function stageCleared() {
   const d = S.dun.current, s = C.stage, dg = DUNGEONS[d], isBoss = s === dg.stages;
-  const sc = rewardScale(d, s);
+  const sc = rewardScale(d, s) * perilRew();
   const dm = devMult();
-  const xpBase = (isBoss ? 34 : 9) * sc, mBase = isBoss ? 4 : 1;
+  const xpBase = (isBoss ? 34 : 9) * sc, mBase = (isBoss ? 4 : 1) * (1 + 0.5 * (C.peril || 0));
   const xp = xpBase * dm;
   const mats = Math.floor(mBase * dm + Math.random());
   S.mats[d] = (S.mats[d] || 0) + mats; C.run.mats += mats;
@@ -1888,9 +2065,9 @@ function stageCleared() {
   const dropP = Math.min(0.8, 0.25 * dm);
   const drops = isBoss ? 1 + (Math.random() < dropP ? 1 : 0) : (Math.random() < dropP ? 1 : 0);
   for (let k = 0; k < drops; k++) {
-    const it = genItem(ilvlFor(d, s)); const note = addToBag(it, true);
-    C.run.items.push(`<b class="rar${it.rarity}">${esc(it.name)}</b>${note ? ` <small>(${note})</small>` : ''}`);
-    log(`Looted <b class="rar${it.rarity}">${esc(it.name)}</b>${note ? ' (' + note + ')' : ''}.`);
+    const it = genItem(perilIlvl(d, s)); const note = addToBag(it, true);
+    C.run.items.push(`<b class="${nameCls(it)}">${esc(it.name)}</b>${note ? ` <small>(${note})</small>` : ''}`);
+    log(`Looted <b class="${nameCls(it)}">${esc(it.name)}</b>${note ? ' (' + note + ')' : ''}.`);
   }
   recalc();
   if (isBoss) return dungeonCleared();
@@ -1900,7 +2077,11 @@ function stageCleared() {
 function dungeonCleared() {
   const d = S.dun.current, first = !(S.dun.clears[d] > 0);
   S.dun.clears[d] = (S.dun.clears[d] || 0) + 1;
-  S.dun.rec[d] = { t: C.run.t, ...C.run.base };
+  if (!C.peril) S.dun.rec[d] = { t: C.run.t, ...C.run.base };
+  if (C.peril) { const pb = S.dun.perilBest = S.dun.perilBest || []; pb[d] = Math.max(pb[d] || 0, C.peril); }
+  if (C.rstats && !C.rstats.deaths) S.stats.flawless = (S.stats.flawless || 0) + 1;
+  if (C.rstats && C.rstats.fightT < 120) S.stats.fast = (S.stats.fast || 0) + 1;
+  if (devMult() >= 2) S.stats.devout = (S.stats.devout || 0) + 1;
   let extra = '';
   if (first) {
     S.bonusPts += 1;
@@ -1912,14 +2093,42 @@ function dungeonCleared() {
   log(`Cleared <b>${DUNGEONS[d].name}</b>. <span class="g">+${fmt(C.run.gold)} gold</span> <span class="x">+${fmt(C.run.xp)} exp</span>`);
   endRun('', `<h3>${esc(DUNGEONS[d].name)} cleared</h3>${extra}`);
 }
+const CAUSE_TIP = {
+  'Doom': 'Doom is telegraphed by a red marker: Ward its target or top them up before it lands.',
+  'Searing Wave': 'Searing Wave hits everyone: cast Sanctuary or start a Prayer as it begins.',
+  'Shadow Bolt': 'Shadow Bolt also hexes its target: Purify them so your heals land in full.',
+  'Hex': 'A hex halves the healing its target receives: Purify it, or Ward the target to block it.',
+  'Poison': 'Poison ramps up every tick: Purify it early.', 'Bleeding': 'Bleeds ramp up: Purify them, or Renew the target.',
+  'Cleave': 'Cleave hits Bram hard and splashes an ally: keep Bram topped up and Ward him before the cast lands.',
+  'Festering Bite': 'Festering Bite poisons: Purify the target.', 'Scorching Air': 'Scorching Air hurts everyone every 4 seconds: Renew and Prayer keep up with it.',
+  'Fireball': 'Imps throw Fireballs at random allies: watch their cast bars.',
+};
+function wipeReport() {
+  const r = C.rstats || {}, out = [], dg = DUNGEONS[S.dun.current];
+  const deaths = r.deathLog || [];
+  const seen = new Set();
+  deaths.forEach(d => { if (seen.has(d.by) || out.length >= 2) return; seen.add(d.by);
+    const who = deaths.filter(x => x.by === d.by).map(x => PARTY[x.i].name), names = [...new Set(who)].join(' and ');
+    out.push(`<b>${names}</b> fell to <b>${d.by}</b>. ${CAUSE_TIP[d.by] || (d.by.includes('attacks') || MOBS[Object.keys(MOBS).find(k => MOBS[k].name === d.by)] ? 'Steady hits wore them down: keep Renew and Ward on whoever is being hit, and raise party health with promotions and armor.' : '')}`); });
+  if (C.time > berserkAt()) out.push(`The enemies went <b>berserk</b> after ${fmtTime(berserkAt())}. Your party needs more damage: promotions, companion gear and their talents.`);
+  const oom = r.fightT ? r.oomT / r.fightT : 0;
+  if (oom > 0.2) out.push(`You were <b>out of mana ${Math.round(oom * 100)}%</b> of the time. Use Meditate and potions, take Still Waters or Inner Well, or drink a Draught of Clarity.`);
+  const sp = Object.values(r.spell || {}), h = sp.reduce((a, x) => a + x.h, 0), o = sp.reduce((a, x) => a + x.o, 0);
+  if (h + o > 0 && o / (h + o) > 0.35) out.push(`<b>${Math.round(100 * o / (h + o))}% of your healing was overheal.</b> Let small hits go, heal whoever is lowest, and lean on Renew.`);
+  const todo = [];
+  if (pointsOf('cleric') > 0) todo.push(`${pointsOf('cleric')} Cleric talent point${pointsOf('cleric') > 1 ? 's' : ''}`);
+  [0, 1, 2, 3].forEach(i => { if (pointsOf(i) > 0) todo.push(`${pointsOf(i)} point${pointsOf(i) > 1 ? 's' : ''} for ${PARTY[i].name}`); });
+  PARTY.forEach((p, i) => { if (canPromote(i) && S.gold >= promoCost(i)) todo.push(`a promotion for ${p.name}`); });
+  const ups = S.inv.filter(isUpgrade).length; if (ups) todo.push(`${ups} upgrade${ups > 1 ? 's' : ''} in your bag`);
+  if (todo.length) out.push(`Unspent: ${todo.join(', ')}.`);
+  if (!out.length) out.push(C.stage === dg.stages ? 'The boss is the real test. Farm for levels, gear and talent points, then come back.' : 'Rewards from cleared stages are kept. Farm, then try again.');
+  return `<ul class="wreport">${out.map(x => `<li>${x}</li>`).join('')}</ul>`;
+}
 function wipe() {
   C.cast = null; S.stats.wipes++;
   const dg = DUNGEONS[S.dun.current];
   log(`The party fell on stage ${C.stage} of <b>${dg.name}</b>.`);
-  const tip = C.time > berserkAt() ? 'The enemies went berserk. Your party needs more damage: weapon upgrades and talents in the Party tab, or Blessing.'
-    : C.stage === dg.stages ? 'The boss is the real test. Farm for levels, gear and talent points, then come back.'
-    : 'Rewards from cleared stages are kept. Farm, then try again.';
-  endRun('wipe', `<h3>The party has fallen</h3><p>Stage ${C.stage} of ${dg.stages}. ${tip}</p>`);
+  endRun('wipe', `<h3>The party has fallen</h3><p>Stage ${C.stage} of ${dg.stages}. What happened:</p>${wipeReport()}`);
 }
 function endRun(cls, head) {
   const r = C.run, delay = cls === 'wipe' ? 0 : 1.3; // let the boss's coin shower land before the summary
@@ -2126,6 +2335,8 @@ function drawHero(i, X, Y, t, castPose) {
   sprite(art.map, art.pal, X, Y - bob);
   if (castPose && i === YOU) { P.fillStyle = '#fff6c4'; P.fillRect(X + 2, Y - 22 - bob, 3, 3); }
 }
+// where each hero's weapon sits relative to their feet, for gear sparkles
+const WEAPON_TIP = [[6, -12], [5, -18], [6, -11], [4, -18], [5, -20]];
 const ACO_POS = { x: 30, y: 128 };
 const ACO_ART = { pal: { ...SKIN, R: '#8a8296', r: '#6b6478', g: '#e4b75c', m: '#b4bccc' }, map: [
   '...RRRR...',
@@ -2407,6 +2618,7 @@ function fxHeroProj(i, f) {
 }
 function fxCoins(f, g) {
   if (document.hidden) return;
+  sfx('coin'); if (f.boss) for (let k = 1; k < 8; k++) setTimeout(() => sfx('coin'), k * 70);
   const n = f.boss ? (reduced() ? 8 : 28) : (reduced() ? 2 : 3 + Math.floor(Math.random() * 4)), y = f.y - f.h / 2;
   for (let k = 0; k < n; k++) FX.push({ t: 'coin', x: f.x + rand(-4, 4), y, vx: rand(-40, 30) * (f.boss ? 1.6 : 1), vy: -rand(30, 70) * (f.boss ? 1.4 : 1), wait: rand(0.35, 0.55) + (f.boss ? k * 0.03 : 0), sp: 0, life: 9, max: 9 });
   if (f.boss) { FX.push({ t: 'ringat', x: f.x, y, life: 0.6, max: 0.6, col: '#ffd36b' }); FX.push({ t: 'num', x: f.x, y: f.y - f.h - 14, str: '+' + fmt(g), col: '#ffd36b', life: 1.6, max: 1.6 }); }
@@ -2510,6 +2722,12 @@ function renderScene(dt) {
       cx.globalAlpha = 0.22 + 0.2 * Math.sin(sceneT * 20); cx.fillStyle = col;
       cx.beginPath(); cx.arc(e.x, e.y - e.h * 0.5, (e.boss ? 18 : 8) + k * (e.boss ? 14 : 6), 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1;
     }
+    if (e.alive && e.elite) {
+      cx.globalAlpha = 0.18 + 0.08 * Math.sin(sceneT * 4); cx.fillStyle = '#ffd36b'; cx.beginPath(); cx.arc(e.x + enterX, e.y - e.h * 0.5, 13, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1;
+      const cy = e.y - e.h - 20, cxx = Math.round(e.x + enterX);
+      cx.fillStyle = '#ffd36b'; cx.fillRect(cxx - 3, cy + 2, 7, 2); cx.fillRect(cxx - 3, cy, 1, 2); cx.fillRect(cxx, cy - 1, 1, 3); cx.fillRect(cxx + 3, cy, 1, 2);
+      if (e.eshield > 0) { cx.strokeStyle = '#d3dbff'; cx.globalAlpha = 0.6; cx.beginPath(); cx.arc(e.x + enterX, e.y - e.h * 0.5, 12, 0, Math.PI * 2); cx.stroke(); cx.globalAlpha = 1; }
+    }
     if (e.alive && (e.frenzy > 0 || (e.boss && e.hp / e.max < 0.2) || C.time > berserkAt())) {
       cx.globalAlpha = 0.16; cx.fillStyle = '#e0605a'; cx.beginPath(); cx.arc(e.x, e.y - e.h * 0.5, e.boss ? 34 : 12, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1;
     }
@@ -2563,7 +2781,22 @@ function renderScene(dt) {
       cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
       if (Math.random() < dt * 30 * incoming) FX.push({ t: 'p', x: p.x + rand(-9, 9), y: p.y - rand(0, 4), vx: 0, vy: -rand(14, 26), g: 0, life: 0.5, max: 0.5, col: '#bff5dd', s: 1 });
     }
-    blit((X, Y) => drawHero(i, X, Y, sceneT, casting), p.x + dx, p.y + walk, { flash: a.flash });
+    const rank = promoRank(i), rc = ROLE_COL[i], hx = p.x + dx, hy = p.y + walk;
+    if (rank >= 4) { cx.globalAlpha = 0.18 + 0.08 * Math.sin(sceneT * 3 + i); cx.fillStyle = rc; cx.beginPath(); cx.ellipse(hx, hy, 12, 4, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; }
+    if (rank >= 2) {
+      // a cape in the hero's color, trailing behind them
+      const wave = Math.round(Math.sin(sceneT * 4 + i));
+      cx.fillStyle = '#0b0910'; cx.fillRect(hx - 8, hy - 18, 5, 15 + wave);
+      cx.fillStyle = rc; cx.fillRect(hx - 7, hy - 17, 3, 13 + wave); cx.fillStyle = '#00000044'; cx.fillRect(hx - 7, hy - 17, 1, 13 + wave);
+      if (rank >= 3) { cx.fillStyle = '#e4b75c'; cx.fillRect(hx - 7, hy - 5 + wave, 3, 1); }
+    }
+    const arm = i === YOU ? S.equip.chest : S.cequip[i].carmor, wpn = i === YOU ? S.equip.staff : S.cequip[i].cweapon;
+    blit((X, Y) => drawHero(i, X, Y, sceneT, casting), hx, hy, { flash: a.flash, outline: arm && arm.rarity >= 3 ? RCOL[arm.rarity][1] : '#0b0910' });
+    if (wpn && wpn.rarity >= 3 && Math.random() < dt * (wpn.rarity === 4 ? 10 : 5)) {
+      const wp = WEAPON_TIP[i]; FX.push({ t: 'p', x: hx + wp[0] + rand(-2, 2), y: hy + wp[1] + rand(-2, 2), vx: rand(-3, 3), vy: -rand(4, 10), g: 0, life: 0.6, max: 0.6, col: RCOL[wpn.rarity][0], s: 1 });
+    }
+    if (rank >= 5) { cx.fillStyle = '#ffd36b'; cx.globalAlpha = 0.8; cx.fillRect(hx - 3, hy - 33, 7, 1); cx.fillRect(hx - 4, hy - 34, 1, 1); cx.fillRect(hx + 4, hy - 34, 1, 1); cx.globalAlpha = 1; }
+    if (rank >= 4 && Math.random() < dt * 3) FX.push({ t: 'p', x: hx + rand(-8, 8), y: hy - rand(0, 6), vx: 0, vy: -rand(6, 12), g: 0, life: 0.8, max: 0.8, col: rc, s: 1 });
     if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
     miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
     if (m.shield > 0) {
@@ -2584,6 +2817,7 @@ function renderScene(dt) {
     }
   });
 
+  if (C.phaseFlash > 0) { C.phaseFlash -= dt; cx.globalAlpha = Math.max(0, C.phaseFlash) * 0.5; cx.fillStyle = '#e0605a'; cx.fillRect(0, 0, SW, SH); cx.globalAlpha = 1; }
   // boss telegraph: a red marker over whoever the boss's cast will hit
   const bc = C.phase === 'fight' && C.foes.find(f => f.alive && f.boss && f.cast && (f.cast.t != null || f.cast.all));
   if (bc) {
@@ -2858,11 +3092,12 @@ function renderArena() {
   const tot = foes.reduce((t, f) => t + f.max, 0), cur = foes.reduce((t, f) => t + Math.max(0, f.hp), 0);
   $('#foeFill').style.width = (tot ? 100 * cur / tot : 0) + '%';
   $('#foeTxt').textContent = `${fmt(cur)} / ${fmt(tot)}`;
-  if (boss) { $('#foeName').textContent = boss.name; $('#foeTitle').textContent = boss.title; }
+  if (boss) { $('#foeName').textContent = boss.name + (boss.p2 ? ' · Phase 2' : ''); $('#foeTitle').textContent = boss.p2 ? BOSSES[S.dun.current].p2.name : boss.title; }
   else {
     const counts = {}; foes.filter(f => f.alive).forEach(f => counts[f.name] = (counts[f.name] || 0) + 1);
     $('#foeName').textContent = Object.entries(counts).map(([n, c]) => c > 1 ? `${n} ×${c}` : n).join(', ') || 'Cleared';
-    $('#foeTitle').textContent = `Stage ${C.stage} of ${DUNGEONS[S.dun.current].stages}`;
+    const el = foes.find(f => f.alive && f.elite);
+    $('#foeTitle').textContent = `Stage ${C.stage} of ${DUNGEONS[S.dun.current].stages}${C.peril ? ' · Peril ' + C.peril : ''}${el ? ' · Elite: ' + AFFIX[el.elite].desc : ''}`;
   }
   const caster = foes.filter(f => f.alive && f.cast).sort((a, b) => (b.boss ? 1 : 0) - (a.boss ? 1 : 0))[0];
   const bc = $('#bcast');
@@ -2929,7 +3164,7 @@ function renderPane() {
     : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
     : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv()
     : tab === 'party' ? JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
-    : tab === 'chronicle' ? logVer + '' + confirmReset + chronScope + Math.floor(S.stats.played / 2) : '');
+    : tab === 'chronicle' ? logVer + '' + confirmReset + JSON.stringify(S.ach || {}) + chronScope + Math.floor(S.stats.played / 2) : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
   const st = pane.scrollTop;
@@ -3001,10 +3236,13 @@ function renderDungeons() {
         </div>
         <div class="dfoot">
           <span class="dmod" title="${MODS[dg.mod].desc}"><b>${MODS[dg.mod].name}</b> ${MODS[dg.mod].desc}</span>
+          ${locked ? '' : `<span class="dmod"><b class="p2">Phase 2</b> at half health, ${BOSSES[i].name} ${BOSSES[i].p2.desc}.</span>`}
+          ${perilOf(i) ? `<span class="dmod perilfx">Peril ${perilOf(i)}: enemies ×${fmt(Math.pow(PERIL_HP, perilOf(i)))} health and ×${fmt(Math.pow(PERIL_DMG, perilOf(i)))} damage · rewards ×${Math.pow(PERIL_REW, perilOf(i)).toFixed(2)} · ${MATS[i]} ×${(1 + 0.5 * perilOf(i)).toFixed(1)} · more elites</span>` : ''}
           <div class="drow"><span class="dpips" title="${clears ? 'Cleared' : best ? 'Best: stage ' + best : 'Not attempted'}">${pips}</span>
             <span class="dstat">${clears ? `Cleared ×${clears}` : best ? `Best ${best}/${dg.stages}` : locked ? 'Sealed' : 'Unexplored'}</span>
             <span class="dstat">Lv ${suggestedLv(i)}</span>${diff ? `<span class="ddiff ${diff[0]}">${diff[1]}</span>` : ''}
             ${!locked && !clears ? `<span class="dfirst" title="First clear reward">★ New spell + talent point</span>` : ''}
+            ${maxPeril(i) ? `<span class="peril" title="Harder enemies, better rewards and more ${MATS[i]}. Capped so it never beats your deepest dungeon.">Peril <button type="button" class="pbtn" data-peril="${i}:-1" ${perilOf(i) ? '' : 'disabled'}>−</button><b>${perilOf(i)}</b><span class="muted">/${maxPeril(i)}</span><button type="button" class="pbtn" data-peril="${i}:1" ${perilOf(i) < maxPeril(i) ? '' : 'disabled'}>+</button></span>` : ''}
             ${locked ? '' : `<button class="btn ${cur ? '' : 'primary'} act" data-enter="${i}">${running ? 'Restart' : cur ? 'Enter again' : 'Enter'}</button>`}</div>
         </div></div>`;
     }).join('')}</div>`;
@@ -3115,7 +3353,7 @@ function renderParty() {
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
     <div class="statgrid" id="pstats"></div>
     ${comp ? `<div class="section-h"><h3>Equipment</h3><span class="label">Change it in the Armory</span></div>
-    <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(it ? itemIcon(it) : CBASES[i][cs.id][0][2], it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
+    <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(it ? itemIcon(it) : CBASES[i][cs.id][0][2], it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="${nameCls(it)}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
     <div class="section-h"><h3>Promotion</h3><span class="label">${PROMO_TITLE[pr]} · each rank ${per}</span></div>
     <div class="promo" style="--rc:${ROLE_COL[i]}"><div class="ladder">${ladder}</div>
       ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div>
@@ -3132,7 +3370,7 @@ function promote(i) {
   const c = promoCost(i);
   if (!canPromote(i) || S.gold < c) return;
   S.gold -= c; S.promo[i] = promoRank(i) + 1; recalc();
-  heroAnim[i].lvl = 2; burst(HERO_POS[i].x, HERO_POS[i].y - 14, '#ffd36b', 30, 24); fxLabel(i, PROMO_TITLE[S.promo[i]] + '!', '#ffd36b');
+  heroAnim[i].lvl = 2; burst(HERO_POS[i].x, HERO_POS[i].y - 14, '#ffd36b', 30, 24); fxLabel(i, PROMO_TITLE[S.promo[i]] + '!', '#ffd36b'); sfx('level');
   log(`<span class="g">${PARTY[i].name} was promoted to ${PROMO_TITLE[S.promo[i]]}.</span>`); toast(`${PARTY[i].name} is now ${PROMO_TITLE[S.promo[i]]}!`);
 }
 let lastCoffer = null;
@@ -3143,9 +3381,9 @@ function openCoffer(id) {
   S.gold -= cost;
   const d = cofferDun(), min = c.id === 'royal' && Math.random() < 0.2 ? 4 : c.min;
   const it = genItem(ilvlFor(d, DUNGEONS[d].stages) + (c.min >= 2 ? 1 : 0), min);
-  S.inv.push(it); lastCoffer = it.id; sel = { where: 'inv', id: it.id }; shopDirty = true;
+  S.inv.push(it); lastCoffer = it.id; sfx('buy'); sel = { where: 'inv', id: it.id }; shopDirty = true;
   S.stats.coffers = (S.stats.coffers || 0) + 1;
-  log(`Opened a ${c.name}: <b class="rar${it.rarity}">${esc(it.name)}</b>.`); toast(`${RARITY[it.rarity].name}! ${it.name}`);
+  log(`Opened a ${c.name}: <b class="${nameCls(it)}">${esc(it.name)}</b>.`); toast(`${RARITY[it.rarity].name}! ${it.name}`);
 }
 function buyElixir(id) {
   const c = elixirCost(), ex = ELIXIRS.find(x => x.id === id);
@@ -3373,6 +3611,12 @@ function renderTown() {
       : '<p class="empty">New blessings appear as you clear more stages.</p>'}`;
   wireTown(); renderTownScene(0);
 }
+function setHtml(it) {
+  const st = SETS[it.set], n = setCount(it.set);
+  return `<div class="full setbox"><b class="setn">${st.name}</b> <span class="label">${n}/3 worn${st.who != null ? ' by ' + PARTY[st.who].name : ''}</span>
+    <ul>${Object.values(st.pieces).map(pn => `<li class="${[...Object.values(st.who == null ? S.equip : S.cequip[st.who])].some(x => x && x.name === pn) ? 'on' : ''}">${pn}</li>`).join('')}</ul>
+    <p class="${n >= 2 ? 'on' : ''}">(2) ${st.b2}</p><p class="${n >= 3 ? 'on' : ''}">(3) ${st.b3}</p></div>`;
+}
 function itemLines(it, cmp) {
   const keys = new Set([...Object.keys(it.stats), ...(cmp ? Object.keys(cmp.stats) : [])]);
   return [...keys].map(k => {
@@ -3390,13 +3634,13 @@ function masteryHtml(it) {
 }
 function renderArmory() {
   const slotBtn = (it, name, attrs, isSel) => `<button class="slot ${isSel ? 'sel' : ''}" ${attrs}>${img(it ? itemIcon(it) : name.icon || name.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${name.name}${it && it.up ? ' · +' + it.up : ''}${it ? ' · ' + it.ilvl : ''}</small>
-      ${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</button>`;
+      ${it ? `<b class="${nameCls(it)}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</button>`;
   const eqHtml = SLOTS.map(sl => slotBtn(S.equip[sl.id], sl, `data-eq="${sl.id}"`, sel && sel.where === 'eq' && sel.id === sl.id)).join('');
   const partyGear = [0, 1, 2, 3].map(ci => `<div class="pgear"><span class="pg-name">${PARTY[ci].name}</span>${CSLOTS.map(cs =>
     slotBtn(S.cequip[ci][cs.id], { ...cs, icon: CBASES[ci][cs.id][0][2] }, `data-ceq="${ci}:${cs.id}"`, sel && sel.where === 'ceq' && sel.ci === ci && sel.slot === cs.id)).join('')}</div>`).join('');
   const bagHtml = S.inv.map(it => {
     const up = isUpgrade(it), isSel = sel && sel.where === 'inv' && sel.id === it.id;
-    return `<button class="bagitem ${isSel ? 'sel' : ''}" data-inv="${it.id}">${img(itemIcon(it), it.rarity)}<b class="rar${it.rarity}">${esc(it.name)}</b>
+    return `<button class="bagitem ${isSel ? 'sel' : ''}" data-inv="${it.id}">${img(itemIcon(it), it.rarity)}<b class="${nameCls(it)}">${esc(it.name)}</b>
       <span class="up ${up ? 'better' : 'worse'}">${up ? '▲ upgrade' : slotName(it)}${isComp(it) ? ' · ' + PARTY[it.who].name : ''} · ilvl ${it.ilvl}${it.mp >= it.mneed ? ' · mastered' : ''}</span></button>`;
   }).join('');
   let detail = '';
@@ -3423,9 +3667,9 @@ function renderArmory() {
         note = sel.where === 'ceq' ? `Worn by ${PARTY[sel.ci].name}. Each enchant adds 10% to every stat.` : 'Each enchant adds 10% to every stat.';
       }
       if (perk('smithy', 3)) acts += `<button class="btn" data-act="reforge" data-cost="${reforgeCost(it)}">Reforge · ${fmt(reforgeCost(it))} gold</button>`;
-      detail = `<div class="detail">${img(itemIcon(it), it.rarity)}<h4 class="rar${it.rarity}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
+      detail = `<div class="detail">${img(itemIcon(it), it.rarity)}<h4 class="${nameCls(it)}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
         <span class="sub">${RARITY[it.rarity].name} ${comp ? PARTY[it.who].name + "'s " + it.base.toLowerCase() : slotName(it)} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
-        <ul class="full">${itemLines(it, cmp)}</ul>
+        <ul class="full">${itemLines(it, cmp)}</ul>${it.set ? setHtml(it) : ''}
         ${masteryHtml(it)}
         <span class="full sub">${note}</span>
         <div class="full actions">${acts}</div></div>`;
@@ -3483,6 +3727,9 @@ function renderChronicle() {
     ${healingTable(b)}
     <div class="statgrid">${[['Damage taken', fmt(b.taken || 0)], ['Party deaths', fmt(b.deaths || 0)], ['Debuffs cleansed', fmt(b.cleansed || 0)]].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
     ${deaths ? `<div class="section-h"><h3>Deaths by dungeon</h3><span class="label">All time</span></div><div class="skills">${deaths}</div>` : ''}
+    <div class="section-h"><h3>Achievements</h3><span class="label">${ACH.filter(a => S.ach && S.ach[a.id]).length} of ${ACH.length} · each grants a permanent bonus</span></div>
+    <div class="achs">${ACH.map(a => { const done = S.ach && S.ach[a.id], pg = !done && a.prog ? a.prog() : null;
+      return `<div class="ach ${done ? 'done' : ''}"><span class="am">${done ? '✓' : '◇'}</span><b>${a.name}</b><span>${a.desc}</span><small>${a.rw}</small>${pg ? `<i class="ap"><i style="width:${Math.min(100, 100 * pg[0] / pg[1])}%"></i></i>` : ''}</div>`; }).join('')}</div>
     <div class="section-h"><h3>Records</h3></div>
     <div class="statgrid">${rows.map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
     <div class="section-h"><h3>Battle log</h3></div>
@@ -3548,6 +3795,7 @@ pane.addEventListener('click', e => {
   if (d.pick) { learnSpell(d.pick); return; }
   if (d.loot != null) { S.lootFilter = +d.loot; shopDirty = true; return; }
   if (d.chron) { chronScope = d.chron; shopDirty = true; return; }
+  if (d.peril) { const [di, dl] = d.peril.split(':').map(Number); S.dun.peril = S.dun.peril || []; S.dun.peril[di] = clamp(perilOf(di) + dl, 0, maxPeril(di)); if (di === S.dun.current && C.phase !== 'done') toast('Peril applies from your next run.'); shopDirty = true; return; }
   if (d.stance) { S.stance = d.stance; recalc(); shopDirty = true; return; }
   if (d.town) {
     const b = TOWNB[d.town], L = lvl(b.id);
@@ -3602,7 +3850,7 @@ function act(a) {
     sel = { where: 'ceq', ci, slot: it.slot }; recalc();
   } else if (a === 'reforge' && sel) {
     const it = sel.where === 'eq' ? S.equip[sel.id] : sel.where === 'ceq' ? S.cequip[sel.ci][sel.slot] : findItem(sel.id);
-    if (it && perk('smithy', 3) && S.gold >= reforgeCost(it)) { S.gold -= reforgeCost(it); reforge(it); recalc(); log(`Reforged <b class="rar${it.rarity}">${esc(it.name)}</b>.`); }
+    if (it && perk('smithy', 3) && S.gold >= reforgeCost(it)) { S.gold -= reforgeCost(it); reforge(it); recalc(); log(`Reforged <b class="${nameCls(it)}">${esc(it.name)}</b>.`); }
   } else if (a === 'unequip' && sel && sel.where === 'ceq') {
     if (S.inv.length >= bagCap()) { toast('Your bag is full.'); return; }
     S.inv.push(S.cequip[sel.ci][sel.slot]); S.cequip[sel.ci][sel.slot] = null; sel = null; recalc();
@@ -3669,10 +3917,102 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
 addEventListener('hashchange', syncDev);
 syncDev();
 
+// One-time hints that appear the first time a system matters
+const HINTS = {
+  start: () => C.phase === 'fight' && 'Click a party frame (or a hero in the scene) to target them, then press <b>1</b> to cast Heal. Keep everyone standing.',
+  devotion: () => C.dev >= 25 && 'Your <b>Devotion</b> is rising. Healing that matters multiplies gold, experience and loot. Overhealing and idling drain it.',
+  plea: () => C.plea && `<b>${PARTY[C.plea.i].name}</b> is pleading for help. Heal them within 6 seconds for a random reward.`,
+  debuff: () => C.party.some(m => m.alive && m.dots.length) && (known('purify') ? 'A <b>debuff</b>! Poison ramps up and hexes halve healing. <b>Purify</b> removes them.' : 'A <b>debuff</b>! Poison ramps up and hexes halve healing. You can learn <b>Purify</b> from a first dungeon clear.'),
+  telegraph: () => C.foes.some(f => f.alive && f.boss && f.cast && f.cast.t != null) && 'The boss is casting at someone. The <b>red marker</b> shows who: get them healthy or Ward them before it lands.',
+  mana: () => lowMana() && 'Running low on <b>mana</b>. Meditate and Mana Potions glow on the action bar when they can help.',
+  talent: () => pointsOf('cleric') > 0 && 'You have a <b>talent point</b>. Spend it in the Talents tab.',
+  promo: () => PARTY.some((_, i) => canPromote(i) && S.gold >= promoCost(i)) && 'A <b>promotion</b> is ready in the Party tab: a big, permanent boost.',
+  town: () => TOWN.some(b => { const L = lvl(b.id); if (L >= TOWN_MAX) return false; const c = townCost(b, L + 1); return c.d <= S.dun.unlocked && S.gold >= c.gold && (S.mats[c.d] || 0) >= c.n; }) && 'You can afford a building in the <b>Town</b>. Buildings unlock new features.',
+  elite: () => C.foes.some(f => f.alive && f.elite) && 'An <b>elite</b>! Tougher, with a special trait (shown under the enemy name), and it always drops loot.',
+  phase: () => C.foes.some(f => f.boss && f.p2) && '<b>Phase 2!</b> Bosses change at half health. Each dungeon card tells you what to expect.',
+  peril: () => DUNGEONS.some((_, d) => maxPeril(d) > 0) && 'You can raise the <b>Peril</b> of cleared dungeons in the Dungeons tab: harder enemies, better loot and more materials.',
+  set: () => S.inv.some(it => it.set) && 'You found a <b>set item</b>! Wearing 2 or 3 pieces of a set unlocks bonuses. Check it in the Armory.',
+};
+let hintT = 0, hintCheckT = 0;
+function checkHints(real) {
+  if (!S.hints) S.hints = {};
+  const box = $('#hint');
+  if (!box.hidden) { hintT -= real; if (hintT <= 0) box.hidden = true; return; }
+  if ((hintCheckT -= real) > 0) return; hintCheckT = 0.5;
+  for (const id in HINTS) {
+    if (S.hints[id]) continue;
+    const txt = HINTS[id](); if (!txt) continue;
+    S.hints[id] = 1; $('#hintTxt').innerHTML = txt; box.hidden = false; hintT = 14; return;
+  }
+}
+$('#hintOk').addEventListener('click', () => { $('#hint').hidden = true; });
+// What to do next, as one clickable line under the arena header
+function nextStep() {
+  if (picksLeft()) return ['talents', 'Choose your new spell'];
+  const ups = S.inv.filter(isUpgrade).length; if (ups) return ['armory', `${ups} upgrade${ups > 1 ? 's' : ''} in your bag: equip them`];
+  if (pointsOf('cleric') > 0) return ['talents', `Spend ${pointsOf('cleric')} Cleric talent point${pointsOf('cleric') > 1 ? 's' : ''}`];
+  const cp = [0, 1, 2, 3].find(i => pointsOf(i) > 0); if (cp != null) return ['party', `${PARTY[cp].name} has talent points to spend`];
+  const pr = PARTY.findIndex((_, i) => canPromote(i) && S.gold >= promoCost(i)); if (pr >= 0) return ['party', `Promote ${PARTY[pr].name} to ${PROMO_TITLE[promoRank(pr) + 1]}`];
+  const tb = TOWN.find(b => { const L = lvl(b.id); if (L >= TOWN_MAX) return false; const c = townCost(b, L + 1); return c.d <= S.dun.unlocked && S.gold >= c.gold && (S.mats[c.d] || 0) >= c.n; });
+  if (tb) return ['town', `${lvl(tb.id) ? 'Upgrade' : 'Build'} the ${tb.name}`];
+  const d = S.dun.current; if ((S.dun.clears[d] || 0) >= 2 && d < S.dun.unlocked && S.dun.current !== S.dun.unlocked) return ['dungeons', `Ready to push on? ${DUNGEONS[S.dun.unlocked].name} awaits`];
+  return null;
+}
+let nextKey = '', nextT = 0;
+function updateNext(real) {
+  if ((nextT -= real) > 0) return; nextT = 1;
+  const n = nextStep(), el = $('#nextStep'), k = n ? n.join('|') : '';
+  if (k === nextKey) return; nextKey = k;
+  el.hidden = !n; if (n) { el.innerHTML = `<span>Next</span> ${n[1]} →`; el.dataset.go = n[0]; }
+}
+$('#nextStep').addEventListener('click', e => { const t = document.querySelector(`.tab[data-tab="${e.currentTarget.dataset.go}"]`); if (t) t.click(); });
+let AC = null, master = null;
+const sfxLast = {};
+function audio() {
+  if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.connect(AC.destination); } catch (e) { return null; } }
+  master.gain.value = S.mute ? 0 : (S.vol ?? 0.6) * 0.3;
+  return AC.state === 'running' ? AC : null;
+}
+function tone(f, dur, type = 'sine', vol = 0.3, slide = 0, delay = 0) {
+  const t0 = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.linearRampToValueAtTime(Math.max(30, f + slide), t0 + dur);
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function noise(dur, vol, freq) {
+  const n = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
+  for (let k = 0; k < n; k++) d[k] = (Math.random() * 2 - 1) * (1 - k / n);
+  const src = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain();
+  fl.type = 'lowpass'; fl.frequency.value = freq; g.gain.value = vol; src.buffer = buf;
+  src.connect(fl); fl.connect(g); g.connect(master); src.start();
+}
+const SFX = {
+  heal: () => tone(520, 0.2, 'sine', 0.16, 240),
+  crit: () => { tone(660, 0.14, 'triangle', 0.18); tone(990, 0.22, 'triangle', 0.16, 0, 0.06); },
+  coin: () => tone(1400 + Math.random() * 300, 0.06, 'square', 0.04, 300),
+  hit: () => noise(0.07, 0.12, 900),
+  warn: () => { tone(150, 0.3, 'sawtooth', 0.1, -30); tone(150, 0.3, 'sawtooth', 0.08, -30, 0.32); },
+  level: () => [523, 659, 784, 1046].forEach((f, k) => tone(f, 0.16, 'triangle', 0.14, 0, k * 0.07)),
+  death: () => tone(320, 0.6, 'sawtooth', 0.1, -220),
+  ach: () => [784, 988, 1175, 1568].forEach((f, k) => tone(f, 0.22, 'sine', 0.14, 0, k * 0.09)),
+  phase: () => { tone(110, 0.7, 'sawtooth', 0.16, -40); noise(0.5, 0.18, 400); },
+  oom: () => tone(240, 0.12, 'sine', 0.08, -60),
+  buy: () => { tone(880, 0.08, 'square', 0.05); tone(1320, 0.12, 'square', 0.05, 0, 0.06); },
+};
+const SFX_GAP = { coin: 50, hit: 90, heal: 60 };
+function sfx(n) {
+  if (S.mute || document.hidden || DEV.speed > 1) return;
+  const now = performance.now(); if (sfxLast[n] && now - sfxLast[n] < (SFX_GAP[n] || 40)) return; sfxLast[n] = now;
+  if (!audio()) return; try { SFX[n](); } catch (e) {}
+}
+['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { audio(); if (AC && AC.state === 'suspended') AC.resume(); }, { capture: true }));
+function syncMute() { const b = $('#muteBtn'); b.textContent = S.mute ? '🔇' : '🔊'; b.setAttribute('aria-pressed', !S.mute); $('#volume').value = Math.round((S.vol ?? 0.6) * 100); }
+$('#muteBtn').addEventListener('click', () => { S.mute = !S.mute; audio(); syncMute(); });
+$('#volume').addEventListener('input', e => { S.vol = +e.target.value / 100; if (S.mute && S.vol > 0) S.mute = false; audio(); syncMute(); sfx('heal'); });
 let toastT = 0;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; toastT = 2.8; }
 
@@ -3754,6 +4094,7 @@ function frame(now) {
   $('#pilvl').textContent = partyIlvl().toFixed(1);
   paneT -= real; if (paneT <= 0) { paneT = 0.25; renderPane(); }
   saveT -= real; if (saveT <= 0) { saveT = 10; save(); }
+  checkHints(real); updateNext(real); checkAch(real);
   if (toastT > 0) { toastT -= real; if (toastT <= 0) $('#toast').hidden = true; }
   requestAnimationFrame(frame);
 }
@@ -3771,6 +4112,7 @@ function start(data) {
   log(loaded ? 'Welcome back. The party is ready.' : 'The party gathers at the sewer gate. Keep them alive.');
   if (S.trainRefund) { log(`<span class="g">Training was replaced by promotions: ${fmt(S.trainRefund)} gold refunded.</span>`); toast(`Training is now Promotions. Refunded ${fmt(S.trainRefund)} gold.`); delete S.trainRefund; }
   renderPane();
+  syncMute();
   window.claude?.hot?.snapshot?.(() => ({ S }));
   addEventListener('pagehide', save);
   document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });

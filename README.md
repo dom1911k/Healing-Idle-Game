@@ -12,6 +12,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Targeting.** A gold ring marks who your next spell will hit. While you cast, a green glow builds on the ally about to receive the heal.
 - **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one. Trying to cast without enough mana shows a quiet blue *Not enough mana* on the mana bar, and when you're running low, Meditate and the Mana Potion glow blue on the action bar.
 - **Dungeons.** The Dungeons tab is a map of the descent: each dungeon has a painted banner with its boss, its rule, your progress through its stages, and how hard it is for your party's level. Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
+- **Readable battlefield text.** Banners, ability names, level-ups, boss name cards and town labels use a crisp pixel font with an outline.
 - **Debuffs.** Poison ramps up with every tick, a hex halves the healing its target receives, and wolves cause short bleeds. Purify removes all of them. A Ward that is still holding makes its target resist new poisons and hexes.
 - **Boss telegraphs.** When a boss starts a big ability, the cast bar names the target, a red marker hovers over that hero and their party frame pulses red. Wave attacks mark the whole party. Later bosses add **Doom**, a slow cast that hits one ally for a huge amount: shield them with Ward or top them up in time.
 - **Boss second phases.** At half health every boss changes: Gnasher calls in rats, the Mire Hag poisons everyone, the Grave Warden raises skeletons, Ashjaw sets the floor on fire, Thornmother weakens healing and summons wisps, the Iron Penitent casts Doom at once and speeds up, and so on. Each dungeon card says what to expect.
@@ -43,15 +44,20 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in the trees: Flash Heal, Purify and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing.
 - With *Repeat dungeon* on, the next run waits until you've chosen. You can also choose from the Talents tab, which always shows which spells your next first clear will offer.
 
-## Cleric talents
+## Healer classes and talents
 
-- The Talents tab shows the three trees as crests, each with the spells it improves and the points you've spent in it.
-- Spells aren't in the trees. Talents with a small spell icon improve that spell and open once you know it; until then they show which spell they need. Every row also has talents that work without any new spell, and each tree ends in a capstone (Miracle, Inner Fortress, Zealot).
-- New talents: **Lifeline** (stronger heals on allies below 40% health), **Miracle** (critical heals refund mana), **Steadfast Faith** (Devotion fades slower), **Last Rites** (once per stage, an ally survives a killing blow) and **War Chant** (companions attack faster).
-- Three WoW-style trees: **Holy** (Heal, Flash Heal, Prayer), **Discipline** (Ward, Purify, Sanctuary, the tank) and **Devotion** (mana, Renew, Meditate, Blessing).
-- Most talents take 5–10 ranks of small bonuses. Ranks 1–5 cost 1 point and later ranks cost 2. Major talents (2–3 points) sit between them.
-- Deeper rows need points spent in that tree first: 2 per row.
-- Talent points are rare: 1 every 2 Cleric levels, plus 1 for each first dungeon clear. Resetting is free.
+- Pick a healer class in the Talents tab, in the spirit of Mini Healer's Priest, Druid and Occultist trees. Switching is free and refunds your Cleric talents. Each class renames and reworks your spells, has its own passive, its own look and three talent trees of its own:
+
+  | Class | Passive | How the spells play |
+  |---|---|---|
+  | **Priest** | Radiant Overflow: 30% of overhealing becomes a shield | Direct heals, Ward, Prayer (the original Cleric) |
+  | **Druid** | Living Seed: Rejuvenation stacks, and heal-over-time ticks restore mana | Regrowth (heal plus a heal over time), Swiftmend (stronger on allies with a heal over time), stacking Rejuvenation, Barkskin (35% damage reduction), instant Wild Growth, Tranquility (party heal every second) |
+  | **Occultist** | Siphon Life: your attacks hit 4× harder and heal the most injured ally. Blood Pact: spend health when out of mana | Drain Life (heals and drains the front enemy), Leech Seed, Bone Shield, Dark Pact (health for mana), Soul Harvest (stronger with more enemies) |
+
+- Trees: Priest has Holy, Discipline and Devotion; Druid has Restoration, Wild Spirit and Thornguard; Occultist has Affliction, Blood and Shadow.
+- Talents are fewer and much bigger: up to 3 ranks of +5–15% per rank, plus keystones (2–3 points) that change how spells work. Examples: Chain Heal, Inner Light, Atonement, Divine Hymn, Lifebloom, Efflorescence, Germination, Tree of Life, Ironbark, Wrath, Soul Drain, Haunt, Vampiric Embrace, Curse of Doom and Eclipse of Souls. Each tree ends in a capstone.
+- Talents with a small spell icon need that spell and open once you know it. Deeper rows need points spent in that tree first (2 per row). Resetting is free.
+- Talent points: 1 every 2 Cleric levels, plus 1 for each first dungeon clear, the Library and an achievement.
 
 ## The party
 

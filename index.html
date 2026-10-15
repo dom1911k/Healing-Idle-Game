@@ -370,6 +370,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .chipbtn small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
 .chipbtn[aria-pressed="true"]{border-color:var(--sc,var(--gold));box-shadow:0 0 0 1px var(--sc,var(--gold)) inset}
 .tgrid{display:grid;gap:10px 8px;align-items:stretch}
+.classes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.classcard{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:#1d1a26;color:var(--ink);font:inherit;cursor:pointer;text-align:center}
+.classcard .crest{width:40px;height:40px;image-rendering:pixelated}.classcard b{font-family:var(--display);font-weight:500;color:var(--sc);font-size:1.05rem}.classcard span{font-size:.74rem;color:var(--muted)}
+.classcard[aria-pressed="true"]{border-color:var(--sc);box-shadow:0 0 0 1px var(--sc) inset,0 0 16px color-mix(in srgb,var(--sc) 30%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 14%,#1d1a26),#1d1a26)}
+.passive{margin:8px 0 2px;padding:8px 10px;border-radius:8px;border-left:3px solid var(--sc);background:#1a1722;font-size:.86rem;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}.passive b{color:var(--sc)}
 .crests{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .crestcard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px 8px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 14%,#1d1a26),#1d1a26 70%);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
 .crestcard:hover{border-color:color-mix(in srgb,var(--sc) 60%,transparent)}
@@ -758,67 +763,195 @@ const clericRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 5 ? 1 : 2;
 const compRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 3 ? 1 : 2;
 
 const CLERIC_TREES = [
-  { id: 'holy', name: 'Holy', col: '#86dcb8', desc: 'Heal, Flash Heal and Prayer, critical heals and saving allies in trouble', nodes: [
-    T_('h_pow', 0, 0, 'Improved Heal', 's_heal', 10, '+3% Heal healing', { heal_pow: 0.03 }),
-    T_('h_cost', 0, 1, 'Thrift', 'coin', 5, '-3% Heal mana cost', { heal_cost: 0.03 }),
-    T_('holy', 0, 2, 'Holy Light', 's_prayer', 10, '+2% all healing', { healAll: 0.02 }),
-    T_('f_pow', 1, 0, 'Bright Burst', 's_flash', 5, '+5% Flash Heal healing', { flash_pow: 0.05 }, { needs: 'flash' }),
-    T_('h_cast', 1, 1, 'Quick Words', 'scroll', 5, '-0.06s Heal cast time', { heal_cast: 0.06 }),
-    T_('insight', 1, 2, 'Insight', 's_core', 10, '+0.5% critical heals', { crit: 0.5 }),
-    T_('f_cost', 2, 0, 'Spare Light', 'coin', 5, '-4% Flash Heal mana cost', { flash_cost: 0.04 }, { needs: 'flash', req: 'f_pow' }),
-    T_('echo', 2, 1, 'Echo', 's_heal', 1, 'Heal has a 20% chance to also heal the most injured ally for half', { heal_echo: 0.2 }, { cost: 2, req: 'h_cast' }),
-    T_('h_pow2', 2, 2, 'Divine Fury', 's_heal', 5, '+4% Heal healing', { heal_pow: 0.04 }),
-    T_('surge', 3, 0, 'Surge', 's_flash', 1, 'Flash Heal has +15% critical chance', { flash_crit: 0.15 }, { cost: 2, needs: 'flash', req: 'f_cost' }),
-    T_('pr_pow', 3, 1, 'Choir Voice', 's_prayer', 5, '+5% Prayer healing and -2% Prayer mana cost', { prayer_pow: 0.05, prayer_cost: 0.02 }, { needs: 'prayer' }),
-    T_('swift', 3, 2, 'Swift Prayers', 'scroll', 10, '+1% haste', { haste: 1 }),
-    T_('lifeline', 4, 0, 'Lifeline', 's_heal', 5, 'Your heals on allies below 40% health heal 5% more', { low_pow: 0.05 }),
-    T_('pr_cast', 4, 1, 'Quick Psalm', 'scroll', 3, '-0.2s Prayer cast time', { prayer_cast: 0.2 }, { needs: 'prayer', req: 'pr_pow' }),
-    T_('martyr', 4, 2, "Martyr's Vow", 's_core', 1, 'All healing +25%, but max mana -20%', { healAll: 0.25, mana: -0.2 }, { cost: 3 }),
-    T_('miracle', 5, 1, 'Miracle', 's_core', 1, 'Critical heals refund 1% of your max mana', { crit_mana: 0.01 }, { cost: 3 }),
+  { id: 'holy', name: 'Holy', col: '#86dcb8', desc: 'Big direct heals, Flash Heal and Prayer', nodes: [
+    T_('h_pow', 0, 0, 'Improved Heal', 's_heal', 3, '+10% Heal healing', { heal_pow: 0.1 }),
+    T_('h_cost', 0, 1, 'Thrift', 'coin', 3, '-8% Heal mana cost', { heal_cost: 0.08 }),
+    T_('holy', 0, 2, 'Holy Light', 's_prayer', 3, '+5% all healing', { healAll: 0.05 }),
+    T_('f_pow', 1, 0, 'Bright Burst', 's_flash', 3, '+12% Flash Heal healing', { flash_pow: 0.12 }, { needs: 'flash' }),
+    T_('h_cast', 1, 1, 'Quick Words', 'scroll', 3, '-0.15s Heal cast time', { heal_cast: 0.15 }),
+    T_('insight', 1, 2, 'Insight', 's_core', 3, '+3% critical heals', { crit: 3 }),
+    T_('surge', 2, 0, 'Surge', 's_flash', 1, 'Flash Heal gets +30% critical chance, and its critical heals refund half its mana', { flash_crit: 0.3, flash_refund: 0.5 }, { cost: 2, needs: 'flash', req: 'f_pow' }),
+    T_('echo', 2, 1, 'Chain Heal', 's_heal', 1, 'Heal jumps to the next most injured ally for 50%', { heal_echo: 1 }, { cost: 2, req: 'h_cast' }),
+    T_('lifeline', 2, 2, 'Lifeline', 's_heal', 3, 'Your heals on allies below 40% health heal 12% more', { low_pow: 0.12 }),
+    T_('pr_pow', 3, 0, 'Choir Voice', 's_prayer', 3, '+12% Prayer healing and -6% Prayer mana cost', { prayer_pow: 0.12, prayer_cost: 0.06 }, { needs: 'prayer' }),
+    T_('gspirit', 3, 1, 'Guardian Spirit', 'shield', 1, 'Once per stage, the first ally to fall below 15% health is healed for 40% of max health', { gspirit: 1 }, { cost: 2 }),
+    T_('swift', 3, 2, 'Swift Prayers', 'scroll', 3, '+6% haste', { haste: 6 }),
+    T_('pr_cast', 4, 0, 'Divine Hymn', 's_prayer', 1, 'Prayer becomes instant and leaves a heal over time worth 40% more', { prayer_instant: 1, prayer_hot: 0.4 }, { cost: 3, needs: 'prayer', req: 'pr_pow' }),
+    T_('martyr', 4, 2, "Martyr's Vow", 's_core', 1, 'All healing +30%, but max mana -20%', { healAll: 0.3, mana: -0.2 }, { cost: 3 }),
+    T_('miracle', 5, 1, 'Miracle', 's_core', 1, 'Critical heals heal 30% more and refund 3% of your max mana', { crit_pow: 0.3, crit_mana: 0.03 }, { cost: 3 }),
   ] },
-  { id: 'disc', name: 'Discipline', col: '#7ba3ee', desc: 'Purify, Ward and Sanctuary, a tougher party and keeping the tank alive', nodes: [
-    T_('tank', 0, 0, 'Shieldbearer', 'shield', 10, 'Bram takes 1% less damage', { tankDR: 0.01 }),
-    T_('fort', 0, 1, 'Fortify', 'shield', 10, '+2% party health', { partyHp: 0.02 }),
-    T_('keen', 0, 2, 'Keen Eye', 's_core', 5, '+1% critical heals', { crit: 1 }),
-    T_('pu_pow', 1, 0, 'Cleansing Light', 's_purify', 5, '+12% Purify healing', { purify_pow: 0.12 }, { needs: 'purify' }),
-    T_('camp', 1, 1, 'Campfire', 'bandage', 5, 'Resting between stages restores 3% more health and mana', { camp: 0.03 }),
-    T_('stout', 1, 2, 'Stout Hearts', 'shield', 5, '+3% party health', { partyHp: 0.03 }),
-    T_('pu_cd', 2, 0, 'Swift Cleanse', 'scroll', 3, '-0.5s Purify cooldown', { purify_cd: 0.5 }, { needs: 'purify', req: 'pu_pow' }),
-    T_('w_pow', 2, 1, 'Thick Glass', 's_ward', 10, '+4% Ward absorb', { ward_pow: 0.04 }, { needs: 'ward' }),
-    T_('w_cd', 2, 2, 'Readiness', 'scroll', 4, '-0.5s Ward cooldown', { ward_cd: 0.5 }, { needs: 'ward' }),
-    T_('faith', 3, 0, 'Steadfast Faith', 's_core', 5, 'Devotion fades 6% slower', { devo_slow: 0.06 }),
-    T_('mendward', 3, 1, 'Mending Ward', 's_ward', 1, 'When a Ward breaks, it heals for 25% of its size', { ward_mend: 0.25 }, { cost: 2, needs: 'ward', req: 'w_pow' }),
+  { id: 'disc', name: 'Discipline', col: '#7ba3ee', desc: 'Shields, Atonement and keeping the tank alive', nodes: [
+    T_('tank', 0, 0, 'Shieldbearer', 'shield', 3, 'Bram takes 4% less damage', { tankDR: 0.04 }),
+    T_('fort', 0, 1, 'Fortify', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
+    T_('keen', 0, 2, 'Keen Eye', 's_core', 3, '+3% critical heals', { crit: 3 }),
+    T_('pu_pow', 1, 0, 'Cleansing Light', 's_purify', 3, '+30% Purify healing and -1s Purify cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('camp', 1, 1, 'Campfire', 'bandage', 3, 'Resting between stages restores 8% more health and mana', { camp: 0.08 }),
+    T_('innerlight', 1, 2, 'Inner Light', 's_ward', 1, 'Heal also shields its target for 20% of the amount healed', { heal_shield: 0.2 }, { cost: 2 }),
+    T_('w_pow', 2, 0, 'Thick Glass', 's_ward', 3, '+15% Ward absorb', { ward_pow: 0.15 }, { needs: 'ward' }),
+    T_('w_cd', 2, 1, 'Readiness', 'scroll', 3, '-1.5s Ward cooldown', { ward_cd: 1.5 }, { needs: 'ward' }),
+    T_('atone', 2, 2, 'Atonement', 'sword', 1, 'Your own attacks deal 4× damage, and heal the most injured ally for all of it', { atone: 1 }, { cost: 2 }),
+    T_('faith', 3, 0, 'Steadfast Faith', 's_core', 3, 'Devotion fades 12% slower', { devo_slow: 0.12 }),
+    T_('mendward', 3, 1, 'Mending Ward', 's_ward', 1, 'When a Ward breaks, it heals for 50% of its size', { ward_mend: 0.5 }, { cost: 2, needs: 'ward', req: 'w_pow' }),
     T_('rites', 3, 2, 'Last Rites', 'shield', 1, 'Once per stage, an ally who would die survives with 1 health', { lastrites: 1 }, { cost: 2 }),
-    T_('sa_str', 4, 0, 'Hallowed Ground', 's_sanctuary', 5, 'Sanctuary blocks 2% more damage', { sanct_amt: 0.02 }, { needs: 'sanctuary' }),
+    T_('sa_str', 4, 0, 'Hallowed Ground', 's_sanctuary', 3, 'Sanctuary blocks 6% more damage', { sanct_amt: 0.06 }, { needs: 'sanctuary' }),
     T_('bulwark', 4, 1, 'Bulwark Doctrine', 's_ward', 1, 'Ward has no cooldown, but costs 60% more mana', { ward_nocd: 1, ward_costUp: 0.6 }, { cost: 3, needs: 'ward', req: 'mendward' }),
-    T_('sa_dur', 4, 2, 'Long Vigil', 'scroll', 4, '+0.5s Sanctuary duration', { sanct_dur: 0.5 }, { needs: 'sanctuary' }),
-    T_('bastion', 5, 1, 'Inner Fortress', 'shield', 1, '+15% party health', { partyHp: 0.15 }, { cost: 3 }),
+    T_('sa_dur', 4, 2, 'Long Vigil', 'scroll', 2, '+2s Sanctuary duration', { sanct_dur: 2 }, { needs: 'sanctuary' }),
+    T_('bastion', 5, 1, 'Inner Fortress', 'shield', 1, '+25% party health', { partyHp: 0.25 }, { cost: 3 }),
   ] },
-  { id: 'devo', name: 'Devotion', col: '#a98cf0', desc: 'Renew, Meditate and Blessing, mana and empowering the party', nodes: [
-    T_('well', 0, 0, 'Inner Well', 's_meditate', 10, '+3% max mana', { mana: 0.03 }),
-    T_('still', 0, 1, 'Still Waters', 's_meditate', 10, '+3% mana regeneration', { regen: 0.03 }),
-    T_('rally', 0, 2, 'Battle Hymn', 'sword', 10, '+2% party damage', { partyDps: 0.02 }),
-    T_('r_pow', 1, 0, 'Sap', 's_renew', 10, '+4% Renew healing', { renew_pow: 0.04 }, { needs: 'renew' }),
-    T_('scholar', 1, 1, 'Scholar', 'scroll', 5, '+3% party experience and +3% gold find', { xp: 0.03, gold: 0.03 }),
-    T_('clarity', 1, 2, 'Clarity', 's_core', 5, '1% chance a spell costs no mana', { clarity: 0.01 }),
-    T_('r_dur', 2, 0, 'Long Roots', 's_renew', 5, '+1s Renew duration', { renew_dur: 1 }, { needs: 'renew', req: 'r_pow' }),
-    T_('m_amt', 2, 1, 'Deep Breath', 's_meditate', 5, 'Meditate restores 3% more of your mana', { med_amt: 0.03 }, { needs: 'meditate' }),
-    T_('m_cd', 2, 2, 'Calm Mind', 'scroll', 4, '-4s Meditate cooldown', { med_cd: 4 }, { needs: 'meditate' }),
-    T_('bloom', 3, 0, 'Bloom', 's_renew', 1, 'Renew heals 20% of its total instantly', { renew_bloom: 0.2 }, { cost: 2, needs: 'renew', req: 'r_dur' }),
-    T_('deepwell', 3, 1, 'Deep Well', 's_meditate', 1, '+15% max mana', { mana: 0.15 }, { cost: 2 }),
-    T_('kindred', 3, 2, 'War Chant', 'sword', 5, 'Companions attack 2% faster', { partySpd: 0.02 }),
-    T_('bl_amt', 4, 0, 'Zeal', 's_blessing', 5, 'Blessing grants 4% more damage', { bless_amt: 0.04 }, { needs: 'blessing' }),
+  { id: 'devo', name: 'Devotion', col: '#a98cf0', desc: 'Mana, Renew, Meditate and empowering the party', nodes: [
+    T_('well', 0, 0, 'Inner Well', 's_meditate', 3, '+10% max mana', { mana: 0.1 }),
+    T_('still', 0, 1, 'Still Waters', 's_meditate', 3, '+10% mana regeneration', { regen: 0.1 }),
+    T_('rally', 0, 2, 'Battle Hymn', 'sword', 3, '+5% party damage', { partyDps: 0.05 }),
+    T_('r_pow', 1, 0, 'Sap', 's_renew', 3, '+15% Renew healing', { renew_pow: 0.15 }, { needs: 'renew' }),
+    T_('scholar', 1, 1, 'Scholar', 'scroll', 3, '+8% party experience and gold find', { xp: 0.08, gold: 0.08 }),
+    T_('clarity', 1, 2, 'Clarity', 's_core', 3, '4% chance a spell costs no mana', { clarity: 0.04 }),
+    T_('r_dur', 2, 0, 'Long Roots', 's_renew', 2, '+3s Renew duration', { renew_dur: 3 }, { needs: 'renew', req: 'r_pow' }),
+    T_('m_amt', 2, 1, 'Deep Breath', 's_meditate', 3, 'Meditate restores 8% more of your mana', { med_amt: 0.08 }, { needs: 'meditate' }),
+    T_('m_cd', 2, 2, 'Calm Mind', 'scroll', 3, '-8s Meditate cooldown', { med_cd: 8 }, { needs: 'meditate' }),
+    T_('bloom', 3, 0, 'Bloom', 's_renew', 1, 'Renew heals 30% of its total instantly', { renew_bloom: 0.3 }, { cost: 2, needs: 'renew', req: 'r_dur' }),
+    T_('deepwell', 3, 1, 'Deep Well', 's_meditate', 1, '+25% max mana', { mana: 0.25 }, { cost: 2 }),
+    T_('kindred', 3, 2, 'War Chant', 'sword', 3, 'Companions attack 5% faster', { partySpd: 0.05 }),
+    T_('bl_amt', 4, 0, 'Zeal', 's_blessing', 3, 'Blessing grants 10% more damage', { bless_amt: 0.1 }, { needs: 'blessing' }),
     T_('ascetic', 4, 1, 'Ascetic', 's_meditate', 1, 'Mana regeneration +60%, but max mana -30%', { regen: 0.6, mana: -0.3 }, { cost: 3 }),
-    T_('bl_dur', 4, 2, 'Fervor', 's_blessing', 4, '+1s Blessing duration', { bless_dur: 1 }, { needs: 'blessing' }),
-    T_('zealot', 5, 1, 'Zealot', 'sword', 1, 'Party damage +30%, but all healing -10%', { partyDps: 0.3, healAll: -0.1 }, { cost: 3 }),
+    T_('bl_dur', 4, 2, 'Fervor', 's_blessing', 2, '+3s Blessing duration', { bless_dur: 3 }, { needs: 'blessing' }),
+    T_('zealot', 5, 1, 'Zealot', 'sword', 1, 'Party damage +40%, but all healing -10%', { partyDps: 0.4, healAll: -0.1 }, { cost: 3 }),
   ] },
 ];
+const DRUID_TREES = [
+  { id: 'resto', name: 'Restoration', col: '#8fdc6a', desc: 'Stacking heals over time and Swiftmend', nodes: [
+    T_('d_nurt', 0, 0, 'Nurturing', 's_renew', 3, '+10% healing from heals over time', { hot_pow: 0.1 }),
+    T_('d_gift', 0, 1, 'Gift of Nature', 's_heal', 3, '+10% Regrowth healing', { heal_pow: 0.1 }),
+    T_('d_cost', 0, 2, 'Lucid Dreams', 'coin', 3, '-8% Regrowth and Rejuvenation mana cost', { heal_cost: 0.08, renew_cost: 0.08 }),
+    T_('d_rej', 1, 0, 'Improved Rejuvenation', 's_renew', 3, '+15% Rejuvenation healing', { renew_pow: 0.15 }, { needs: 'renew' }),
+    T_('d_sm', 1, 1, 'Improved Swiftmend', 's_flash', 3, '+15% Swiftmend healing', { flash_pow: 0.15 }, { needs: 'flash' }),
+    T_('d_crit', 1, 2, "Nature's Focus", 's_core', 3, '+3% critical heals', { crit: 3 }),
+    T_('d_bloom', 2, 0, 'Lifebloom', 's_renew', 1, 'Rejuvenation stacks up to 3 times on one ally', { rej_stack: 1 }, { cost: 2, needs: 'renew', req: 'd_rej' }),
+    T_('d_effl', 2, 1, 'Efflorescence', 's_renew', 1, 'Every heal-over-time tick also heals the most injured other ally for 30%', { hot_spread: 0.3 }, { cost: 2 }),
+    T_('d_verd', 2, 2, 'Verdant Swiftmend', 's_flash', 1, 'Swiftmend also plants a Rejuvenation', { sm_rej: 1 }, { cost: 2, needs: 'flash', req: 'd_sm' }),
+    T_('d_wg', 3, 0, 'Improved Wild Growth', 's_prayer', 3, '+12% Wild Growth healing', { prayer_pow: 0.12 }, { needs: 'prayer' }),
+    T_('d_roots', 3, 1, 'Living Roots', 'scroll', 2, 'Heals over time last 2s longer', { hot_dur: 2 }),
+    T_('d_swift', 3, 2, 'Wild Haste', 'scroll', 3, '+6% haste', { haste: 6 }),
+    T_('d_tran', 4, 0, 'Improved Tranquility', 's_sanctuary', 3, '+15% Tranquility healing', { sanct_pow: 0.15 }, { needs: 'sanctuary' }),
+    T_('d_tree', 4, 1, 'Tree of Life', 's_renew', 1, 'All healing +25%, and heals over time heal 15% more', { healAll: 0.25, hot_pow: 0.15 }, { cost: 3 }),
+    T_('d_germ', 5, 1, 'Germination', 's_renew', 1, 'Rejuvenation also lands on the most injured other ally', { rej_double: 1 }, { cost: 3 }),
+  ] },
+  { id: 'wild', name: 'Wild Spirit', col: '#6fd1c8', desc: 'Mana, Barkskin, Innervate and the Mark of the Wild', nodes: [
+    T_('d_well', 0, 0, 'Moonwell', 's_meditate', 3, '+10% max mana', { mana: 0.1 }),
+    T_('d_still', 0, 1, 'Moonglow', 's_meditate', 3, '+10% mana regeneration', { regen: 0.1 }),
+    T_('d_hide', 0, 2, 'Thick Hide', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
+    T_('d_rc', 1, 0, 'Improved Remove Corruption', 's_purify', 3, '+30% Remove Corruption healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('d_seed', 1, 1, 'Living Seed', 's_meditate', 1, 'Heal-over-time ticks restore twice as much mana', { hot_mana: 1 }, { cost: 2 }),
+    T_('d_omen', 1, 2, 'Omen of Clarity', 's_core', 3, '4% chance a spell costs no mana', { clarity: 0.04 }),
+    T_('d_inn', 2, 0, 'Improved Innervate', 's_meditate', 3, 'Innervate restores 8% more of your mana', { med_amt: 0.08 }, { needs: 'meditate' }),
+    T_('d_inncd', 2, 1, 'Moonkin Calm', 'scroll', 3, '-8s Innervate cooldown', { med_cd: 8 }, { needs: 'meditate' }),
+    T_('d_bk', 2, 2, 'Oaken Bark', 's_ward', 2, 'Barkskin lasts 2s longer', { bark_dur: 2 }, { needs: 'ward' }),
+    T_('d_iron', 3, 0, 'Ironbark', 's_ward', 1, 'Barkskin blocks 50% of damage instead of 35%', { bark_pow: 0.15 }, { cost: 2, needs: 'ward', req: 'd_bk' }),
+    T_('d_grove', 3, 1, 'Sacred Grove', 's_meditate', 1, '+25% max mana', { mana: 0.25 }, { cost: 2 }),
+    T_('d_calm', 3, 2, 'Tranquil Mind', 's_core', 3, 'Devotion fades 12% slower', { devo_slow: 0.12 }),
+    T_('d_motw', 4, 0, 'Improved Mark', 's_blessing', 3, 'Mark of the Wild grants 10% more damage', { bless_amt: 0.1 }, { needs: 'blessing' }),
+    T_('d_tdur', 4, 1, 'Long Tranquility', 'scroll', 2, '+2s Tranquility', { sanct_dur: 2 }, { needs: 'sanctuary' }),
+    T_('d_motw2', 4, 2, 'Lasting Mark', 's_blessing', 2, '+3s Mark of the Wild', { bless_dur: 3 }, { needs: 'blessing' }),
+    T_('d_force', 5, 1, 'Force of Nature', 'sword', 1, 'Companions attack 15% faster', { partySpd: 0.15 }, { cost: 3 }),
+  ] },
+  { id: 'thorn', name: 'Thornguard', col: '#c9a64a', desc: 'Thorns, roots and a fiercer pack', nodes: [
+    T_('d_thorns', 0, 0, 'Thorns', 'sword', 3, 'Enemies that hit Bram take 15% of the damage back', { thorns: 0.15 }),
+    T_('d_tank', 0, 1, 'Bear Hide', 'shield', 3, 'Bram takes 4% less damage', { tankDR: 0.04 }),
+    T_('d_pack', 0, 2, 'Pack Leader', 'sword', 3, '+5% party damage', { partyDps: 0.05 }),
+    T_('d_ent', 1, 0, 'Entangling Roots', 'scroll', 1, 'Enemies attack 15% slower', { foe_slow: 0.15 }, { cost: 2 }),
+    T_('d_moon', 1, 1, 'Moonfire', 's_core', 3, 'Your own attacks deal +50% damage', { you_dmg: 0.5 }),
+    T_('d_heart', 1, 2, 'Heart of the Wild', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
+    T_('d_grasp', 2, 0, "Nature's Grasp", 'sword', 3, 'Companions get +4% critical chance', { partyCrit: 0.04 }),
+    T_('d_roar', 2, 1, 'Savage Roar', 'sword', 1, 'Enemies below half health take 20% more damage', { lowFoe: 0.2 }, { cost: 2 }),
+    T_('d_surv', 2, 2, 'Survival Instincts', 'shield', 1, 'Once per stage, an ally who would die survives with 1 health', { lastrites: 1 }, { cost: 2 }),
+    T_('d_cw', 3, 0, 'Cenarion Ward', 's_renew', 3, 'Bram regenerates 1% of max health per second', { tank_regen: 0.01 }),
+    T_('d_rally', 3, 1, 'Call of the Wild', 'sword', 3, '+6% party damage', { partyDps: 0.06 }),
+    T_('d_wrath', 3, 2, 'Wrath', 's_core', 1, 'Your own attacks hit every enemy', { you_aoe: 1 }, { cost: 2 }),
+    T_('d_avatar', 4, 1, 'Avatar of the Grove', 'sword', 1, '+25% party damage and +25% party health', { partyDps: 0.25, partyHp: 0.25 }, { cost: 3 }),
+  ] },
+];
+const OCC_TREES = [
+  { id: 'afflict', name: 'Affliction', col: '#a3c45c', desc: 'Siphon Life: damage you deal becomes healing', nodes: [
+    T_('o_siph', 0, 0, 'Deeper Siphon', 's_core', 3, '+20% Siphon Life healing', { siphon_pow: 0.2 }),
+    T_('o_bolt', 0, 1, 'Shadow Bolt', 'sword', 3, 'Your own attacks deal +30% damage', { you_dmg: 0.3 }),
+    T_('o_dark', 0, 2, 'Dark Arts', 's_heal', 3, '+5% all healing', { healAll: 0.05 }),
+    T_('o_seed', 1, 0, 'Improved Leech Seed', 's_renew', 3, '+15% Leech Seed healing', { renew_pow: 0.15 }, { needs: 'renew' }),
+    T_('o_haste', 1, 1, 'Quickened Curses', 'scroll', 3, 'Your own attacks are 15% faster', { you_spd: 0.15 }),
+    T_('o_crit', 1, 2, 'Malice', 's_core', 3, '+3% critical heals', { crit: 3 }),
+    T_('o_drain', 2, 0, 'Soul Drain', 's_heal', 1, 'Drain Life deals all of its healing as damage too', { drain_dmg: 0.6 }, { cost: 2 }),
+    T_('o_corr', 2, 1, 'Corruption', 's_purify', 1, 'Your own attacks poison their target', { you_poison: 1 }, { cost: 2 }),
+    T_('o_weak', 2, 2, 'Curse of Weakness', 'scroll', 3, 'Enemies deal 4% less damage', { foe_weak: 0.04 }),
+    T_('o_harv', 3, 0, 'Improved Soul Harvest', 's_prayer', 3, '+12% Soul Harvest healing', { prayer_pow: 0.12 }, { needs: 'prayer' }),
+    T_('o_haunt', 3, 1, 'Haunt', 's_core', 1, 'Siphon Life heals the two most injured allies', { siphon_two: 1 }, { cost: 2 }),
+    T_('o_swift', 3, 2, 'Dark Haste', 'scroll', 3, '+6% haste', { haste: 6 }),
+    T_('o_feast', 4, 1, 'Soul Feast', 's_meditate', 1, 'Every enemy that dies restores 3% of your mana', { kill_mana: 0.03 }, { cost: 3 }),
+    T_('o_apoth', 5, 1, 'Dark Apotheosis', 's_core', 1, 'Your own attacks deal triple damage and Siphon Life heals 30% more', { you_dmg: 2, siphon_pow: 0.3 }, { cost: 3 }),
+  ] },
+  { id: 'blood', name: 'Blood', col: '#c43a5a', desc: 'Blood Pact, Bone Shield and Blood Bolt', nodes: [
+    T_('o_vit', 0, 0, 'Vitality', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
+    T_('o_pact', 0, 1, 'Thick Blood', 's_core', 3, 'Blood Pact costs 20% less health', { pact_eff: 0.2 }),
+    T_('o_tank', 0, 2, 'Bone Armor', 'shield', 3, 'Bram takes 4% less damage', { tankDR: 0.04 }),
+    T_('o_purge', 1, 0, 'Improved Purge', 's_purify', 3, '+30% Purge healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('o_vamp', 1, 1, 'Vampiric Embrace', 's_heal', 1, '10% of all damage the party deals heals the party', { vamp: 0.1 }, { cost: 2 }),
+    T_('o_trans', 1, 2, 'Transfusion', 's_flash', 3, '+15% Blood Bolt healing', { flash_pow: 0.15 }, { needs: 'flash' }),
+    T_('o_bone', 2, 0, 'Improved Bone Shield', 's_ward', 3, '+15% Bone Shield absorb', { ward_pow: 0.15 }, { needs: 'ward' }),
+    T_('o_bonecd', 2, 1, 'Marrow Craft', 'scroll', 3, '-1.5s Bone Shield cooldown', { ward_cd: 1.5 }, { needs: 'ward' }),
+    T_('o_dpact', 2, 2, 'Improved Dark Pact', 's_meditate', 3, 'Dark Pact restores 8% more mana', { med_amt: 0.08 }, { needs: 'meditate' }),
+    T_('o_marrow', 3, 0, 'Ossuary', 's_ward', 1, 'While Bone Shield holds, its target takes 20% less damage', { bone_dr: 0.2 }, { cost: 2, needs: 'ward', req: 'o_bone' }),
+    T_('o_rites', 3, 1, 'Undying Will', 'shield', 1, 'Once per stage, an ally who would die survives with 1 health', { lastrites: 1 }, { cost: 2 }),
+    T_('o_regen', 3, 2, 'Sanguine Flow', 's_meditate', 3, '+10% mana regeneration', { regen: 0.1 }),
+    T_('o_ug', 4, 0, 'Unholy Might', 's_sanctuary', 3, 'Unholy Ground blocks 6% more damage', { sanct_amt: 0.06 }, { needs: 'sanctuary' }),
+    T_('o_lich', 4, 1, 'Lichborne', 's_meditate', 1, '+30% max mana', { mana: 0.3 }, { cost: 3 }),
+    T_('o_ug2', 4, 2, 'Lingering Ground', 'scroll', 2, '+2s Unholy Ground', { sanct_dur: 2 }, { needs: 'sanctuary' }),
+    T_('o_tide', 5, 1, 'Crimson Tide', 'shield', 1, '+25% party health', { partyHp: 0.25 }, { cost: 3 }),
+  ] },
+  { id: 'shadow', name: 'Shadow', col: '#8e5fc0', desc: 'Curses that make enemies fall faster', nodes: [
+    T_('o_mal', 0, 0, 'Malediction', 'scroll', 3, 'Enemies take 4% more damage', { foe_vuln: 0.04 }),
+    T_('o_pd', 0, 1, 'Dark Command', 'sword', 3, '+5% party damage', { partyDps: 0.05 }),
+    T_('o_xp', 0, 2, 'Forbidden Lore', 'scroll', 3, '+8% party experience and gold find', { xp: 0.08, gold: 0.08 }),
+    T_('o_doom', 1, 0, 'Curse of Doom', 's_core', 1, 'The front enemy takes 15% more damage', { front_vuln: 0.15 }, { cost: 2 }),
+    T_('o_fear', 1, 1, 'Terror', 'scroll', 3, 'Enemies attack 5% slower', { foe_slow: 0.05 }),
+    T_('o_cl', 1, 2, 'Dark Clarity', 's_core', 3, '4% chance a spell costs no mana', { clarity: 0.04 }),
+    T_('o_dpcd', 2, 0, 'Quick Pact', 'scroll', 3, '-8s Dark Pact cooldown', { med_cd: 8 }, { needs: 'meditate' }),
+    T_('o_agony', 2, 1, 'Agony', 's_purify', 1, 'Poisoned or burning enemies take 15% more damage', { dot_vuln: 0.15 }, { cost: 2 }),
+    T_('o_dev', 2, 2, 'Fanaticism', 's_core', 3, 'Devotion fades 12% slower', { devo_slow: 0.12 }),
+    T_('o_sil', 3, 0, 'Silence', 'scroll', 1, 'Enemy casts take 25% longer', { slowcast: 0.25 }, { cost: 2 }),
+    T_('o_spd', 3, 1, 'Frenzied Thralls', 'sword', 3, 'Companions attack 5% faster', { partySpd: 0.05 }),
+    T_('o_pd2', 3, 2, 'Blood Rage', 'sword', 3, '+5% party damage', { partyDps: 0.05 }),
+    T_('o_bl', 4, 0, 'Improved Bloodlust', 's_blessing', 3, 'Bloodlust grants 10% more damage', { bless_amt: 0.1 }, { needs: 'blessing' }),
+    T_('o_dread', 4, 1, 'Dread Lord', 'sword', 1, '+30% party damage, but -10% party health', { partyDps: 0.3, partyHp: -0.1 }, { cost: 3 }),
+    T_('o_bl2', 4, 2, 'Lasting Bloodlust', 'scroll', 2, '+3s Bloodlust', { bless_dur: 3 }, { needs: 'blessing' }),
+    T_('o_eclipse', 5, 1, 'Eclipse of Souls', 's_core', 1, 'Enemies take 20% more damage', { foe_vuln: 0.2 }, { cost: 3 }),
+  ] },
+];
+const CLASSES = {
+  priest: { name: 'Priest', crest: 'holy', col: '#86dcb8', trees: CLERIC_TREES, tag: 'Direct heals and shields',
+    passive: ['Radiant Overflow', '30% of your overhealing becomes a shield on the target (up to 20% of their health)'],
+    names: {}, descs: {} },
+  druid: { name: 'Druid', crest: 'resto', col: '#8fdc6a', trees: DRUID_TREES, tag: 'Stacking heals over time and nature magic',
+    passive: ['Living Seed', 'Rejuvenation stacks twice on one ally, and every heal-over-time tick restores a little mana'],
+    names: { heal: 'Regrowth', flash: 'Swiftmend', renew: 'Rejuvenation', ward: 'Barkskin', purify: 'Remove Corruption', meditate: 'Innervate', prayer: 'Wild Growth', sanctuary: 'Tranquility', blessing: 'Mark of the Wild' },
+    descs: { heal: 'Heals now and a little more over 6 seconds.', flash: 'An instant heal, 60% stronger on an ally who already has a heal over time.', renew: 'Heals over 10 seconds. Stacks on the same ally.',
+      ward: 'The target takes 35% less damage for 8 seconds.', prayer: 'Instant: a heal over time on the whole party.', sanctuary: 'Heals the whole party for 6% of their health every second for 5 seconds.' } },
+  occultist: { name: 'Occultist', crest: 'afflict', col: '#c43a5a', trees: OCC_TREES, tag: 'Healing by draining your enemies',
+    passive: ['Siphon Life', 'Your own attacks hit 4× harder and heal the most injured ally for half the damage. Blood Pact: without enough mana, spells cost your health instead'],
+    names: { heal: 'Drain Life', flash: 'Blood Bolt', renew: 'Leech Seed', ward: 'Bone Shield', purify: 'Purge', meditate: 'Dark Pact', prayer: 'Soul Harvest', sanctuary: 'Unholy Ground', blessing: 'Bloodlust' },
+    descs: { heal: 'Heals one ally and drains the front enemy for 40% of it.', renew: 'Heals over 10 seconds and drains the front enemy just as much.',
+      meditate: 'Instantly trade 15% of your health for 35% of your mana.', prayer: 'Heals the whole party, 15% more for every enemy still standing.' } },
+};
+const clsId = () => (S && CLASSES[S.cls]) ? S.cls : 'priest';
+const cls = () => CLASSES[clsId()];
+const BASE_SP = {};
+// spells take their class's name and description
+function applyClassNames() {
+  SPELLS.forEach(sp => { if (!BASE_SP[sp.id]) BASE_SP[sp.id] = { name: sp.name, desc: sp.desc }; const c = cls(); sp.name = c.names[sp.id] || BASE_SP[sp.id].name; sp.desc = c.descs[sp.id] || BASE_SP[sp.id].desc; if (sp.id !== 'heal') SP_NAMES[sp.id] = sp.name; });
+}
 // Spells are offered in the order their talents open up in the trees (shallowest row first)
 const SPELL_ORDER = (() => {
   const at = {};
   CLERIC_TREES.forEach((tr, ti) => tr.nodes.forEach(n => { if (n.needs) { const k = n.row * 10 + ti; at[n.needs] = Math.min(at[n.needs] ?? 99, k); } }));
   return Object.keys(at).sort((a, b) => at[a] - at[b]);
 })();
+
 
 /* Companion trees: two specs each. Companions earn their own points (one every 2 levels). */
 const COMP_TREES = [
@@ -915,9 +1048,10 @@ for (const id in CABIL) {
     T_(id + '_x', 3, 2, a.xName, a.icon, 1, a.xDesc, { [id + '_x']: 1 }, { cost: 2, req: id + '_cd' }));
 }
 // Owners: 'cleric' or the companion index 0-3.
-const OWNERS = { cleric: CLERIC_TREES, 0: COMP_TREES[0], 1: COMP_TREES[1], 2: COMP_TREES[2], 3: COMP_TREES[3] };
+const OWNERS = { get cleric() { return cls().trees; }, 0: COMP_TREES[0], 1: COMP_TREES[1], 2: COMP_TREES[2], 3: COMP_TREES[3] };
 const TNODE = {};
-for (const o in OWNERS) OWNERS[o].forEach(tr => tr.nodes.forEach(n => { n.tree = tr.id; n.owner = o; n.cost = n.cost ?? 1; TNODE[o + '|' + n.id] = n; }));
+Object.values(CLASSES).forEach(c => c.trees.forEach(tr => tr.nodes.forEach(n => { n.tree = tr.id; n.owner = 'cleric'; n.cost = n.cost ?? 1; TNODE['cleric|' + n.id] = n; })));
+for (const o of [0, 1, 2, 3]) OWNERS[o].forEach(tr => tr.nodes.forEach(n => { n.tree = tr.id; n.owner = o; n.cost = n.cost ?? 1; TNODE[o + '|' + n.id] = n; }));
 
 /* Item skills, learned permanently by mastering an item (Astlibra-style). */
 const SKILLS = {
@@ -1023,10 +1157,15 @@ const TIER_PAL = [
   [{ q: '#b88ae0' }, { F: '#fff2a8' }, { p: '#8a4ad0', P: '#5a2a90' }, { w: '#c9a64a' }, { p: '#3c3a8a', P: '#24224a', q: '#7ad6ff' }, { f: '#7ad6ff', F: '#e8f6ff', g: '#fff2a8' }],
   [{ L: '#fff2a8' }, { g: '#ffd36b' }, { w: '#ffffff', W: '#e8dcb8' }, { m: '#e4b75c' }, { y: '#ffe9a8', Y: '#e4b75c' }, { L: '#bfe9ff', W: '#ffe9a8' }],
 ];
+const CLASS_PAL = {
+  druid: { w: '#6a8a4a', W: '#4a6a32', y: '#8a6a3a', Y: '#5a4028', m: '#7a5434', L: '#9be06a', g: '#c9a64a' },
+  occultist: { w: '#4a2a4a', W: '#2a1a2e', y: '#2a2433', Y: '#1b1622', m: '#5a5560', L: '#e0605a', g: '#8a2a3a' },
+};
 const palCache = {};
 function tierPal(i, rk) {
-  const k = i + ':' + rk; if (palCache[k]) return palCache[k];
+  const c = i === YOU ? clsId() : '', k = i + ':' + rk + c; if (palCache[k]) return palCache[k];
   const pal = { ...HERO_ART[i].pal }; for (let r2 = 0; r2 < rk; r2++) Object.assign(pal, TIER_PAL[i][r2]);
+  if (CLASS_PAL[c]) { Object.assign(pal, CLASS_PAL[c]); for (let r2 = 0; r2 < rk; r2++) for (const kk of ['g', 'L']) if (TIER_PAL[i][r2][kk] && r2 >= 3) pal[kk] = TIER_PAL[i][r2][kk]; }
   return (palCache[k] = pal);
 }
 const promoRank = i => (S.promo && S.promo[i]) || 0;
@@ -1194,7 +1333,7 @@ const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last A
    ========================================================= */
 function newState() {
   return {
-    v: 8, hints: {}, ach: {}, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
+    v: 9, cls: 'priest', hints: {}, ach: {}, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
     town: {}, mats: [], upgrades: {}, promo: PARTY.map(() => 0), elixir: {}, lootFilter: 0, autoGear: false,
     equip: { head: null, chest: null, hands: null, staff: makeStarter(), ring: null, trinket: null },
     inv: [], nextId: 2,
@@ -1282,6 +1421,7 @@ function makeCs(i, over) {
     spd: gf('spd') + ge.spd / 100 + (i === YOU ? 0 : D.partySpd || 0), crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow'),
     vsCC: gf('vsCC') + ge.vscc / 100, vsDot: gf('vsDot') + ge.vsdot / 100 };
+  if (i === YOU) { o.dmg *= D.youDmg || 1; o.spd += D.youSpd || 0; } else o.crit += D.partyCrit || 0;
   const sid = i === YOU ? null : setFor(i), n = sid ? setCount(sid, over) : 0;
   if (i === 2 && pk(2, 1)) o.crit += 0.1;
   if (i === 2 && pk(2, 4)) o.critDmg += 0.3;
@@ -1298,6 +1438,7 @@ function treeStats() { const t = sumFx('cleric'); return k => t[k] || 0; }
 function recalc() {
   const s = { power: 0, mana: 0, regen: 0, crit: 0, haste: 0, greed: 0, vigor: 0 };
   for (const k in S.equip) { const it = S.equip[k]; if (it) for (const st in it.stats) s[st] += statVal(it, st); }
+  applyClassNames();
   const t = treeStats();
   D.gear = s;
   const clv = S.heroes[YOU].lv, base = (30 + s.power) * Math.pow(1.04, clv - 1);
@@ -1316,6 +1457,15 @@ function recalc() {
   D.revive = 0.2 + 0.05 * lvl('infirmary');
   D.devFade = (has('devo1') ? 0.6 : 1) * (1 - 0.06 * lvl('chapel')) * (1 - t('devo_slow'));
   D.lowPow = t('low_pow'); D.critMana = t('crit_mana'); D.lastRites = t('lastrites'); D.partySpd = t('partySpd');
+  const cl = clsId();
+  D.youDmg = (1 + t('you_dmg')) * (cl === 'occultist' ? 4 : 1) * (t('atone') ? 4 : 1); D.youSpd = t('you_spd'); D.youAoe = t('you_aoe'); D.youPoison = t('you_poison');
+  D.siphon = cl === 'occultist' ? 0.5 * (1 + t('siphon_pow')) : t('atone') ? 1 : 0; D.siphonTwo = t('siphon_two');
+  D.healShield = t('heal_shield'); D.flashRefund = t('flash_refund'); D.gspirit = t('gspirit'); D.critPow = t('crit_pow'); D.prayerHot = t('prayer_hot');
+  D.hotPow = t('hot_pow'); D.rejStack = 2 + t('rej_stack'); D.hotSpread = t('hot_spread'); D.smRej = t('sm_rej'); D.hotDur = t('hot_dur'); D.rejDouble = t('rej_double');
+  D.hotMana = cl === 'druid' ? 0.003 * (1 + t('hot_mana')) : 0; D.barkDur = 8 + t('bark_dur'); D.barkPow = 0.35 + t('bark_pow'); D.sanctPow = t('sanct_pow');
+  D.thorns = t('thorns'); D.foeSlow = t('foe_slow'); D.partyCrit = t('partyCrit'); D.lowFoe = t('lowFoe'); D.tankRegen = t('tank_regen');
+  D.drainDmg = 0.4 + t('drain_dmg'); D.foeWeak = t('foe_weak'); D.killMana = t('kill_mana'); D.pactEff = t('pact_eff'); D.vamp = t('vamp'); D.boneDr = t('bone_dr');
+  D.foeVulnAll = t('foe_vuln'); D.frontVuln = t('front_vuln'); D.dotVuln = t('dot_vuln'); D.slowcast = t('slowcast'); D.overflow = cl === 'priest' ? 0.3 : 0;
   const aL = lvl('cloister');
   D.aco = aL ? { pow: 0.3 + 0.1 * (aL - 1), every: 3.2 - 0.15 * (aL - 1), eff: 0.2 + 0.05 * (aL - 1) } : null;
   D.tankDR = t('tankDR');
@@ -1328,7 +1478,6 @@ function recalc() {
   if (cset >= 2) D.heal *= 1.1;
   D.lowWard = cset >= 3;
   if (pk(YOU, 5)) D.crit += 0.1;
-  if (pk(YOU, 6)) { D.sp.prayer.amt *= 1.2; D.sp.prayer.cost *= 0.7; }
   const A = achFx();
   D.heal *= 1 + A.healAll; D.maxMana *= 1 + A.mana; D.regen *= 1 + A.regen; D.crit += A.crit / 100;
   D.greed += A.greed; D.partyDps *= 1 + A.partyDps; D.partyHp *= 1 + A.partyHp; D.xpMult += A.xp;
@@ -1346,6 +1495,10 @@ function recalc() {
     sanctuary: { amt: 0.3 + t('sanct_amt'), dur: 6 + t('sanct_dur') },
     blessing:  { amt: 0.4 + t('bless_amt'), dur: 10 + t('bless_dur') },
   };
+  D.sp.renew.cost = 1 - t('renew_cost'); D.sp.renew.amt *= 1 + D.hotPow;
+  if (t('prayer_instant')) D.sp.prayer.cast = 0;
+  if (cl === 'druid') { D.sp.prayer.cast = 0; D.sp.prayer.cd = 8; }
+  if (pk(YOU, 6)) { D.sp.prayer.amt *= 1.2; D.sp.prayer.cost *= 0.7; }
   C.party.forEach((m, i) => {
     const nm = memberMax(i);
     if (m.alive) m.hp = m.hp * nm / m.max;
@@ -1540,6 +1693,7 @@ function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
   C.bossIntro = C.foes.some(f => f.boss) ? 2.4 : 0;
+  C.gsUsed = false; C.tranq = 0; C.vampPool = 0; C.regenT = 1; C.party.forEach(m => { m.bark = 0; });
   C.bramSave = false; C.rookRamp = 0; C.battleCry = pk(1, 2) ? 8 : 0; C.petT = [0, 0, 3, 2.5, 0]; C.meteorT = 15;
   C.buff = { sanct: 0, bless: 0 }; C.bossHeat = false; C.bossThorns = false; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
@@ -1561,6 +1715,10 @@ function hit(i, amt) {
   if (C.buff.sanct > 0) amt *= 1 - D.sp.sanctuary.amt;
   if (i === 0) amt *= (1 - D.tankDR) * (C.slamT > 0 ? 0.8 : 1);
   if (elixirOn('bark')) amt *= 0.85;
+  if (m.bark > 0) amt *= 1 - D.barkPow;
+  if (D.boneDr && m.shield > 0 && m.wardSize) amt *= 1 - D.boneDr;
+  if (D.foeWeak) amt *= 1 - D.foeWeak;
+  if (i === 0 && D.thorns && C.hitLabel) { const fr = front(); if (fr) dealFoe(fr, amt * D.thorns); }
   const bram = C.party[0];
   if (i !== 0 && pk(0, 3) && bram && bram.alive && bram.hp / bram.max > 0.5) amt *= 0.95;
   if (pk(0, 6) && bram && bram.alive) amt *= 0.92;
@@ -1580,6 +1738,7 @@ function hit(i, amt) {
   if (amt <= 0) return;
   trackStat('taken', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
   m.hp -= amt; heroAnim[i].kb = 0.14;
+  if (m.hp > 0 && D.gspirit && !C.gsUsed && m.hp / m.max < 0.15) { C.gsUsed = true; heal(i, m.max * 0.4, 0, true); fxLabel(i, 'Guardian Spirit', '#86dcb8'); }
   floatTxt(i, '-' + fmt(amt), 'dmg');
   pnumFx(i, '-' + fmt(amt), '#ff8a7a');
   heroAnim[i].flash = 0.12;
@@ -1602,8 +1761,10 @@ function heal(i, amt, critBonus = 0, npc = false) {
   const cut = healCut(m); if (cut) amt *= 1 - cut;
   if (C.bossThorns) amt *= 0.8;
   const crit = Math.random() < D.crit + critBonus;
-  if (crit) { amt *= 1.5; S.stats.crits++; if (!npc && D.critMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.critMana); }
+  C.lastCrit = crit;
+  if (crit) { amt *= 1.5 + (D.critPow || 0); S.stats.crits++; if (!npc && D.critMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.critMana); }
   const wasLow = m.hp / m.max < 0.1;
+  if (!npc && D.overflow && amt > m.max - m.hp) { const cap = m.max * 0.2; if (m.shield < cap) m.shield = Math.min(cap, m.shield + (amt - (m.max - m.hp)) * D.overflow); }
   const eff = Math.min(amt, m.max - m.hp);
   if (!npc && D.lowWard && m.hp / m.max < 0.4 && eff > 0) m.shield = Math.min(m.max * 0.3, m.shield + eff * 0.2);
   if (!npc && wasLow && eff > 0) S.stats.clutch = (S.stats.clutch || 0) + 1;
@@ -1624,14 +1785,15 @@ function heal(i, amt, critBonus = 0, npc = false) {
 
 const RUN_SPELL = {
   heal: t => {
-    heal(t, D.heal * D.sp.heal.amt); fxBeam(t, '#bff5dd');
+    const eh = heal(t, D.heal * D.sp.heal.amt); fxBeam(t, '#bff5dd');
+    if (D.healShield && eh > 0) { const m = C.party[t]; m.shield = Math.min(m.max * 0.4, m.shield + eh * D.healShield); }
     if (pk(YOU, 4)) { const o = aliveIdx().filter(k => k !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0]; if (o != null) { heal(o, D.heal * D.sp.heal.amt * 0.25); fxBeam(o, '#fff2a8'); } }
     if (Math.random() < D.sp.heal.echo) {
       const o = aliveIdx().filter(i => i !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0];
       if (o != null) { heal(o, D.heal * D.sp.heal.amt * 0.5); fxBeam(o, '#bff5dd'); }
     }
   },
-  flash: t => { heal(t, D.heal * D.sp.flash.amt, D.sp.flash.crit); fxStar(t); },
+  flash: t => { heal(t, D.heal * D.sp.flash.amt, D.sp.flash.crit); fxStar(t); if (C.lastCrit && D.flashRefund) C.mana = Math.min(D.maxMana, C.mana + spellCost(SP.flash) * D.flashRefund); },
   renew: t => {
     const rw = D.sp.renew, total = D.heal * rw.amt * rw.dur;
     C.party[t].hots = [{ rate: total * (1 - rw.bloom) / rw.dur, left: rw.dur, acc: 0 }];
@@ -1649,10 +1811,42 @@ const RUN_SPELL = {
     }
   },
   meditate: () => { C.medi = { left: 5, rate: D.maxMana * D.sp.meditate.amt / 5 }; },
-  prayer: () => { aliveIdx().forEach(i => heal(i, D.heal * D.sp.prayer.amt)); fxRing(); },
+  prayer: () => { aliveIdx().forEach(i => { heal(i, D.heal * D.sp.prayer.amt); if (D.prayerHot) setHot(i, 'hymn', D.heal * D.sp.prayer.amt * D.prayerHot, 6); }); fxRing(); },
   sanctuary: () => { C.buff.sanct = D.sp.sanctuary.dur; },
   blessing: () => { C.buff.bless = D.sp.blessing.dur; },
 };
+function setHot(t, kind, total, dur) { const m = C.party[t]; if (!m || !m.alive) return; m.hots = m.hots.filter(h => h.kind !== kind).concat({ kind, rate: total / dur, left: dur, acc: 0 }); }
+const lowestOther = t => aliveIdx().filter(k => k !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0];
+function addRejuv(t) {
+  const m = C.party[t]; if (!m || !m.alive) return;
+  const rw = D.sp.renew, dur = rw.dur + D.hotDur, total = D.heal * rw.amt * rw.dur, rej = m.hots.filter(h => h.kind === 'rejuv');
+  if (rej.length >= D.rejStack) { const old = rej.sort((a, b) => a.left - b.left)[0]; m.hots.splice(m.hots.indexOf(old), 1); }
+  m.hots.push({ kind: 'rejuv', rate: total / dur, left: dur, acc: 0 }); if (rw.bloom) heal(t, total * rw.bloom); fxLeaves(t);
+}
+// Each class plays its spells differently
+const CLASS_RUN = {
+  druid: {
+    heal: t => { const a = D.heal * D.sp.heal.amt; heal(t, a * 0.7); setHot(t, 'regrowth', a * 0.5 * (1 + D.hotPow), 6 + D.hotDur); fxLeaves(t); },
+    flash: t => { const has = C.party[t].hots.length > 0; heal(t, D.heal * D.sp.flash.amt * (has ? 1.6 : 1), D.sp.flash.crit); fxStar(t); if (D.smRej) addRejuv(t); },
+    renew: t => { addRejuv(t); if (D.rejDouble) { const o = lowestOther(t); if (o != null) addRejuv(o); } },
+    ward: t => { C.party[t].bark = D.barkDur; fxRingAt(t, '#a8763a'); },
+    prayer: () => { aliveIdx().forEach(i => setHot(i, 'wild', D.heal * D.sp.prayer.amt * 1.3 * (1 + D.hotPow), 7 + D.hotDur)); fxRing(); },
+    sanctuary: () => { C.tranq = 5 + (D.sp.sanctuary.dur - 6); C.tranqT = 0; fxRing(); },
+  },
+  occultist: {
+    heal: t => { const a = D.heal * D.sp.heal.amt; heal(t, a); fxBeam(t, '#e0605a'); const f = front(); if (f) { dealFoe(f, a * D.drainDmg, '', YOU); burst(f.x, f.y - f.h / 2, '#c43a5a', 6); } },
+    renew: t => { RUN_SPELL.renew(t); const f = front(); if (f) f.leech = { rate: D.heal * D.sp.renew.amt, left: D.sp.renew.dur, acc: 0 }; },
+    meditate: () => { const m = C.party[YOU], c = m.max * 0.15; if (m.hp > c + 1) { m.hp -= c; floatTxt(YOU, '-' + fmt(c), 'dmg'); } C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.sp.meditate.amt); fxRingAt(YOU, '#c43a5a'); },
+    prayer: () => { const k = 1 + 0.15 * liveFoes().length; aliveIdx().forEach(i => heal(i, D.heal * D.sp.prayer.amt * k)); fxRing(); },
+  },
+};
+// Blood Pact: an Occultist without enough mana pays the rest in health
+function pactCost(cost) { return (cost - C.mana) / D.maxMana * C.party[YOU].max * 1.5 * (1 - (D.pactEff || 0)); }
+function canPay(cost) { if (C.mana >= cost) return true; return clsId() === 'occultist' && C.party[YOU].alive && C.party[YOU].hp > pactCost(cost) + 1; }
+function pay(cost) {
+  if (C.mana >= cost) { C.mana -= cost; return; }
+  const h = pactCost(cost); C.party[YOU].hp -= h; C.mana = 0; floatTxt(YOU, 'Blood Pact -' + fmt(h), 'dmg');
+}
 const castTime = sp => (D.sp[sp.id] && D.sp[sp.id].cast != null ? D.sp[sp.id].cast : sp.cast);
 const spellCd = sp => (D.sp[sp.id] && D.sp[sp.id].cd != null ? D.sp[sp.id].cd : sp.cd);
 const spellCost = sp => sp.cost * D.costMult * (D.sp[sp.id] && D.sp[sp.id].cost != null ? D.sp[sp.id].cost : 1);
@@ -1693,19 +1887,19 @@ function tryCast(sp) {
   if (C.cast || C.gcd > 0 || (C.cds[sp.id] || 0) > 0) return;
   const t = C.hover ?? C.target;
   if (!sp.group && !sp.self && !C.party[t].alive) return toast(`${PARTY[t].name} is dead. Pick a living target.`);
-  if (C.mana < spellCost(sp)) return oomNotice();
+  if (!canPay(spellCost(sp))) return oomNotice();
   if (castTime(sp) > 0) C.cast = { sp, t, el: 0, dur: castTime(sp) / (1 + D.haste) };
   else finishCast(sp, t);
 }
 function finishCast(sp, t) {
   let cost = spellCost(sp);
-  if (C.mana < cost) { oomNotice(); return; }
+  if (!canPay(cost)) { oomNotice(); return; }
   if (!sp.group && !sp.self && !C.party[t].alive) return;
   if (cost > 0 && Math.random() < D.clarity) { cost = 0; floatTxt(YOU, 'Clarity', 'free'); }
   else if (cost > 0 && pk(YOU, 2) && Math.random() < 0.1) { cost = 0; floatTxt(YOU, 'Halo', 'free'); }
-  C.mana -= cost;
+  pay(cost);
   C.inCast = true; C.castEff = 0; C.castAmt = 0; C.healSrc = sp.id;
-  RUN_SPELL[sp.id](t);
+  ((CLASS_RUN[clsId()] || {})[sp.id] || RUN_SPELL[sp.id])(t);
   C.inCast = false; C.healSrc = null;
   trackCast(sp.id);
   if (C.castEff > 0) {
@@ -1733,8 +1927,10 @@ function tickEffects(m, i, dt) {
       while (e.acc >= 1 && e.left > 0 && m.alive) {
         e.acc -= 1; e.left -= 1;
         if (list === m.hots) {
-          C.healSrc = 'renew';
+          C.healSrc = e.kind === 'regrowth' ? 'heal' : e.kind === 'wild' || e.kind === 'hymn' ? 'prayer' : 'renew';
           const eff = heal(i, e.rate);
+          if (D.hotMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.hotMana);
+          if (D.hotSpread) { const o = lowestOther(i); if (o != null && C.party[o].hp < C.party[o].max) heal(o, e.rate * D.hotSpread); }
           // Renew's overhealing jumps to the most injured ally at half strength
           if (e.rate - eff > 1) { const o = aliveIdx().filter(k => k !== i).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0]; if (o != null && C.party[o].hp < C.party[o].max) heal(o, (e.rate - eff) * 0.5); }
           C.healSrc = null;
@@ -1753,7 +1949,7 @@ function foeAct(e, dt) {
   e.frenzy = Math.max(0, e.frenzy - dt);
   e.slow = Math.max(0, (e.slow || 0) - dt);
   const rage = e.elite === 'enraged' && e.hp / e.max < 0.5 ? 1.5 : 1;
-  e.atkT -= dt * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1) * rage * (e.haste || 1);
+  e.atkT -= dt * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1) * rage * (e.haste || 1) * (1 - (D.foeSlow || 0));
   if (e.elite === 'mender' && (e.mendT -= dt) <= 0) {
     e.mendT = 4; liveFoes().forEach(o => { if (o !== e) { o.hp = Math.min(o.max, o.hp + o.max * 0.06); burst(o.x, o.y - o.h / 2, '#86dcb8', 4, 10); } });
   }
@@ -1767,7 +1963,7 @@ function foeAct(e, dt) {
     }
   }
   if (e.cast) {
-    e.cast.el += dt;
+    e.cast.el += dt * (1 - (D.slowcast || 0));
     if (e.cast.el >= e.cast.dur) {
       const c = e.cast; e.cast = null;
       if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e);
@@ -1848,6 +2044,13 @@ function stepFight(dt) {
   }
   C.slamT = Math.max(0, (C.slamT || 0) - dt);
   C.battleCry = Math.max(0, (C.battleCry || 0) - dt);
+  C.party.forEach(m => { if (m.bark > 0) m.bark -= dt; });
+  if (C.tranq > 0) { C.tranq -= dt; C.tranqT -= dt; if (C.tranqT <= 0) { C.tranqT = 1; C.healSrc = 'sanctuary'; aliveIdx().forEach(i => { heal(i, C.party[i].max * 0.06 * (1 + D.sanctPow)); fxLeaves(i); }); C.healSrc = null; } }
+  if ((C.regenT -= dt) <= 0) {
+    C.regenT = 1;
+    if (D.tankRegen && C.party[0].alive) heal(0, C.party[0].max * D.tankRegen, 0, true);
+    if (C.vampPool > 0) { const o = aliveIdx().sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0]; C.healSrc = 'vamp'; if (o != null) heal(o, C.vampPool); C.healSrc = null; C.vampPool = 0; }
+  }
   if (f && f.enter <= 0) {
     if (pk(2, 3) && C.party[2].alive && (C.petT[2] -= dt) <= 0) { C.petT[2] = 3; C.hawk = { el: 0, f }; }
     if (pk(3, 3) && C.party[3].alive && (C.petT[3] -= dt) <= 0) { C.petT[3] = 2.5; const fp = famPos(); FX.push({ t: 'proj', x: fp.x, y: fp.y, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 200, col: '#ffb347', s: 2 }); C.hits.push({ t: Math.hypot(f.x - fp.x, f.y - fp.y) / 200, fn: () => abHit(3, f.alive ? f : front(), 0.5) }); }
@@ -1859,7 +2062,8 @@ function stepFight(dt) {
     if (S.elixir[k] <= 0) { S.elixir[k] = 0; recalc(); const ex = ELIXIRS.find(x => x.id === k); log(`${ex.name} wore off.`); toast(`${ex.name} wore off.`); }
   }
   C.hits = C.hits.filter(h => { h.t -= dt; if (h.t > 0) return true; if (h.fn) h.fn(); else landHit(h); return false; });
-  C.foes.forEach(e => { if (e.alive && e.poison) tickPoison(e, dt); if (e.alive && e.burn) tickBurn(e, dt); });
+  C.foes.forEach(e => { if (e.alive && e.poison) tickPoison(e, dt); if (e.alive && e.burn) tickBurn(e, dt);
+    if (e.alive && e.leech) { e.leech.acc += dt; while (e.leech.acc >= 1 && e.alive) { e.leech.acc -= 1; e.leech.left -= 1; dealFoe(e, e.leech.rate, 'poison', YOU); if (e.leech.left <= 0) { e.leech = null; break; } } } });
   C.meter.t += dt;
   if (C.rstats) { C.rstats.fightT = (C.rstats.fightT || 0) + dt; if (C.mana < spellCost(SP.heal)) C.rstats.oomT = (C.rstats.oomT || 0) + dt; }
   C.foes.forEach(e => { if (e.alive) foeAct(e, dt); });
@@ -1884,6 +2088,10 @@ function heroAttack(i, f) {
   C.hits.push({ i, t: delay, foe: f });
 }
 // How much more damage an enemy takes from a companion, given what the party has done to it
+function siphonHeal(amt) {
+  const order = aliveIdx().sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max), n = D.siphonTwo ? 2 : 1;
+  C.healSrc = 'siphon'; order.slice(0, n).forEach(i => { if (C.party[i].hp < C.party[i].max) heal(i, amt / n); }); C.healSrc = null;
+}
 function foeVuln(f, i) {
   const cc = f.stun > 0, chill = f.slow > 0, dot = !!(f.poison || f.burn), cs = D.cs[i] || {};
   let m = 1;
@@ -1895,16 +2103,24 @@ function foeVuln(f, i) {
   if ((cc || chill) && cs.vsCC) m *= 1 + cs.vsCC;
   if (dot && cs.vsDot) m *= 1 + cs.vsDot;
   if (i === 3 && f.poison && cs.kindle) m *= 1 + cs.kindle;
+  if (D.foeVulnAll) m *= 1 + D.foeVulnAll;
+  if (D.frontVuln && f === front()) m *= 1 + D.frontVuln;
+  if (D.dotVuln && dot) m *= 1 + D.dotVuln;
+  if (D.lowFoe && f.hp / f.max < 0.5) m *= 1 + D.lowFoe;
   return m;
 }
 function dealFoe(f, dmg, col, src) {
   if (!f || !f.alive) return;
-  if (src != null && src !== YOU) dmg *= foeVuln(f, src);
+  if (src != null) dmg *= foeVuln(f, src);
   if (f.eshield > 0) { const a = Math.min(f.eshield, dmg * 0.6); f.eshield -= a; dmg -= a; }
-  if (src != null && C.meter) C.meter.d[src] += Math.min(dmg, f.hp);
+  const real = Math.min(dmg, f.hp);
+  if (src != null && C.meter) C.meter.d[src] += real;
+  if (src === YOU && D.siphon) siphonHeal(real * D.siphon);
+  if (src != null && src !== YOU && D.vamp) C.vampPool += real * D.vamp;
   f.hp -= dmg; f.flash = 0.06; f.kb = 0.14;
   foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
   if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f);
+    if (D.killMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.killMana);
     if (src === 1) { if (pk(1, 3) && C.party[1].alive) heal(1, C.party[1].max * 0.1, 0, true); if (pk(1, 5)) C.rookRamp = Math.min(5, (C.rookRamp || 0) + 1); } }
   else if (f.boss && !f.p2 && f.hp / f.max < 0.5) bossPhase(f);
 }
@@ -2061,6 +2277,8 @@ function landHit(h) {
   dealFoe(f, dmg, crit || big ? 'crit' : '', h.i);
   burst(f.x - 4, f.y - f.h * 0.5 + rand(-4, 4), big ? '#ffb347' : '#ffe9b0', big ? 10 : 4);
   if (cs.cleave && others.length) dealFoe(pick(others), dmg * cs.cleave, '', h.i);
+  if (h.i === YOU && D.youAoe) others.forEach(e => dealFoe(e, dmg, '', YOU));
+  if (h.i === YOU && D.youPoison) applyPoison(f, cs.dmg * 0.25, cs);
   if (!h.extra) {
     if (h.i === 1 && pk(1, 1) && Math.random() < 0.15) C.hits.push({ i: 1, t: 0.14, foe: f, extra: true });
     if (h.i === 1 && pk(1, 4)) others.forEach(e => dealFoe(e, dmg * 0.2, '', 1));
@@ -2418,7 +2636,7 @@ const HERO_ART = [
 // Head-and-shoulders portrait of a hero, outlined like the battle sprites
 const portraitCache = {};
 function portrait(i, rk = promoRank(i)) {
-  const key = i + ':' + rk; if (portraitCache[key]) return portraitCache[key];
+  const key = i + ':' + rk + (i === YOU ? clsId() : ''); if (portraitCache[key]) return portraitCache[key];
   const art = HERO_ART[i], w = art.map[0].length + 2, h = 14;
   const a = document.createElement('canvas'); a.width = w; a.height = h;
   const prev = P; P = a.getContext('2d');
@@ -2892,6 +3110,44 @@ function pdraw(str, x, y, col, c = cx) {
   }
 }
 
+
+// A crisp 5x7 pixel font for text drawn on the battlefield and the town map
+const PFONT = (() => {
+  const g = {
+    A: '.###.|#...#|#...#|#####|#...#|#...#|#...#', B: '####.|#...#|#...#|####.|#...#|#...#|####.', C: '.###.|#...#|#....|#....|#....|#...#|.###.',
+    D: '####.|#...#|#...#|#...#|#...#|#...#|####.', E: '#####|#....|#....|####.|#....|#....|#####', F: '#####|#....|#....|####.|#....|#....|#....',
+    G: '.###.|#...#|#....|#.###|#...#|#...#|.###.', H: '#...#|#...#|#...#|#####|#...#|#...#|#...#', I: '###|.#.|.#.|.#.|.#.|.#.|###',
+    J: '..###|...#.|...#.|...#.|...#.|#..#.|.##..', K: '#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#', L: '#....|#....|#....|#....|#....|#....|#####',
+    M: '#...#|##.##|#.#.#|#.#.#|#...#|#...#|#...#', N: '#...#|##..#|#.#.#|#..##|#...#|#...#|#...#', O: '.###.|#...#|#...#|#...#|#...#|#...#|.###.',
+    P: '####.|#...#|#...#|####.|#....|#....|#....', Q: '.###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#', R: '####.|#...#|#...#|####.|#.#..|#..#.|#...#',
+    S: '.####|#....|#....|.###.|....#|....#|####.', T: '#####|..#..|..#..|..#..|..#..|..#..|..#..', U: '#...#|#...#|#...#|#...#|#...#|#...#|.###.',
+    V: '#...#|#...#|#...#|#...#|#...#|.#.#.|..#..', W: '#...#|#...#|#...#|#.#.#|#.#.#|#.#.#|.#.#.', X: '#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#',
+    Y: '#...#|#...#|.#.#.|..#..|..#..|..#..|..#..', Z: '#####|....#|...#.|..#..|.#...|#....|#####',
+    0: '.###.|#...#|#..##|#.#.#|##..#|#...#|.###.', 1: '.#.|##.|.#.|.#.|.#.|.#.|###', 2: '.###.|#...#|....#|...#.|..#..|.#...|#####',
+    3: '####.|....#|....#|.###.|....#|....#|####.', 4: '...#.|..##.|.#.#.|#..#.|#####|...#.|...#.', 5: '#####|#....|####.|....#|....#|#...#|.###.',
+    6: '.###.|#....|#....|####.|#...#|#...#|.###.', 7: '#####|....#|...#.|..#..|.#...|.#...|.#...', 8: '.###.|#...#|#...#|.###.|#...#|#...#|.###.',
+    9: '.###.|#...#|#...#|.####|....#|....#|.###.', ' ': '..|..|..|..|..|..|..', '.': '.|.|.|.|.|.|#', ',': '.|.|.|.|.|#|#', '!': '#|#|#|#|#|.|#',
+    '?': '.###.|#...#|....#|...#.|..#..|.....|..#..', ':': '.|#|.|.|.|#|.', '-': '...|...|...|###|...|...|...', "'": '#|#|.|.|.|.|.',
+    '+': '.....|..#..|..#..|#####|..#..|..#..|.....', '(': '.#|#.|#.|#.|#.|#.|.#', ')': '#.|.#|.#|.#|.#|.#|#.', '/': '....#|...#.|...#.|..#..|.#...|.#...|#....',
+  };
+  const out = {}; for (const k in g) out[k] = g[k].split('|'); return out;
+})();
+const pfWidth = str => [...str.toUpperCase().replace(/…/g, '...')].reduce((w, ch) => w + ((PFONT[ch] || PFONT[' '])[0].length + 1), -1);
+// draws centred text with a dark outline; scale 2 doubles the pixels for headings
+function pfont(str, x, y, col, c = cx, scale = 1) {
+  const t = str.toUpperCase().replace(/…/g, '...'), w = pfWidth(t) * scale;
+  let px = Math.round(x - w / 2); const py = Math.round(y);
+  const glyphs = [...t].map(ch => PFONT[ch] || PFONT[' ']);
+  for (const pass of [0, 1]) {
+    let cxp = px;
+    c.fillStyle = pass ? col : '#0b0910';
+    glyphs.forEach(gl => {
+      gl.forEach((row, ry) => { for (let rx = 0; rx < row.length; rx++) if (row[rx] === '#') {
+        if (pass) c.fillRect(cxp + rx * scale, py + ry * scale, scale, scale); else c.fillRect(cxp + rx * scale - 1, py + ry * scale - 1, scale + 2, scale + 2); } });
+      cxp += (gl[0].length + 1) * scale;
+    });
+  }
+}
 /* Effects */
 function burst(x, y, col, n = 8, up = 0) {
   if (reduced()) n = Math.min(n, 3);
@@ -3120,8 +3376,7 @@ function renderScene(dt) {
     }
     if (a.lvl > 0) {
       cx.globalAlpha = Math.min(1, a.lvl);
-      cx.fillStyle = '#c9a6ff'; cx.font = '7px monospace'; cx.textAlign = 'center';
-      cx.fillText('LEVEL UP', p.x, p.y - 40 - (2 - a.lvl) * 6);
+      pfont('LEVEL UP', p.x, p.y - 46 - (2 - a.lvl) * 6, '#c9a6ff');
       cx.globalAlpha = 1;
     }
   });
@@ -3179,9 +3434,8 @@ function renderScene(dt) {
       f.vy += (f.g || 0) * dt; f.x += f.vx * dt; f.y += f.vy * dt;
       cx.globalAlpha = Math.min(1, k * 1.5); cx.fillStyle = f.col; cx.fillRect(Math.round(f.x), Math.round(f.y), f.s, f.s); cx.globalAlpha = 1;
     } else if (f.t === 'label') {
-      cx.globalAlpha = Math.min(1, k * 2); cx.font = '7px monospace'; cx.textAlign = 'center';
-      cx.lineWidth = 2; cx.strokeStyle = '#0b0910'; const ly = Math.round(f.y - (1 - k) * 8);
-      cx.strokeText(f.str, f.x, ly); cx.fillStyle = f.col; cx.fillText(f.str, f.x, ly); cx.globalAlpha = 1;
+      cx.globalAlpha = Math.min(1, k * 2); const ly = Math.round(f.y - (1 - k) * 8);
+      pfont(f.str, Math.max(pfWidth(f.str) / 2 + 2, Math.min(SW - pfWidth(f.str) / 2 - 2, f.x)), ly - 7, f.col); cx.globalAlpha = 1;
     } else if (f.t === 'num') {
       cx.globalAlpha = Math.min(1, k * 2); pdraw(f.str, f.x, f.y - (1 - k) * 14, f.col); cx.globalAlpha = 1;
     } else if (f.t === 'beam') {
@@ -3223,13 +3477,14 @@ function renderScene(dt) {
     C.bossIntro -= dt; const b = C.foes.find(f => f.boss), k = Math.min(1, C.bossIntro / 0.4, (2.4 - C.bossIntro) / 0.3);
     if (b) {
       cx.globalAlpha = 0.75 * k; cx.fillStyle = '#0b0910'; cx.fillRect(0, 56, SW, 30); cx.globalAlpha = k; cx.fillStyle = '#e4b75c'; cx.fillRect(0, 56, SW, 1); cx.fillRect(0, 85, SW, 1);
-      cx.textAlign = 'center'; cx.font = 'bold 12px serif'; cx.lineWidth = 3; cx.strokeStyle = '#0b0910'; cx.strokeText(b.name.toUpperCase(), SW / 2, 72); cx.fillStyle = '#f3ead8'; cx.fillText(b.name.toUpperCase(), SW / 2, 72);
-      cx.font = '7px monospace'; cx.fillStyle = '#e4b75c'; cx.fillText(b.title, SW / 2, 81); cx.globalAlpha = 1;
+      pfont(b.name, SW / 2, 59, '#f3ead8', cx, 2); pfont(b.title, SW / 2, 76, '#e4b75c'); cx.globalAlpha = 1;
     }
   }
   if (C.phase === 'rest') {
-    cx.fillStyle = '#e4b75c'; cx.font = '8px monospace'; cx.textAlign = 'center';
-    cx.globalAlpha = 0.9; cx.fillText(C.stage + 1 === dg.stages ? 'The boss awaits…' : `Onward to stage ${C.stage + 1}`, SW / 2, 20); cx.globalAlpha = 1;
+    const msg = C.stage + 1 === dg.stages ? 'The boss awaits' : `Onward to stage ${C.stage + 1}`, mw = pfWidth(msg) + 12;
+    cx.globalAlpha = 0.7; cx.fillStyle = '#0b0910'; cx.fillRect(Math.round(SW / 2 - mw / 2), 12, mw, 13); cx.globalAlpha = 1;
+    cx.fillStyle = '#e4b75c'; cx.fillRect(Math.round(SW / 2 - mw / 2), 12, mw, 1); cx.fillRect(Math.round(SW / 2 - mw / 2), 24, mw, 1);
+    pfont(msg, SW / 2, 15, C.stage + 1 === dg.stages ? '#ff8a7a' : '#ffd36b');
   }
 }
 
@@ -3426,8 +3681,9 @@ function renderArena() {
   if (C.time > B) tags += '<span class="tag enrage">Berserk ×3</span>';
   else if (boss && boss.alive && boss.hp / boss.max < 0.2) tags += '<span class="tag enrage">Enraged +30%</span>';
   if (foes.some(f => f.alive && f.frenzy > 0)) tags += '<span class="tag frenzy">Frenzy</span>';
-  if (C.buff.sanct > 0) tags += `<span class="tag buff">Sanctuary ${Math.ceil(C.buff.sanct)}s</span>`;
-  if (C.buff.bless > 0) tags += `<span class="tag buff">Blessing ${Math.ceil(C.buff.bless)}s</span>`;
+  if (C.buff.sanct > 0) tags += `<span class="tag buff">${SP.sanctuary.name} ${Math.ceil(C.buff.sanct)}s</span>`;
+  if (C.tranq > 0) tags += `<span class="tag buff">Tranquility ${Math.ceil(C.tranq)}s</span>`;
+  if (C.buff.bless > 0) tags += `<span class="tag buff">${SP.blessing.name} ${Math.ceil(C.buff.bless)}s</span>`;
   if (C.silenced) tags += `<span class="tag frenzy">${SP[C.silenced].name} silenced</span>`;
   if (C.plea) tags += `<span class="tag plea">${PARTY[C.plea.i].name} pleads for help · ${Math.ceil(C.plea.t)}s</span>`;
   if (C.goldFrenzy > 0) tags += `<span class="tag gold">Gold ×5 · ${Math.ceil(C.goldFrenzy)}s</span>`;
@@ -3444,7 +3700,7 @@ function renderArena() {
     fe.lv.textContent = 'Lv ' + h.lv;
     fe.xpf.style.width = (100 * h.xp / xpNeed(h.lv)) + '%';
     fe.f.classList.toggle('dead', !m.alive);
-    if (fe.rk !== promoRank(i)) { fe.rk = promoRank(i); fe.por.src = portrait(i); fe.f.style.setProperty('--tc', TIER_COL[fe.rk]); }
+    if (fe.rk !== promoRank(i) + (i === YOU ? clsId() : '')) { fe.rk = promoRank(i) + (i === YOU ? clsId() : ''); fe.por.src = portrait(i); fe.f.style.setProperty('--tc', TIER_COL[fe.rk]); }
     fe.f.classList.toggle('sel', C.target === i);
     fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
     fe.f.classList.toggle('plea', !!C.plea && C.plea.i === i);
@@ -3480,9 +3736,9 @@ function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
   const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
     : tab === 'armory' ? itemsKey + lvl('market') + lvl('smithy') + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
-    : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
+    : tab === 'talents' ? clsId() + JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
     : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv()
-    : tab === 'party' ? JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
+    : tab === 'party' ? clsId() + JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
     : tab === 'chronicle' ? logVer + '' + confirmReset + JSON.stringify(S.ach || {}) + chronScope + Math.floor(S.stats.played / 2) : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
@@ -3498,6 +3754,14 @@ const CRESTS = {
   disc: ['..ssssssssssss..','.suuuuuuuuuuuus.','.suuuuuwwuuuuus.','.suuuuuwwuuuuus.','.suuwwwwwwwwuus.','.suuwwwwwwwwuus.','.suuuuuwwuuuuus.','.suuuuuwwuuuuus.','.sUuuuuwwuuuuUs.','..sUuuuwwuuuUs..','..sUUuuuuuuUUs..','...sUUuuuuUUs...','....sUUuuUUs....','.....sUUUUs.....','......ssss......','................'],
   devo: ['.......y........','......yoy.......','......ooo.......','.....oyyyo......','.....oyyyo......','......oyo.......','.......k........','.....wwwww......','.....wpppw......','.....wpppw......','.....wpppw......','.....wPppw......','.....wPppw......','...gggggggggg...','....GGGGGGGG....','................'],
 };
+Object.assign(CRESTS, {
+  resto: ['.......nn.......', '......nNNn......', '.....nNnnNn.....', '....nNnnnnNn....', '...nNnnNnnnNn...', '...nNnnNnnnNn...', '..nNnnnNnnnnNn..', '..nNnnnNnnnnNn..', '..nNnnnNnnnnNn..', '...nNnnNnnnNn...', '....nNnNnnNn....', '.....nNNNNn.....', '.......b........', '.......b........', '......bb........', '................'],
+  wild: ['................', '.....uuuu.......', '...uuUUuu.......', '..uUUuu.........', '.uUUu.......y...', '.uUu.......yyy..', 'uUUu........y...', 'uUUu............', 'uUUu............', '.uUUu...........', '.uUUuu......w...', '..uUUuuuuu......', '...uuUUUUuu.....', '.....uuuuu......', '................', '................'],
+  thorn: ['..B.......B.....', '..bB.....bB.....', '...bB...bB..r...', '...bbB.bB...r...', '....bbbB........', '....bbbB....B...', '...BbbbbB..bB...', '..Bb.bb.bB.b....', '.Bb..bb..bbB....', '.b...bb...b.....', '..r..bb...r.....', '.....bb.........', '.....bb.........', '....BbbB........', '...BBBBBB.......', '................'],
+  afflict: ['.....wwwwww.....', '....wwwwwwww....', '...wwwwwwwwww...', '...wwkkwwkkww...', '...wwknwwknww...', '...wwkkwwkkww...', '...wwwwkkwwww...', '....wwwkkwww....', '.....wwwwww.....', '.....wkwkwk.....', '.....wwwwww.....', '......SSSS......', '................', '..n...........n.', '...n.........n..', '................'],
+  blood: ['.......m........', '.......m........', '......mmm.......', '......mmm.......', '.....mmmmm......', '....mmmmmmm.....', '...mmwmmmmmm....', '...mwmmmmmmmM...', '..mmwmmmmmmmM...', '..mmmmmmmmmmM...', '..mmmmmmmmmMM...', '...mmmmmmmMM....', '....MmmmmMM.....', '.....MMMMM......', '................', '................'],
+  shadow: ['................', '................', '................', '.....pppppp.....', '...ppPPPPPPpp...', '..pPPyyyyyyPPp..', '.pPPyykkkkyyPPp.', 'pPPyykkkkkkyyPPp', '.pPPyykkkkyyPPp.', '..pPPyyyyyyPPp..', '...ppPPPPPPpp...', '.....pppppp.....', '................', '................', '................', '................'],
+});
 const crestCache = {};
 function crest(id) {
   if (crestCache[id]) return crestCache[id];
@@ -3572,6 +3836,7 @@ function canLearn(n) {
   const o = n.owner, r = rankOf(o, n.id);
   if (r >= n.max) return 'Fully learned.';
   const tr = OWNERS[o].find(t => t.id === n.tree), need = n.row * TIER_GATE, have = spentIn(o, n.tree);
+  if (!tr) return 'Belongs to another healer class.';
   if (have < need) return `Needs ${need} points spent in ${tr.name} (${have} so far).`;
   if (n.needs && !known(n.needs)) return `Needs the ${SP_NAMES[n.needs]} spell. Each first dungeon clear lets you choose a new spell.`;
   if (n.req && rankOf(o, n.req) < 1) return `Needs ${TNODE[o + '|' + n.req].name} first.`;
@@ -3600,7 +3865,7 @@ function talDetailHtml() {
   const kind = n.kind === 'ability' ? 'New attack' : n.kind === 'major' ? 'Major talent' : `Rank ${r} of ${n.max}`;
   const nc = r < n.max ? rankCost(n, r + 1) : 0, pts = `${nc} point${nc > 1 ? 's' : ''}`;
   const per = esc(n.per.replace(/\.$/, ''));
-  const eff = n.kind === 'minor' ? `<p>Each rank: ${per}.</p><p class="sub">Ranks 1–${o === 'cleric' ? 5 : 3} cost 1 point; later ranks cost 2.</p>` : `<p>${per}.</p>`;
+  const eff = n.kind === 'minor' ? `<p>Each rank: ${per}.</p><p class="sub">${n.max <= 3 ? 'Each rank costs 1 point.' : 'Ranks 1–3 cost 1 point; later ranks cost 2.'}</p>` : `<p>${per}.</p>`;
   const label = n.kind === 'ability' ? 'Learn attack' : n.kind === 'major' ? 'Learn' : `Learn rank ${r + 1}`;
   const btn = r >= n.max ? '<span class="label">Fully learned</span>'
     : c === true ? `<button class="btn primary" data-learn="${tSel}">${label} · ${pts}</button>`
@@ -3629,16 +3894,19 @@ function nextSpellHtml() {
   return `<div class="nextspell">${offer.map(id => img('s_' + id, 0, 'sm')).join('')}<span>Next spell: ${where} lets you choose ${offer.map(id => `<b>${SP_NAMES[id]}</b>`).join(', ').replace(/, ([^,]*)$/, ' or $1')}.</span></div>`;
 }
 function renderTalents() {
-  const pts = pointsOf('cleric'), tr = CLERIC_TREES.find(t => t.id === talTree) || CLERIC_TREES[0];
+  const pts = pointsOf('cleric'), tr = cls().trees.find(t => t.id === talTree) || cls().trees[0];
   if (!tSel || !tSel.startsWith('cleric|')) tSel = null;
   pane.innerHTML = `
     <div class="section-h"><h3>Cleric talents</h3><span class="label">Talent points <b style="color:var(--xp);font-family:var(--mono)">${pts}</b></span></div>
     ${picksLeft() ? pickHtml() : nextSpellHtml()}
-    <p class="intro">You earn a talent point every 2 Cleric levels and one on each first dungeon clear. New spells don't cost points: each first dungeon clear lets you choose one of three. Talents marked with a spell icon improve that spell and open once you know it. Most take many ranks of small bonuses; major talents cost more. Deeper rows need points spent in that tree first (the number on the left).</p>
-    <div class="crests" role="group" aria-label="Talent trees">${CLERIC_TREES.map(t => { const sp = spentIn('cleric', t.id), mx = treeMax('cleric', t);
+    <p class="intro">Pick a healer class: it changes your spells, your passive and your three talent trees. You earn a talent point every 2 Cleric levels and one on each first dungeon clear. Talents take up to 3 ranks of big bonuses; keystones (2–3 points) change how your spells work. Talents marked with a spell icon need that spell, which you choose on first dungeon clears. Deeper rows need points spent in that tree first (the number on the left).</p>
+    <div class="section-h"><h3>Healer class</h3><span class="label">Switch any time; your Cleric talents are refunded</span></div>
+    <div class="classes" role="group" aria-label="Healer class">${Object.entries(CLASSES).map(([id, c]) => `<button class="classcard" data-cls="${id}" aria-pressed="${id === clsId()}" style="--sc:${c.col}"><img class="crest" src="${crest(c.crest)}" alt=""><b>${c.name}</b><span>${c.tag}</span></button>`).join('')}</div>
+    <div class="passive" style="--sc:${cls().col}"><span class="label">Class passive</span><b>${cls().passive[0]}</b> ${cls().passive[1]}.</div>
+    <div class="crests" role="group" aria-label="Talent trees">${cls().trees.map(t => { const sp = spentIn('cleric', t.id), mx = treeMax('cleric', t);
       return `<button class="crestcard" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">
         <img class="crest" src="${crest(t.id)}" alt=""><b>${t.name}</b>
-        <span class="cspells">${['heal'].filter(() => t.id === 'holy').concat(treeSpells(t)).map(id => `<span class="${known(id) ? 'k' : ''}" title="${SP[id].name}${known(id) ? '' : ' (not learned yet)'}">${img('s_' + id, 0, 'xs')}</span>`).join('')}</span>
+        <span class="cspells">${['heal'].filter(() => t === cls().trees[0]).concat(treeSpells(t)).map(id => `<span class="${known(id) ? 'k' : ''}" title="${SP[id].name}${known(id) ? '' : ' (not learned yet)'}">${img('s_' + id, 0, 'xs')}</span>`).join('')}</span>
         <span class="cbar"><i style="width:${100 * sp / mx}%"></i></span><small>${sp} points</small></button>`; }).join('')}</div>
     <div class="tbanner" style="--sc:${tr.col}"><img class="crest" src="${crest(tr.id)}" alt=""><div><h3>${tr.name}</h3><p>${tr.desc}.</p></div></div>
     <div class="tframe" style="--sc:${tr.col}">${gridHtml(tr, 3)}</div>
@@ -3667,7 +3935,7 @@ function renderParty() {
   const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}" style="--tc:${TIER_COL[k]}">${portraitImg(i, 'rg', k)}<b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
   const perks = PROMO_PERKS[i].map(([n, dsc], k) => `<li class="${pr > k ? 'on' : k === pr ? 'next' : ''}" style="--tc:${TIER_COL[k + 1]}"><span class="pt">${PROMO_TITLE[k + 1]}</span><b>${n}</b> ${dsc}</li>`).join('');
   pane.innerHTML = `
-    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
+    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${k === YOU ? cls().name : q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
     ${perk('barracks', 2) ? `<div class="stances"><span class="label">Battle stance</span>${Object.entries(STANCES).map(([k, v]) => `<button class="chipbtn" data-stance="${k}" aria-pressed="${stance() === k}" title="${v.desc}">${v.name}</button>`).join('')}<span class="label sub">${STANCES[stance()].desc}</span></div>` : ''}
     <div class="phead" style="--rc:${ROLE_COL[i]}">${portraitImg(i, 'lg')}<div><h3>${p.name} <small class="ptitle">${PROMO_TITLE[promoRank(i)]}</small></h3><span class="label">${p.role} · Level ${S.heroes[i].lv}${comp ? ` · ${fmt(memberDps(i))} damage per second` : ''}</span></div></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
@@ -3962,9 +4230,8 @@ function renderTownScene(dt) {
   const lid = townHover || townSel;
   if (lid) {
     const p = PLOTS[lid], name = TOWNB[lid].name + (lvl(lid) ? '' : ' (empty plot)');
-    x.font = '8px monospace'; x.textAlign = 'center';
-    const ty = p.y + 11 > TH - 2 ? p.y - p.top - 8 : p.y + 11;
-    x.lineWidth = 3; x.strokeStyle = '#1b1622'; x.strokeText(name, p.x, ty); x.fillStyle = '#f3ead8'; x.fillText(name, p.x, ty);
+    const ty = p.y + 12 > TH - 8 ? p.y - p.top - 14 : p.y + 4, hw = pfWidth(name) / 2 + 2;
+    pfont(name, Math.max(hw, Math.min(TW - hw, p.x)), ty, '#f3ead8', x);
   }
 }
 function townDetailHtml() {
@@ -4177,7 +4444,7 @@ function updatePane() {
     const rf = pane.querySelector('[data-act="reforge"]'); if (rf) rf.disabled = S.gold < +rf.dataset.cost;
   }
   const dotFor = (sel, label, on) => { const tt = document.querySelector(sel); if (!!tt.querySelector('.dot') !== on) tt.innerHTML = label + (on ? '<span class="dot" aria-label="talents you can learn"></span>' : ''); };
-  dotFor('[data-tab="talents"]', 'Talents', picksLeft() > 0 || CLERIC_TREES.some(t => t.nodes.some(n => canLearn(n) === true)));
+  dotFor('[data-tab="talents"]', 'Talents', picksLeft() > 0 || cls().trees.some(t => t.nodes.some(n => canLearn(n) === true)));
   dotFor('[data-tab="party"]', 'Party', PARTY.some((_, i) => canPromote(i) && S.gold >= promoCost(i)) || [0, 1, 2, 3].some(i => COMP_TREES[i].some(t => t.nodes.some(n => canLearn(n) === true))));
 }
 
@@ -4187,6 +4454,7 @@ pane.addEventListener('click', e => {
   if (d.pick) { learnSpell(d.pick); return; }
   if (d.loot != null) { S.lootFilter = +d.loot; shopDirty = true; return; }
   if (d.chron) { chronScope = d.chron; shopDirty = true; return; }
+  if (d.cls && d.cls !== clsId()) { S.cls = d.cls; S.tree = {}; talTree = cls().trees[0].id; tSel = null; applyClassNames(); recalc(); barKey = ''; shopDirty = true; log(`You walk the path of the <b>${cls().name}</b>.`); toast(`You are now a ${cls().name}. Talents refunded.`); return; }
   if (d.peril) { const [di, dl] = d.peril.split(':').map(Number); S.dun.peril = S.dun.peril || []; S.dun.peril[di] = clamp(perilOf(di) + dl, 0, maxPeril(di)); if (di === S.dun.current && C.phase !== 'done') toast('Peril applies from your next run.'); shopDirty = true; return; }
   if (d.stance) { S.stance = d.stance; recalc(); shopDirty = true; return; }
   if (d.town) {
@@ -4309,7 +4577,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
 addEventListener('hashchange', syncDev);
 syncDev();
 
@@ -4415,10 +4683,10 @@ function save() { S.lastSave = Date.now(); try { localStorage.setItem(SAVE_KEY, 
 function load(data) {
   let raw = data && data.S;
   if (!raw) { try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { raw = null; } }
-  if (!raw || ![1, 2, 3, 4, 5, 6, 7, 8].includes(raw.v)) return false;
+  if (!raw || ![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(raw.v)) return false;
   const base = newState();
   S = Object.assign(base, raw, {
-    v: 8,
+    v: 9,
     stats: Object.assign(base.stats, raw.stats), equip: Object.assign(base.equip, raw.equip),
     heroes: raw.heroes || base.heroes, skills: raw.skills || {},
     tree: raw.v >= 5 ? raw.tree || {} : {},
@@ -4440,6 +4708,7 @@ function load(data) {
     S.town = {}; S.mats = DUNGEONS.map((_, d) => S.dun.clears[d] ? 10 + 5 * S.dun.clears[d] : 0);
     for (const k in S.upgrades) if (!UPG[k]) delete S.upgrades[k];
   }
+  if (raw.v < 9 && Object.keys(S.tree || {}).length) { S.tree = {}; S.talentRefund = true; }
   if (raw.v < 8) {
     // Training became promotions: refund every bit of gold spent on it
     let refund = 0;
@@ -4502,6 +4771,7 @@ function start(data) {
     if (away > 60) expedition(away);
   }
   log(loaded ? 'Welcome back. The party is ready.' : 'The party gathers at the sewer gate. Keep them alive.');
+  if (S.talentRefund) { delete S.talentRefund; log('<span class="x">The Cleric talent trees were redesigned: your points are refunded. You can also choose a healer class now.</span>'); toast('Talents redesigned: points refunded. Pick a healer class in Talents!'); }
   if (S.trainRefund) { log(`<span class="g">Training was replaced by promotions: ${fmt(S.trainRefund)} gold refunded.</span>`); toast(`Training is now Promotions. Refunded ${fmt(S.trainRefund)} gold.`); delete S.trainRefund; }
   renderPane();
   syncMute();

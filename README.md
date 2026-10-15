@@ -11,9 +11,22 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Gold.** Every enemy drops gold when it dies. Coins pop out and fly to your Cleric, and a boss bursts into a shower of them. Tougher monsters and deeper dungeons pay more.
 - **Targeting.** A gold ring marks who your next spell will hit. While you cast, a green glow builds on the ally about to receive the heal.
 - **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one. Trying to cast without enough mana shows a quiet blue *Not enough mana* on the mana bar, and when you're running low, Meditate and the Mana Potion glow blue on the action bar.
-- **Dungeons.** The Dungeons tab is a map of the descent: each dungeon has a painted banner with its boss, its rule, your progress through its stages, and how hard it is for your party's level. Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
+- **Dungeons.** The Dungeons tab is a map of the descent: each dungeon has a painted banner with its boss, its rule, your progress through its stages, and how hard it is for your party's level. Twelve dungeons in two acts, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **Readable battlefield text.** Banners, ability names, level-ups, boss name cards and town labels use a crisp pixel font with an outline.
 - **Debuffs.** Poison ramps up with every tick, a hex halves the healing its target receives, and wolves cause short bleeds. Purify removes all of them. A Ward that is still holding makes its target resist new poisons and hexes.
+- **Act II: The Hollow Crown.** Beating the Eclipse Seraph opens four deeper dungeons with new monsters (cave spiders that poison, wraiths that wither, crystal golems that pound the tank, gargoyles), new scenery, new music and new materials:
+
+  | Dungeon | Rule | Boss | Boss checks |
+  |---|---|---|---|
+  | IX Webbed Depths | **Venom**: poisons ramp twice as fast | Broodmother Xyth | Soul Chain, Plague; spiders hatch at half health |
+  | X Crystal Caverns | **Shard Rain**: shards hit the party every 12 seconds | Crystal Colossus | Prismatic Mark, Skull Crusher |
+  | XI Frostveil Hollow | **Bitter Cold**: casts and channels take 20% longer | The Rime Queen | Frost Theft, Necrotic Grip, Doom |
+  | XII The Hollow Crown | **The Void**: 25% less max mana | The Hollow King | everything, plus Soul Chain and Frost Theft |
+
+  - **Soul Chain** links two allies for 10 seconds (a chain is drawn between them): half the damage one takes also hits the other.
+  - **Prismatic Mark**: for 6 seconds, healing that ally heals the boss for twice as much. Shield them or let them wait.
+  - **Frost Theft** steals every heal over time and shield on the party and turns them into a shield for the boss. Hold your heals over time until it lands.
+- **Ascension.** Once you beat the Hollow King, the Dungeons tab lets you **ascend**: start over from the sewers for permanent **Echoes**. You keep achievements, stats, Echoes and the Echo Altar; gold, levels, dungeons, Town, gear, promotions, talents and spells reset. Each cycle's enemies are 25% tougher and pay 30% more. Spend Echoes at the **Echo Altar** on Might (party damage), Life (party health), Grace (healing), Fortune (gold and experience), Home (start each cycle with buildings already built) and Memory (keep your first spells).
 - **Bosses test the healer.** Bosses act more often the deeper you go, and from the second dungeon on they bring checks you have to answer:
   - **Plague** (green countdown badge): cleanse it within 7 seconds or it bursts on the whole party. A Ward or Bone Shield on the target blocks it before it lands.
   - **Necrotic Grip**: soaks up the next heals on that ally (the badge shows how much is left), so you have to heal through it.
@@ -36,7 +49,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril, sets, Plague, Necrotic Grip, Skull Crusher and losing the tank.
 - A **Next** line under the arena header suggests the most useful thing to do now, like choosing a spell, equipping upgrades, spending points, promoting someone or building in the Town. Click it to jump to the right tab.
 - **Sound and music.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements, and a chiptune theme for every dungeon (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
-- **Phones.** On narrow screens the party frames sit three to a row, the tabs wrap into two rows and empty action-bar slots hide until you edit keybinds.
+- **Phones.** On narrow screens the party frames sit three to a row, the tabs wrap into two rows and empty action-bar slots hide until you edit keybinds. **Hold a party frame** (or right-click it on a computer) for a quick-cast ring of your spells around it: slide onto a spell and let go, or let go and tap one.
 
 ## Why heal actively
 
@@ -63,6 +76,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - Trees: Priest has Holy, Discipline and Devotion; Druid has Restoration, Wild Spirit and Thornguard; Occultist has Affliction, Blood and Shadow.
 - Talents are fewer and much bigger: up to 3 ranks of +5–15% per rank, plus keystones (2–3 points) that change how spells work. Examples: Chain Heal, Inner Light, Atonement, Divine Hymn, Lifebloom, Efflorescence, Germination, Tree of Life, Ironbark, Wrath, Soul Drain, Haunt, Vampiric Embrace, Curse of Doom and Eclipse of Souls. Each tree ends in a capstone.
+- Defensive capstones: the Priest's **Retribution Ward** throws 40% of what a Ward absorbs back at the enemy, the Druid's **Blooming Bark** turns an ending Barkskin into a heal over time worth 20% of the target's health, and the Occultist's **Shattering Bones** makes a breaking Bone Shield hit every enemy for 60% of its absorb.
 - Talents with a small spell icon need that spell and open once you know it. Deeper rows need points spent in that tree first (2 per row). Resetting is free.
 - Talent points: 1 every 2 Cleric levels, plus 1 for each first dungeon clear, the Library and an achievement.
 - Each class has its own spell icon colors, heal effects and casting sparkles. The Talents tab lists your spells as that class under "Your spells as a …".
@@ -127,14 +141,20 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - **Gear.** Enemies drop items for the Cleric's six slots and the companions' three, in five rarities. The header shows your **party item level**, the average across all 18 slots. **Equip best items** fills every slot automatically: armor goes to the tank first, and weapons and charms go to the hardest hitters first. Enchant equipped items with gold for +10% stats per level.
 - **Item sets.** Each companion and the Cleric has a three-piece set that sometimes drops in place of a rare-or-better item (set pieces are always epic, with teal names). Two pieces give a stat bonus, and three unlock a synergy: Bram's hits sunder armor, Rook always crits slowed or stunned enemies, Vess's crits mark enemies for 8 seconds, Ilda's fireballs chill, and the Cleric's heals on low allies also shield them. The item view shows the set's pieces and bonuses.
-- **Looks.** Promotions show on the battlefield as new armor and weapons (see the table above), with a glowing aura and rising motes from Hero. Epic or legendary armor gives a colored outline, and epic or legendary weapons sparkle.
+- **Looks.** Promotions show on the battlefield as new armor and weapons (see the table above), with a glowing aura and rising motes from Hero. Epic or legendary armor gives a colored outline and trims the torso in its rarity color, legendary armor adds a pulsing gem on the chest, and an epic or legendary helmet puts a circlet on your Cleric. Weapons glow in their rarity color, and epic or legendary ones sparkle.
 - **Loot filter.** In the Armory, choose to auto-sell drops below a rarity (upgrades are never sold), and optionally equip upgrades as they drop. When the bag is full, the weakest non-upgrade is sold to make room.
 - **Merchant.** Once you build a Market, the Armory sells sealed items for the deepest dungeon you've reached: a Supply Crate (any rarity), a Gilded Coffer (rare or better) and a Royal Reliquary (epic or better, 20% legendary).
 - **Elixirs.** As the Herb Garden grows, the Dungeons tab sells three elixirs (+25% party damage, 15% less damage taken, +40% mana regeneration). Each lasts 10 minutes of fighting and stacks up to an hour. Their price scales with your deepest dungeon.
 - **Achievements.** Fifteen achievements, such as clearing a dungeon without a death, slaying ten elites, wearing a full set or clearing at Peril 3. Each grants a small permanent bonus: healing, damage, gold, experience, mana or a talent point. They're listed in the Chronicle with progress bars.
 - **Chronicle.** Healing by spell for this run or all time, with share, overheal and casts, plus damage taken, party deaths, debuffs cleansed and deaths per dungeon.
+- **Crafting with materials.** The Smithy turns materials into gear upgrades. Every item uses the materials of the dungeon its item level comes from:
+  - **Salvage** (Smithy 1): break a bag item into materials.
+  - **Empower** (Smithy 1): raise an item one rarity, up to Legendary. Its stats grow and it gains new ones.
+  - **Imbue** (Smithy 4): add one extra stat to an item, once.
+  - **Masterwork** (Smithy 8): crafting costs 30% fewer materials.
+- **Bounty Board.** The Town shows three bounties at a time, such as "Defeat 40 enemies in the Cinder Pit", "Defeat 4 elites", "Cleanse 15 debuffs", "Clear 5 stages without anyone falling" or "Clear the Hollow Crypt as an Occultist". Finished bounties pay gold and materials, and one in five also gives an epic item. Reroll one you don't like for gold. The Town tab shows a dot when one is ready to claim.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
-- **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. The Town tab shows your town as a pixel-art map with eight empty plots. Click a plot to see what it would do, and build it: the building rises out of the ground and stays on the map, gaining a banner at level 4 and gold trim at level 8. Buildings go up to level 8 and cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper unlocks the next tier:
+- **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. The Town tab shows your town as a pixel-art map with eight plots. Click a plot to see what it would do, and build it: the building rises out of the ground and stays on the map, gaining a banner at level 4 and gold trim at level 8. Buildings go up to level 12 and cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper (including Act II) unlocks the next tier:
 
   | Building | Every level | Unlocks |
   |---|---|---|
@@ -143,7 +163,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Herb Garden | One more mana potion per run | Lv 2/4/6 the three elixirs · Lv 3 Healing Draught (heals the party for 25%, on F) · Lv 7 a second draught |
   | Chapel | Start with Devotion; Devotion fades slower | Lv 3 Chapel Bell (+35 Devotion once per run, on R) · Lv 6 Devotion never falls below 20% |
   | Library | More experience | Lv 3 and 7 a bonus Cleric talent point · Lv 5 first clears offer four spells |
-  | Smithy | Cheaper, stronger enchanting | Lv 3 Reforge (reroll an item's stats) · Lv 5 every drop is one item level higher |
+  | Smithy | Cheaper, stronger enchanting | Lv 1 Salvage and Empower · Lv 3 Reforge (reroll an item's stats) · Lv 4 Imbue · Lv 5 every drop is one item level higher · Lv 8 Masterwork |
   | Barracks | Cheaper promotions | Lv 2 Battle Stances (Aggressive, Balanced or Defensive, in the Party tab) · Lv 4 +20% experience |
   | Market | Cheaper sealed items | Lv 1/3/5 Supply Crates, Gilded Coffers and Royal Reliquaries |
 

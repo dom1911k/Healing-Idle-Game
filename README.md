@@ -19,11 +19,16 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold from every kill and the experience and loot from every stage, from ×0.5 when you idle up to ×3. It fades slowly on its own and gains less the higher it gets, so steady, efficient healing holds it around ×1.5–2. Reaching ×3 takes a lot of work.
 - **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
 
+## Spells
+
+- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of two new spells. The one you pass on stays on offer for your next first clear. In order, the spells come up as Flash Heal, Renew, Purify, Ward, Meditate, Prayer, Sanctuary and Blessing.
+- With *Repeat dungeon* on, the next run waits until you've chosen. You can also choose from the Talents tab, which always shows which spells your next first clear will offer.
+
 ## Cleric talents
 
-- You start with only **Heal**. The other eight spells are learned in the talent trees.
+- Talents improve the spells you know. Each spell sits in its tree as a marker, with its upgrades right next to and below it.
 - Three WoW-style trees: **Holy** (Heal, Flash Heal, Prayer), **Discipline** (Ward, Purify, Sanctuary, the tank) and **Devotion** (mana, Renew, Meditate, Blessing).
-- Most talents take 5–10 ranks of small bonuses. Ranks 1–5 cost 1 point and later ranks cost 2. Major talents (2–3 points) and new spells (3–4 points) sit between them.
+- Most talents take 5–10 ranks of small bonuses. Ranks 1–5 cost 1 point and later ranks cost 2. Major talents (2–3 points) sit between them.
 - Deeper rows need points spent in that tree first: 2 per row.
 - Talent points are rare: 1 every 2 Cleric levels, plus 1 for each first dungeon clear. Resetting is free.
 

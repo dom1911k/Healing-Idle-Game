@@ -101,6 +101,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 @media (max-width:480px){.pgear{grid-template-columns:repeat(3,minmax(0,1fr))}.pg-name{grid-column:1/-1}}
 .slot.static{cursor:default}
 .mats{display:flex;flex-wrap:wrap;gap:6px}
+.town{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+#townCv{width:100%;aspect-ratio:320/176;image-rendering:pixelated;border:1px solid var(--line);border-radius:8px;background:#4c7a3c;display:block}
+.tdetail{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+.tdetail p{margin:0}.tdetail .sub{color:var(--muted)}
+.tdh{display:flex;align-items:center;gap:8px}.tdh .label{margin-left:auto}
+.tdetail .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.tdetail .short{color:var(--hurt)}
 .matchip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.84rem;background:var(--surface-2)}
 .matchip i{width:9px;height:9px;border-radius:50%;background:var(--mc)}
 .lvtag{font-family:var(--mono);font-size:.72rem;color:var(--muted);font-weight:400}
@@ -130,7 +136,17 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .bar.cast{height:16px}.bar.cast .fill{background:linear-gradient(#f2d48b,#c49434);transition:none}
 .bar.cast:not(.on){opacity:.3}
 .bar.mana{height:20px}.bar.mana .fill{background:linear-gradient(#7ba3ee,#3f61b0)}
-.spells{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.spells{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+@media (max-width:520px){.spells{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.bar-h{margin:0}.btn.small{padding:3px 10px;font-size:.78rem}
+.spell.empty-slot{background:#1a1722;border-style:dashed;justify-content:center;min-height:62px;cursor:default}
+.spell.empty-slot .sp-meta{font-size:.72rem;color:var(--muted)}
+.spell.empty-slot.armed,.spell.over{border-color:var(--gold);border-style:solid;cursor:pointer}
+.spell.over{box-shadow:0 0 0 2px #e4b75c55 inset}
+.spellbook{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.sbook{display:flex;flex-wrap:wrap;gap:6px}
+.sbk{display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 8px 3px 4px;color:var(--text);font:inherit;font-size:.84rem;cursor:grab}
+.sbk:hover,.sbk.picked{border-color:var(--gold)}.sbk.picked{background:#3a3020}
 .spell{position:relative;overflow:hidden;background:linear-gradient(#2f2a3d,#252130);border:1px solid #4a4260;border-radius:8px;padding:6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
 .spell:hover{border-color:var(--gold)}
 .spell.nomana .sp-cost{color:var(--hurt)}
@@ -342,10 +358,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div class="caster">
         <div class="bar cast" id="castBar"><i class="fill" id="castFill"></i><span class="txt" id="castTxt"></span></div>
         <div class="bar mana"><i class="fill" id="manaFill"></i><span class="txt" id="manaTxt"></span></div>
-        <div class="bar devo" title="Effective healing builds Devotion; idling and overhealing drain it. Devotion multiplies gold, experience and loot from every stage."><i class="fill" id="devFill"></i><span class="txt" id="devTxt"></span></div>
+        <div class="bar devo" title="Effective healing builds Devotion; idling and overhealing drain it. Devotion multiplies the gold from every kill and the experience and loot from every stage."><i class="fill" id="devFill"></i><span class="txt" id="devTxt"></span></div>
       </div>
+      <div class="section-h bar-h"><span class="label">Action bar</span><button class="btn small" type="button" id="bindBtn" aria-pressed="false">Edit keybinds</button></div>
       <div class="spells" id="spells"></div>
-      <p class="hint">Click a hero in the scene or a party frame to target them, then tap a spell or press its number. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Learn more spells in the Talents tab. Healing that matters builds <b>Devotion</b>, which multiplies stage rewards, and each heal pays a few seconds of your gold income. When an ally glows gold, they're pleading for help: heal them quickly for a random reward.</p>
+      <div class="spellbook" id="spellbook" hidden></div>
+      <p class="hint">Click a hero in the scene or a party frame to target them, then tap a spell or press its key. Use <b>Edit keybinds</b> to drag spells onto 1–6, E, F, R, T, Q or Y. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Learn more spells in the Talents tab. Every enemy you defeat drops gold. Healing that matters builds <b>Devotion</b>, which multiplies gold, experience and loot. When an ally glows gold, they're pleading for help: heal them quickly for a random reward.</p>
       <div class="dev" id="dev" hidden>
         <div class="section-h"><span class="label">Playtest tools</span><span class="label">Remove #dev from the address to hide</span></div>
         <div class="actions"><span class="label">Speed</span>
@@ -805,7 +823,7 @@ const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last A
    ========================================================= */
 function newState() {
   return {
-    v: 6, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true,
+    v: 6, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [],
     town: {}, mats: [], upgrades: {}, train: { dps: 0, hp: 0, regen: 0 },
     equip: { head: null, chest: null, hands: null, staff: makeStarter(), ring: null, trinket: null },
     inv: [], nextId: 2,
@@ -910,7 +928,6 @@ function recalc() {
   D.partyDps = (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
   D.cs = PARTY.map((p, i) => makeCs(i));
   D.partyRegen = 0.004 * S.train.regen;
-  D.healGold = 0.08 * (1 + D.greed);
   D.sp = {
     heal:      { amt: 2.0 * (1 + t('heal_pow')) * (1 + 0.05 * K('mendm')), cast: 1.8 - t('heal_cast'), cost: 1 - t('heal_cost'), echo: t('heal_echo') },
     flash:     { amt: 1.4 * (1 + t('flash_pow')), cost: (1 - t('flash_cost')) * (1 - 0.06 * K('flashm')), crit: t('flash_crit') },
@@ -1101,7 +1118,6 @@ function heal(i, amt, critBonus = 0, npc = false) {
   m.hp += eff;
   S.stats.healed += eff; S.stats.overheal += amt - eff;
   if (eff > 0 && !npc) {
-    addGold(eff * D.healGold * devMult());
     C.devQuiet = 0;
     if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 0.5 * (1 - C.dev / 110));
   }
@@ -1290,7 +1306,16 @@ function dealFoe(f, dmg, col) {
   if (!f || !f.alive) return;
   f.hp -= dmg; f.flash = 0.06;
   foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : '#f3ead8');
-  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); }
+  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); }
+}
+// Every kill pays gold; Devotion (how well you heal) multiplies it
+function foeGold(f) {
+  const sc = rewardScale(S.dun.current, C.stage) * (1 + D.greed);
+  const g = f.boss ? 120 * sc : 7 * (MOBS[f.kind] ? MOBS[f.kind].hp : 1) * sc;
+  if (C.run) C.run.base.gold += g;
+  const got = g * devMult() * (C.goldFrenzy > 0 ? 5 : 1);
+  addGold(g * devMult());
+  fxCoins(f, got);
 }
 function applyPoison(e, rate, cs) {
   if (!e.alive) return;
@@ -1386,12 +1411,11 @@ function stageCleared() {
   const d = S.dun.current, s = C.stage, dg = DUNGEONS[d], isBoss = s === dg.stages;
   const sc = rewardScale(d, s);
   const dm = devMult();
-  const gBase = Math.round((isBoss ? 70 : 12) * sc * (1 + D.greed)), xpBase = (isBoss ? 34 : 9) * sc, mBase = isBoss ? 4 : 1;
-  addGold(gBase * dm);
+  const xpBase = (isBoss ? 34 : 9) * sc, mBase = isBoss ? 4 : 1;
   const xp = xpBase * dm;
   const mats = Math.floor(mBase * dm + Math.random());
   S.mats[d] = (S.mats[d] || 0) + mats; C.run.mats += mats;
-  Object.assign(C.run.base, { gold: C.run.base.gold + gBase, xp: C.run.base.xp + xpBase * D.xpMult, mats: C.run.base.mats + mBase, items: C.run.base.items + (isBoss ? 1.25 : 0.25) });
+  Object.assign(C.run.base, { xp: C.run.base.xp + xpBase * D.xpMult, mats: C.run.base.mats + mBase, items: C.run.base.items + (isBoss ? 1.25 : 0.25) });
   C.run.xp += xp * D.xpMult; C.run.stages++;
   C.run.ups.push(...gainXp(xp));
   C.run.mastered.push(...gainMastery());
@@ -1432,14 +1456,15 @@ function wipe() {
   endRun('wipe', `<h3>The party has fallen</h3><p>Stage ${C.stage} of ${dg.stages}. ${tip}</p>`);
 }
 function endRun(cls, head) {
-  const r = C.run;
-  C.phase = 'done'; C.phaseT = 4.5;
+  const r = C.run, delay = cls === 'wipe' ? 0 : 1.3; // let the boss's coin shower land before the summary
+  C.phase = 'done'; C.phaseT = 4.5 + delay;
   const body = `${head}
     <p class="num"><span style="color:var(--gold)">+${fmt(r.gold)} gold</span> · <span class="lvl">+${fmt(r.xp)} exp</span> · +${r.mats} ${MATS[r.d]} · ${r.stages} stage${r.stages === 1 ? '' : 's'} cleared</p>
     ${r.ups.length ? `<p class="lvl">Level up: ${[...new Set(r.ups)].join(', ')}</p>` : ''}
     ${r.items.length ? `<p>${r.items.join('<br>')}</p>` : ''}${r.mastered.map(m => `<p style="color:var(--gold)">${m}</p>`).join('')}
     ${S.autoRetry ? '<p class="label">Starting again…</p>' : '<div class="actions"><button class="btn primary" data-run="again">Run again</button></div>'}`;
-  showOverlay(cls, `<div>${body}</div>`);
+  const run = C.run;
+  setTimeout(() => { if (C.run === run && C.phase === 'done') showOverlay(cls, `<div>${body}</div>`); }, delay * 1000 / DEV.speed);
   shopDirty = true; save();
 }
 function showOverlay(cls, html) { const o = $('#overlay'); o.className = 'overlay ' + cls; o.innerHTML = html; o.hidden = false; }
@@ -1862,15 +1887,15 @@ function makeVignette() {
 const GLYPH = { '0':'111101101101111','1':'010110010010111','2':'111001111100111','3':'111001111001111','4':'101101111001001','5':'111100111001111',
   '6':'111100111101111','7':'111001010010010','8':'111101111101111','9':'111101111001111','+':'000010111010000','-':'000000111000000',
   '.':'000000000000010','!':'010010010000010','K':'101101110101101','M':'101111111101101','B':'110101110101110','T':'111010010010010' };
-function pdraw(str, x, y, col) {
+function pdraw(str, x, y, col, c = cx) {
   const w = str.length * 4 - 1, x0 = Math.round(x - w / 2), y0 = Math.round(y);
   for (const pass of [0, 1]) {
-    cx.fillStyle = pass ? col : '#0b0910';
+    c.fillStyle = pass ? col : '#0b0910';
     [...str].forEach((ch, ci) => {
       const gph = GLYPH[ch]; if (!gph) return;
       for (let k = 0; k < 15; k++) if (gph[k] === '1') {
         const px = x0 + ci * 4 + k % 3, py = y0 + (k / 3 | 0);
-        if (pass) cx.fillRect(px, py, 1, 1); else cx.fillRect(px - 1, py - 1, 3, 3);
+        if (pass) c.fillRect(px, py, 1, 1); else c.fillRect(px - 1, py - 1, 3, 3);
       }
     });
   }
@@ -1898,9 +1923,16 @@ function fxHeroProj(i, f) {
   const p = HERO_POS[i];
   FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : '#fff2a8', s: i === 3 ? 3 : 2 });
 }
+function fxCoins(f, g) {
+  if (document.hidden) return;
+  const n = f.boss ? (reduced() ? 8 : 28) : (reduced() ? 2 : 3 + Math.floor(Math.random() * 4)), y = f.y - f.h / 2;
+  for (let k = 0; k < n; k++) FX.push({ t: 'coin', x: f.x + rand(-4, 4), y, vx: rand(-40, 30) * (f.boss ? 1.6 : 1), vy: -rand(30, 70) * (f.boss ? 1.4 : 1), wait: rand(0.35, 0.55) + (f.boss ? k * 0.03 : 0), sp: 0, life: 9, max: 9 });
+  if (f.boss) { FX.push({ t: 'ringat', x: f.x, y, life: 0.6, max: 0.6, col: '#ffd36b' }); FX.push({ t: 'num', x: f.x, y: f.y - f.h - 14, str: '+' + fmt(g), col: '#ffd36b', life: 1.6, max: 1.6 }); }
+  else FX.push({ t: 'num', x: f.x, y: f.y - f.h - 6, str: '+' + fmt(g), col: '#e4b75c', life: 0.9, max: 0.9 });
+}
 function goldFx(g) { if (document.hidden) return; const p = HERO_POS[YOU]; FX.push({ t: 'num', x: p.x, y: p.y - 44, str: '+' + fmt(g), col: '#e4b75c', life: 1.1, max: 1.1 }); }
 function foeNum(f, str, col) { if (document.hidden) return; FX.push({ t: 'num', x: f.x + rand(-8, 8), y: f.y - f.h - 12, str, col, life: 0.8, max: 0.8 }); }
-function resetScene() { FX = FX.filter(f => f.t === 'num'); heroAnim.forEach(a => { a.atk = -1; a.flash = 0; a.cast = 0; }); }
+function resetScene() { FX = FX.filter(f => f.t === 'num' || f.t === 'coin'); heroAnim.forEach(a => { a.atk = -1; a.flash = 0; a.cast = 0; }); }
 
 function heroAt(px, py) {
   let best = null, bd = 1e9;
@@ -2064,6 +2096,20 @@ function renderScene(dt) {
   if (C.medi && Math.random() < dt * 16) FX.push({ t: 'p', x: yp.x + rand(-8, 8), y: yp.y - rand(0, 6), vx: 0, vy: -18, g: 0, life: 0.8, max: 0.8, col: '#7ba3ee', s: 1 });
 
   FX = FX.filter(f => {
+    if (f.t === 'coin') {
+      const p = HERO_POS[YOU], tx = p.x, ty = p.y - 14;
+      if (f.wait > 0) { f.wait -= dt; f.vy += 160 * dt; f.vx *= 1 - 2 * dt; f.x += f.vx * dt; f.y = Math.min(f.y + f.vy * dt, 152); }
+      else {
+        const ddx = tx - f.x, ddy = ty - f.y, dd = Math.hypot(ddx, ddy); f.sp += 600 * dt;
+        const step = f.sp * dt;
+        if (dd <= step + 2) { if (Math.random() < 0.5) FX.push({ t: 'p', x: tx + rand(-3, 3), y: ty + rand(-3, 3), vx: rand(-8, 8), vy: -rand(8, 20), g: 0, life: 0.3, max: 0.3, col: '#ffe9b0', s: 1 }); return false; }
+        f.x += ddx / dd * step; f.y += ddy / dd * step;
+      }
+      const spin = (f.wait * 12 + f.x) | 0, w = spin % 3 === 0 ? 1 : 2;
+      cx.fillStyle = '#8a5a12'; cx.fillRect(Math.round(f.x - w / 2), Math.round(f.y) + 1, w, 1);
+      cx.fillStyle = '#ffd36b'; cx.fillRect(Math.round(f.x - w / 2), Math.round(f.y) - 1, w, 2);
+      return true;
+    }
     if (f.t === 'proj') {
       const ddx = f.tx - f.x, ddy = f.ty - f.y, dd = Math.hypot(ddx, ddy), step = f.sp * dt;
       if (dd <= step) { burst(f.tx, f.ty, f.col, 6); if (f.hero) f.hero.flash = 0.05; return false; }
@@ -2140,19 +2186,101 @@ function buildArena() {
     frameEls.push({ f, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
       floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '' });
   });
-  $('#spells').addEventListener('click', e => { const b = e.target.closest('[data-spell]'); if (b) tryCast(SP[b.dataset.spell]); if (e.target.closest('[data-potion]')) drinkPotion(); });
+  wireActionBar();
 }
-let spellKey = '';
+/* ---------- Action bar: 12 bindable slots; drag spells onto keys ---------- */
+const BIND_KEYS = ['1', '2', '3', '4', '5', '6', 'e', 'f', 'r', 't', 'q', 'y'];
+let editBinds = false, picked = null, barKey = '';
+const usable = id => id === 'potion' ? lvl('garden') > 0 : known(id);
+const allActions = () => [...barSpells().map(s => s.id), ...(lvl('garden') ? ['potion'] : [])];
+function autoBind(id) {
+  if (!S.binds) S.binds = {};
+  if (!S.bindSeen) S.bindSeen = [];
+  if (S.bindSeen.includes(id)) return; // bind each new spell once; after that the player decides
+  S.bindSeen.push(id);
+  if (Object.values(S.binds).includes(id)) return;
+  const order = id === 'potion' ? ['q', ...BIND_KEYS] : BIND_KEYS.filter(k => k !== 'q').concat('q');
+  const k = order.find(k => !S.binds[k] || !usable(S.binds[k]));
+  if (k) S.binds[k] = id;
+}
+function bindTo(k, id, fromKey) {
+  const old = S.binds[k];
+  for (const kk in S.binds) if (S.binds[kk] === id) delete S.binds[kk];
+  S.binds[k] = id;
+  if (fromKey && old && old !== id) S.binds[fromKey] = old;
+  barKey = '';
+}
+const actName = id => id === 'potion' ? 'Mana Potion' : SP[id].name;
+const actIcon = id => id === 'potion' ? 'potion' : 's_' + id;
 function buildSpellBar() {
-  const list = barSpells(), key = list.map(s => s.id).join(',') + ':' + lvl('garden');
-  if (key === spellKey) return;
-  spellKey = key;
-  const sb = $('#spells');
-  const locked = SPELLS.length - list.length;
-  sb.innerHTML = list.map((sp, i) => `<button class="spell" type="button" data-spell="${sp.id}"><span class="key">${i + 1}</span>${img('s_' + sp.id, 0, 'sm')}<span class="sp-name">${sp.name}</span><span class="sp-cost"></span><i class="cd"></i><span class="cdt"></span></button>`).join('')
-    + (lvl('garden') ? `<button class="spell" type="button" data-potion="1"><span class="key">Q</span>${img('potion', 0, 'sm')}<span class="sp-name">Mana Potion</span><span class="sp-cost" id="potCount"></span><i class="cd" id="potCd"></i><span class="cdt" id="potCdt"></span></button>` : '')
-    + (locked ? `<div class="spell locked-slot">${locked} more spell${locked === 1 ? '' : 's'} to learn in Talents</div>` : '');
-  list.forEach(sp => { const el = sb.querySelector(`[data-spell="${sp.id}"]`); sp.el = el; sp.costEl = el.querySelector('.sp-cost'); sp.cdEl = el.querySelector('.cd'); sp.cdtEl = el.querySelector('.cdt'); });
+  allActions().forEach(autoBind);
+  const key = JSON.stringify(S.binds) + allActions().join(',') + editBinds + picked;
+  if (key === barKey) return;
+  barKey = key;
+  $('#spells').innerHTML = BIND_KEYS.map(k => {
+    const id = S.binds[k] && usable(S.binds[k]) ? S.binds[k] : null;
+    return id ? `<button class="spell" type="button" draggable="true" data-slot="${k}" data-act="${id}"><span class="key">${k.toUpperCase()}</span>${img(actIcon(id), 0, 'sm')}<span class="sp-name">${actName(id)}</span><span class="sp-cost"></span><i class="cd"></i><span class="cdt"></span></button>`
+      : `<button class="spell empty-slot ${picked ? 'armed' : ''}" type="button" data-slot="${k}"><span class="key">${k.toUpperCase()}</span><span class="sp-meta">${editBinds ? 'Drop here' : 'Empty'}</span></button>`;
+  }).join('');
+  const locked = SPELLS.length - barSpells().length;
+  $('#bindBtn').textContent = editBinds ? 'Done' : 'Edit keybinds';
+  $('#bindBtn').setAttribute('aria-pressed', editBinds);
+  const book = $('#spellbook');
+  book.hidden = !editBinds;
+  if (editBinds) book.innerHTML = `<span class="label">Drag a spell onto a key, or click a spell and then a key. Drag a key back here to clear it.</span>
+    <div class="sbook">${allActions().map(id => `<button class="sbk ${picked === id ? 'picked' : ''}" type="button" draggable="true" data-sb="${id}">${img(actIcon(id), 0, 'sm')}${actName(id)}</button>`).join('')}</div>
+    ${locked ? `<span class="label">${locked} more spell${locked === 1 ? '' : 's'} to learn in Talents</span>` : ''}`;
+}
+function useAction(id) { if (id === 'potion') drinkPotion(); else if (known(id)) tryCast(SP[id]); }
+function wireActionBar() {
+  const bar = $('#spells'), book = $('#spellbook');
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('[data-slot]'); if (!b) return;
+    const k = b.dataset.slot;
+    if (editBinds) {
+      if (picked) { bindTo(k, picked); picked = null; }
+      else if (S.binds[k]) { picked = S.binds[k]; delete S.binds[k]; }
+      barKey = '';
+    } else if (b.dataset.act) useAction(b.dataset.act);
+  });
+  book.addEventListener('click', e => { const s = e.target.closest('[data-sb]'); if (s) { picked = picked === s.dataset.sb ? null : s.dataset.sb; barKey = ''; } });
+  const startDrag = e => {
+    const s = e.target.closest('[data-sb], [data-act]'); if (!s) return;
+    e.dataTransfer.setData('text/plain', JSON.stringify({ id: s.dataset.sb || s.dataset.act, from: s.dataset.slot || null }));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  bar.addEventListener('dragstart', startDrag); book.addEventListener('dragstart', startDrag);
+  bar.addEventListener('dragover', e => { const b = e.target.closest('[data-slot]'); if (b) { e.preventDefault(); bar.querySelectorAll('.over').forEach(x => x.classList.remove('over')); b.classList.add('over'); } });
+  bar.addEventListener('dragleave', e => { const b = e.target.closest('[data-slot]'); if (b && !b.contains(e.relatedTarget)) b.classList.remove('over'); });
+  bar.addEventListener('drop', e => {
+    const b = e.target.closest('[data-slot]'); if (!b) return;
+    e.preventDefault();
+    try { const d = JSON.parse(e.dataTransfer.getData('text/plain')); if (d.id) bindTo(b.dataset.slot, d.id, d.from); } catch (err) {}
+  });
+  book.addEventListener('dragover', e => e.preventDefault());
+  book.addEventListener('drop', e => {
+    e.preventDefault();
+    try { const d = JSON.parse(e.dataTransfer.getData('text/plain')); if (d.from) { delete S.binds[d.from]; barKey = ''; } } catch (err) {}
+  });
+  $('#bindBtn').addEventListener('click', () => { editBinds = !editBinds; picked = null; barKey = ''; });
+}
+function updateActionBar() {
+  $('#spells').querySelectorAll('[data-act]').forEach(el => {
+    const id = el.dataset.act, costEl = el.querySelector('.sp-cost'), cdEl = el.querySelector('.cd'), cdtEl = el.querySelector('.cdt');
+    if (id === 'potion') {
+      const cd = C.cds.potion || 0;
+      costEl.textContent = `${C.potions || 0} left`; cdEl.style.height = (Math.min(1, cd / 20) * 100) + '%'; cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
+      el.classList.toggle('nomana', !(C.potions > 0));
+      return;
+    }
+    const sp = SP[id], cost = spellCost(sp);
+    el.classList.toggle('nomana', C.mana < cost);
+    el.classList.toggle('silenced', C.silenced === sp.id);
+    costEl.textContent = C.silenced === sp.id ? 'Silenced' : cost ? `${fmt(cost)} mana` : 'Free';
+    const cdMax = spellCd(sp), cd = C.cds[sp.id] || 0, frac = cd > 0 ? cd / cdMax : (C.gcd > 0 && castTime(sp) === 0 ? C.gcd : 0);
+    cdEl.style.height = (Math.min(1, frac) * 100) + '%';
+    cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
+  });
 }
 function floatTxt(i, text, cls) {
   if (document.hidden) return;
@@ -2237,20 +2365,9 @@ function renderArena() {
   $('#manaFill').style.width = (100 * C.mana / D.maxMana) + '%';
   $('#manaTxt').textContent = `Mana ${fmt(C.mana)} / ${fmt(D.maxMana)}  ·  +${fmt(D.regen)}/s`;
   $('#devFill').style.width = C.dev + '%';
-  const pc = $('#potCount');
-  if (pc) { const cd = C.cds.potion || 0; pc.textContent = `${C.potions || 0} left`; $('#potCd').style.height = (Math.min(1, cd / 20) * 100) + '%'; $('#potCdt').textContent = cd > 1 ? Math.ceil(cd) : ''; }
   $('#devTxt').textContent = `Devotion ${Math.round(C.dev)}%  ·  rewards ×${devMult().toFixed(1)}`;
 
-  barSpells().forEach(sp => {
-    if (!sp.el) return;
-    const cost = spellCost(sp);
-    sp.el.classList.toggle('nomana', C.mana < cost);
-    sp.el.classList.toggle('silenced', C.silenced === sp.id);
-    sp.costEl.textContent = C.silenced === sp.id ? 'Silenced' : cost ? `${fmt(cost)} mana` : 'Free';
-    const cdMax = spellCd(sp), cd = C.cds[sp.id] || 0, frac = cd > 0 ? cd / cdMax : (C.gcd > 0 && castTime(sp) === 0 ? C.gcd : 0);
-    sp.cdEl.style.height = (Math.min(1, frac) * 100) + '%';
-    sp.cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
-  });
+  updateActionBar();
 }
 
 /* =========================================================
@@ -2264,7 +2381,7 @@ const availableUpgrades = () => UPGRADES.filter(u => !has(u.id) && u.req()).sort
 const findItem = id => S.inv.find(x => x.id === id);
 function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
-  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + S.mats.join(',') + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
+  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
     : tab === 'armory' ? itemsKey + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree
     : tab === 'dungeons' ? JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest')
@@ -2345,7 +2462,7 @@ function learnTal(key) {
   const n = TNODE[key]; if (!n || canLearn(n) !== true) return;
   const rk = ranksOf(n.owner); rk[n.id] = (rk[n.id] || 0) + 1;
   recalc();
-  if (n.spell) { log(`<span class="x">Learned ${n.name}.</span>`); toast(`Learned ${n.name}. It's on your spell bar.`); }
+  if (n.spell) { log(`<span class="x">Learned ${n.name}.</span>`); toast(`Learned ${n.name}. It's on your action bar.`); }
   tSel = key; shopDirty = true; renderPane();
 }
 pane.addEventListener('dblclick', e => { const b = e.target.closest('[data-tal]'); if (b) learnTal(b.dataset.tal); });
@@ -2422,30 +2539,187 @@ function expedition(secs) {
     ${ups.length ? `<p class="lvl">Level up: ${[...new Set(ups)].join(', ')}</p>` : ''}
     <div class="actions"><button class="btn primary" data-run="dismiss">Back to the fight</button></div></div>`);
 }
+/* ---------- Town scene: a little pixel-art town; buildings appear the first time you build them ---------- */
+const TW = 320, TH = 176;
+// x, y: ground point under the building's centre; top: height of the drawing (for hit-testing, banners and the rise animation)
+const PLOTS = {
+  chapel:    { x: 160, y: 66,  top: 64 },
+  cloister:  { x: 84,  y: 74,  top: 46 },
+  library:   { x: 236, y: 74,  top: 44 },
+  infirmary: { x: 48,  y: 130, top: 34 },
+  garden:    { x: 120, y: 146, top: 28 },
+  smithy:    { x: 202, y: 146, top: 36 },
+  barracks:  { x: 274, y: 130, top: 34 },
+};
+const TOWN_ANIM = {};
+let townSel = 'cloister', townHover = null, townT = 0, townBg = null, TFX = [];
+function buildTownBg() {
+  const c = document.createElement('canvas'); c.width = TW; c.height = TH;
+  const x = c.getContext('2d');
+  const gr = x.createLinearGradient(0, 0, 0, 40); gr.addColorStop(0, '#2b2a4a'); gr.addColorStop(1, '#6a6a8a');
+  x.fillStyle = gr; x.fillRect(0, 0, TW, 40);
+  x.fillStyle = '#3e4a5a'; for (let k = 0; k < TW; k += 2) x.fillRect(k, 26 + Math.round(Math.sin(k / 23) * 4 + Math.sin(k / 9) * 2), 2, 20);
+  x.fillStyle = '#4c7a3c'; x.fillRect(0, 36, TW, TH - 36);
+  for (let k = 0; k < 500; k++) { x.fillStyle = hash(k) > 0.5 ? '#558a42' : '#43703a'; x.fillRect(Math.floor(hash(k * 3.1) * TW), 36 + Math.floor(hash(k * 7.7) * (TH - 36)), 2, 1); }
+  // roads: the main street, the lane up to the chapel and paths to each plot
+  x.fillStyle = '#a8916a';
+  x.fillRect(0, 92, TW, 12); x.fillRect(154, 66, 12, TH - 66);
+  for (const id in PLOTS) { const p = PLOTS[id]; if (p.y < 92) x.fillRect(p.x - 3, p.y, 6, 92 - p.y); else x.fillRect(p.x - 3, 104, 6, p.y - 104); }
+  x.fillStyle = '#8f7a56'; for (let k = 0; k < 160; k++) x.fillRect(Math.floor(hash(k * 5.3) * TW), 93 + Math.floor(hash(k * 2.9) * 10), 2, 1);
+  // trees around the edges
+  for (const [tx, ty] of [[12, 70], [26, 90], [300, 64], [312, 96], [10, 160], [150, 172], [306, 168], [128, 84], [196, 84], [100, 112], [222, 116]]) {
+    x.fillStyle = '#00000033'; x.fillRect(tx - 6, ty - 1, 12, 2);
+    x.fillStyle = '#5a3d28'; x.fillRect(tx - 1, ty - 6, 2, 6);
+    x.fillStyle = '#2f5d34'; x.fillRect(tx - 6, ty - 15, 12, 9); x.fillRect(tx - 4, ty - 18, 8, 3);
+    x.fillStyle = '#3f7a44'; x.fillRect(tx - 4, ty - 14, 5, 4);
+  }
+  return c;
+}
+function drawBuilding(id, X, Y, t) {
+  switch (id) {
+    case 'cloister':
+      r(X - 18, Y - 22, 36, 22, '#8d8a9a'); r(X - 18, Y - 22, 36, 1, '#a9a6b6');
+      r(X - 20, Y - 28, 40, 6, '#4a4560'); r(X - 16, Y - 32, 32, 4, '#4a4560');
+      r(X + 7, Y - 44, 9, 14, '#8d8a9a'); r(X + 6, Y - 46, 11, 3, '#4a4560'); r(X + 10, Y - 41, 3, 4, '#e4b75c');
+      r(X - 4, Y - 12, 8, 12, '#3a2a20'); r(X - 3, Y - 13, 6, 1, '#3a2a20');
+      r(X - 14, Y - 17, 4, 5, '#e8c86a'); r(X + 10, Y - 17, 4, 5, '#e8c86a');
+      break;
+    case 'infirmary':
+      r(X - 17, Y - 24, 34, 24, '#e8e2d4'); r(X - 19, Y - 30, 38, 6, '#a8433d'); r(X - 15, Y - 33, 30, 3, '#a8433d');
+      r(X - 2, Y - 22, 4, 10, '#c9504a'); r(X - 5, Y - 19, 10, 4, '#c9504a');
+      r(X - 3, Y - 9, 6, 9, '#6b4a2e'); r(X - 14, Y - 19, 5, 5, '#9fc4e8'); r(X + 9, Y - 19, 5, 5, '#9fc4e8');
+      break;
+    case 'garden': {
+      r(X - 20, Y - 14, 40, 11, '#5a3d28');
+      for (let row = 0; row < 3; row++) for (let col = 0; col < 7; col++) {
+        const sway = Math.sin(t * 2 + col + row) > 0.6 ? 1 : 0;
+        r(X - 18 + col * 5 + sway, Y - 13 + row * 4, 2, 3, '#6fbf73'); r(X - 18 + col * 5 + sway, Y - 14 + row * 4, 2, 1, '#9be06a');
+      }
+      r(X + 10, Y - 26, 12, 12, '#8a6a44'); r(X + 9, Y - 28, 14, 3, '#5e3c1c'); r(X + 14, Y - 21, 4, 7, '#4a3220');
+      r(X - 22, Y - 3, 44, 1, '#9a7350'); for (let k = 0; k <= 7; k++) r(X - 22 + k * 6, Y - 6, 1, 6, '#7a5434');
+      break;
+    }
+    case 'chapel':
+      r(X - 15, Y - 24, 30, 24, '#cfc7b8'); r(X - 17, Y - 30, 34, 6, '#6b5a8a'); r(X - 13, Y - 34, 26, 4, '#6b5a8a');
+      r(X - 4, Y - 50, 8, 20, '#cfc7b8'); r(X - 5, Y - 54, 10, 4, '#6b5a8a'); r(X - 3, Y - 58, 6, 4, '#6b5a8a');
+      r(X - 1, Y - 64, 2, 6, '#e4b75c'); r(X - 3, Y - 62, 6, 2, '#e4b75c');
+      r(X - 3, Y - 21, 6, 8, '#b07ae0'); r(X - 2, Y - 22, 4, 1, '#b07ae0'); r(X - 3, Y - 8, 6, 8, '#5a3d28');
+      break;
+    case 'library':
+      r(X - 15, Y - 34, 30, 34, '#9a7a5a'); r(X - 17, Y - 40, 34, 6, '#3c5aa0'); r(X - 13, Y - 44, 26, 4, '#3c5aa0');
+      for (const wy of [30, 19]) { r(X - 11, Y - wy, 5, 6, '#fff2a8'); r(X + 6, Y - wy, 5, 6, '#fff2a8'); }
+      r(X - 3, Y - 10, 6, 10, '#4a3220'); r(X - 5, Y - 37, 10, 4, '#e8dcc0'); r(X, Y - 37, 1, 4, '#7a5434');
+      break;
+    case 'smithy':
+      r(X - 17, Y - 20, 30, 20, '#6a5040'); r(X - 19, Y - 26, 34, 6, '#3a2a20'); r(X + 6, Y - 36, 5, 12, '#5a5560');
+      r(X - 13, Y - 15, 11, 11, '#2a1d17'); r(X - 12, Y - 12, 9, 8, (t * 6 | 0) % 2 ? '#ff9f43' : '#e07a3a');
+      r(X + 14, Y - 5, 8, 2, '#5d6372'); r(X + 16, Y - 3, 4, 3, '#5d6372');
+      break;
+    case 'barracks': {
+      r(X - 20, Y - 20, 36, 20, '#8a6a44'); for (let k = 0; k < 4; k++) r(X - 20, Y - 16 + k * 4, 36, 1, '#7a5a38');
+      r(X - 22, Y - 26, 40, 6, '#5e3c1c'); r(X - 6, Y - 10, 7, 10, '#4a3220');
+      const wave = (t * 4 | 0) % 2;
+      r(X + 19, Y - 34, 1, 34, '#7a5434'); r(X + 20, Y - 34, 7, 8, '#c9504a'); r(X + 20 + wave, Y - 26, 6 - wave, 2, '#c9504a');
+      r(X - 28, Y - 12, 1, 12, '#7a5434'); r(X - 30, Y - 10, 5, 1, '#7a5434'); r(X - 29, Y - 15, 3, 3, '#d8c49a');
+      break;
+    }
+  }
+}
+function drawPlot(X, Y, t, hot) {
+  r(X - 16, Y - 10, 32, 10, '#6b5235'); r(X - 16, Y - 10, 32, 1, '#7d6242');
+  for (const sx of [-16, 15]) { r(X + sx, Y - 14, 1, 14, '#a8865c'); }
+  r(X - 16, Y - 13, 32, 1, '#d8c49a88');
+  r(X - 5, Y - 24, 10, 8, '#8a6a44'); r(X - 1, Y - 16, 2, 6, '#7a5434');
+  const a = hot ? 1 : 0.5 + 0.4 * Math.sin(t * 3);
+  P.globalAlpha = a; r(X - 1, Y - 23, 2, 6, '#e4b75c'); r(X - 3, Y - 21, 6, 2, '#e4b75c'); P.globalAlpha = 1;
+}
+function plotAt(px, py) {
+  let hit = null;
+  for (const id in PLOTS) { const p = PLOTS[id]; if (px > p.x - 24 && px < p.x + 24 && py > p.y - p.top - 4 && py < p.y + 4) hit = id; }
+  return hit;
+}
+function renderTownScene(dt) {
+  const tc = $('#townCv'); if (!tc) return;
+  townT += dt;
+  const x = tc.getContext('2d'); x.imageSmoothingEnabled = false;
+  if (!townBg) townBg = buildTownBg();
+  x.drawImage(townBg, 0, 0);
+  // fountain in the square
+  x.fillStyle = '#8d8a9a'; x.fillRect(150, 100, 20, 6); x.fillStyle = '#6f9be8'; x.fillRect(152, 101, 16, 3);
+  x.fillStyle = '#b4bccc'; x.fillRect(159, 92, 2, 9);
+  for (let k = 0; k < 4; k++) { const f = (townT * 2 + k / 4) % 1; x.fillStyle = '#bfe0ff'; x.fillRect(Math.round(160 + (k - 1.5) * 4 * f), Math.round(92 - 6 * Math.sin(f * Math.PI)), 1, 1); }
+  const prevP = P; P = x;
+  Object.keys(PLOTS).sort((a, b) => PLOTS[a].y - PLOTS[b].y).forEach(id => {
+    const p = PLOTS[id], L = lvl(id), hot = id === townHover || id === townSel;
+    x.fillStyle = '#00000033'; x.fillRect(p.x - 20, p.y - 1, 40, 3);
+    if (!L) { drawPlot(p.x, p.y, townT, hot); }
+    else {
+      let prog = 1;
+      if (TOWN_ANIM[id] != null) { TOWN_ANIM[id] += dt; prog = Math.min(1, TOWN_ANIM[id] / 0.8); if (prog >= 1) delete TOWN_ANIM[id]; }
+      x.save(); x.beginPath(); x.rect(p.x - 34, p.y - p.top * prog - 2, 68, p.top * prog + 4); x.clip();
+      drawBuilding(id, p.x, p.y, townT);
+      if (L >= 4) { const fy = p.y - p.top; r(p.x - 12, fy + 2, 1, 7, '#7a5434'); r(p.x - 11, fy + 2, 4, 3, '#e4b75c'); }
+      if (L >= TOWN_MAX) { r(p.x - 18, p.y - 1, 36, 1, '#e4b75c'); }
+      x.restore();
+      if (prog < 1 && Math.random() < dt * 40) TFX.push({ x: p.x + rand(-18, 18), y: p.y - rand(0, 4), vx: rand(-10, 10), vy: -rand(4, 14), life: 0.7, col: '#d8c49a' });
+      // level badge
+      pdraw(String(L), p.x + 18, p.y - p.top + 2, '#ffd36b', x);
+    }
+    if (id === 'smithy' && L && Math.random() < dt * 6) TFX.push({ x: p.x + 8, y: p.y - 37, vx: rand(-2, 4), vy: -rand(6, 12), life: 1.6, col: '#9a9aa8' });
+    if (hot) {
+      x.strokeStyle = id === townSel ? '#e4b75c' : '#f3ead899'; x.lineWidth = 1; x.setLineDash([2, 2]);
+      x.strokeRect(p.x - 24.5, p.y - p.top - 4.5, 49, p.top + 8); x.setLineDash([]);
+    }
+  });
+  P = prevP;
+  TFX = TFX.filter(f => {
+    f.life -= dt; if (f.life <= 0) return false;
+    f.x += f.vx * dt; f.y += f.vy * dt;
+    x.globalAlpha = Math.min(1, f.life); x.fillStyle = f.col; x.fillRect(Math.round(f.x), Math.round(f.y), 1, 1); x.globalAlpha = 1;
+    return true;
+  });
+  const lid = townHover || townSel;
+  if (lid) {
+    const p = PLOTS[lid], name = TOWNB[lid].name + (lvl(lid) ? '' : ' (empty plot)');
+    x.font = '8px monospace'; x.textAlign = 'center';
+    const ty = p.y + 11 > TH - 2 ? p.y - p.top - 8 : p.y + 11;
+    x.lineWidth = 3; x.strokeStyle = '#1b1622'; x.strokeText(name, p.x, ty); x.fillStyle = '#f3ead8'; x.fillText(name, p.x, ty);
+  }
+}
+function townDetailHtml() {
+  const b = TOWNB[townSel], L = lvl(b.id);
+  const cost = L < TOWN_MAX ? townCost(b, L + 1) : null;
+  return `<div class="tdh">${img(b.icon)}<b>${b.name}</b><span class="label">level ${L}/${TOWN_MAX}</span></div>
+    <p>${L ? 'Now: ' + b.fx(L) + '.' : b.intro}</p>
+    ${cost ? `<p class="sub">Next level: ${b.fx(L + 1)}.</p>` : ''}
+    <div class="actions">${cost ? `<button class="btn primary" data-town="${b.id}">${L ? 'Upgrade' : 'Build'}</button><span class="cost" data-tcost></span>` : '<span class="label">Fully built</span>'}</div>`;
+}
+function wireTown() {
+  const tc = $('#townCv'); if (!tc) return;
+  const at = e => { const rc = tc.getBoundingClientRect(); return plotAt((e.clientX - rc.left) / rc.width * TW, (e.clientY - rc.top) / rc.height * TH); };
+  tc.addEventListener('mousemove', e => { townHover = at(e); tc.style.cursor = townHover ? 'pointer' : 'default'; });
+  tc.addEventListener('mouseleave', () => { townHover = null; });
+  tc.addEventListener('click', e => { const id = at(e); if (id) { townSel = id; const d = $('#townDetail'); if (d) d.innerHTML = townDetailHtml(); updatePane(); } });
+}
 function renderTown() {
   const ups = availableUpgrades();
-  const mats = MATS.map((m, d) => d <= S.dun.unlocked ? `<span class="matchip" style="--mc:${DUNGEONS[d].bg[5]}"><i></i>${m} <b class="num">${fmt(S.mats[d] || 0)}</b></span>` : '').join('');
-  const rows = TOWN.map(b => {
-    const L = lvl(b.id);
-    return `<button class="row" data-town="${b.id}">${img(b.icon)}<span class="nm">${b.name} <span class="lvtag">level ${L}/${TOWN_MAX}</span></span><span class="owned">${L}</span>
-      <span class="ds">${L ? 'Now: ' + b.fx(L) + '.' : b.intro}</span>
-      ${L < TOWN_MAX ? `<span class="next">Next level: ${b.fx(L + 1)}.</span>` : ''}
-      <span class="meta"><span class="cost" data-cost></span></span></button>`;
-  }).join('');
+  const mats = MATS.map((m, d) => d <= S.dun.unlocked ? `<span class="matchip" style="--mc:${DUNGEONS[d].bg[5]}"><i></i>${m} <b class="num" data-mat="${d}">${fmt(S.mats[d] || 0)}</b></span>` : '').join('');
   const r = expeditionRate(1);
   const expo = !D.aco ? 'Build the <b>Acolyte Cloister</b> to hire an Acolyte. They heal in the background and farm for you while you are away.'
     : !r ? 'Clear a dungeon to give your Acolyte somewhere to farm.'
     : `While you're away, your Acolyte leads the party through <b>${DUNGEONS[r.d].name}</b> at ${Math.round(D.aco.eff * 100)}% of your active pace: about <b>${fmt(r.gold)} gold</b>, <b>${fmt(r.xp * D.xpMult)} experience</b> and <b>${fmt(r.mats)} ${MATS[r.d]}</b> an hour, plus items. They farm the dungeon you're in, if you've cleared it, otherwise your deepest clear. Up to 8 hours.`;
   pane.innerHTML = `
+    <div class="section-h"><h3>Town</h3><span class="label">Click a plot to build. Each level needs materials from a deeper dungeon</span></div>
+    <div class="town"><canvas id="townCv" width="${TW}" height="${TH}" aria-label="Your town. Click a building or empty plot to see it."></canvas>
+      <div class="tdetail" id="townDetail">${townDetailHtml()}</div></div>
     <div class="section-h"><h3>Materials</h3><span class="label">Dropped by every stage; more with high Devotion</span></div>
     <div class="mats">${mats}</div>
-    <div class="section-h"><h3>Buildings</h3><span class="label">Each level needs materials from a deeper dungeon</span></div>
-    <div class="rows">${rows}</div>
     <div class="section-h"><h3>Expeditions</h3></div>
     <div class="expo">${img('acolyte')}<p>${expo}</p></div>
     <div class="section-h"><h3>Blessings</h3><span class="label">One-time upgrades</span></div>
     ${ups.length ? `<div class="upgrades">${ups.map(u => `<button class="upg" data-upg="${u.id}">${img(u.icon)}<b>${u.name}</b><span>${u.desc}</span><span class="cost">${fmt(u.cost)} gold</span></button>`).join('')}</div>`
       : '<p class="empty">New blessings appear as you clear more stages.</p>'}`;
+  wireTown(); renderTownScene(0);
 }
 function itemLines(it, cmp) {
   const keys = new Set([...Object.keys(it.stats), ...(cmp ? Object.keys(cmp.stats) : [])]);
@@ -2539,13 +2813,13 @@ function renderChronicle() {
 
 function updatePane() {
   if (tab === 'town') {
-    pane.querySelectorAll('[data-town]').forEach(r => {
-      const b = TOWNB[r.dataset.town], L = lvl(b.id), el = r.querySelector('[data-cost]');
-      if (L >= TOWN_MAX) { r.classList.add('cant'); el.textContent = 'Fully built'; return; }
+    const b = TOWNB[townSel], L = lvl(b.id), el = pane.querySelector('[data-tcost]'), btn = pane.querySelector('[data-town]');
+    if (el && btn && L < TOWN_MAX) {
       const c = townCost(b, L + 1), have = S.mats[c.d] || 0, reach = c.d <= S.dun.unlocked;
-      r.classList.toggle('cant', !reach || S.gold < c.gold || have < c.n);
+      btn.disabled = !reach || S.gold < c.gold || have < c.n;
       el.innerHTML = !reach ? `Needs materials from ${DUNGEONS[c.d].name}` : `<span class="${S.gold < c.gold ? 'short' : ''}">${fmt(c.gold)} gold</span> · <span class="${have < c.n ? 'short' : ''}">${c.n} ${MATS[c.d]} (${fmt(have)})</span>`;
-    });
+    }
+    pane.querySelectorAll('[data-mat]').forEach(m => { m.textContent = fmt(S.mats[+m.dataset.mat] || 0); });
     pane.querySelectorAll('[data-upg]').forEach(u => u.classList.toggle('cant', S.gold < UPG[u.dataset.upg].cost));
   } else if (tab === 'party') {
     const i = partySel, cs = D.cs[i], h = S.heroes[i];
@@ -2591,7 +2865,8 @@ pane.addEventListener('click', e => {
       const c = townCost(b, L + 1);
       if (c.d <= S.dun.unlocked && S.gold >= c.gold && (S.mats[c.d] || 0) >= c.n) {
         S.gold -= c.gold; S.mats[c.d] -= c.n; S.town[b.id] = L + 1; recalc();
-        if (b.id === 'garden') C.potions = (C.potions || 0) + 1;
+        if (L === 0) TOWN_ANIM[b.id] = 0;
+        if (b.id === 'garden') { C.potions = (C.potions || 0) + 1; autoBind('potion'); }
         log(`Built <b>${b.name}</b> level ${L + 1}.`); toast(`${b.name} is now level ${L + 1}.`);
       }
     }
@@ -2656,7 +2931,7 @@ function act(a) {
   else if (a === 'reset-no') confirmReset = false;
   else if (a === 'reset-yes') {
     confirmReset = false; S = newState(); LOG.length = 0; try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
-    sel = null; spellKey = ''; recalc(); enterDungeon(0); log('A new vow. The party gathers at the sewer gate.');
+    sel = null; barKey = ''; recalc(); enterDungeon(0); log('A new vow. The party gathers at the sewer gate.');
   }
 }
 
@@ -2672,10 +2947,10 @@ $('#autoRetry').addEventListener('change', e => {
 
 document.addEventListener('keydown', e => {
   if (e.target.closest?.('input, textarea')) return;
-  const n = parseInt(e.key, 10);
-  if (n >= 1 && n <= 9) { const sp = barSpells()[n - 1]; if (sp) { e.preventDefault(); tryCast(sp); } }
-  else if (e.key === 'Escape' && C.cast) C.cast = null;
-  else if (e.key === 'q' || e.key === 'Q') drinkPotion();
+  if (e.key === 'Escape') { if (editBinds) { editBinds = false; picked = null; barKey = ''; } else if (C.cast) C.cast = null; return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (BIND_KEYS.includes(k) && S.binds[k] && usable(S.binds[k])) { e.preventDefault(); useAction(S.binds[k]); }
 });
 
 /* ---------- Playtest tools (open the page with #dev) ---------- */
@@ -2695,7 +2970,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'pts') S.bonusPts += 5;
   else if (a === 'mats') { for (let d = 0; d <= S.dun.unlocked; d++) S.mats[d] = (S.mats[d] || 0) + 20; }
   else if (a === 'away') expedition(3600);
-  else if (a === 'win' && C.phase === 'fight') C.foes.forEach(f => { f.hp = 0; f.alive = false; f.die = 0.5; });
+  else if (a === 'win' && C.phase === 'fight') C.foes.forEach(f => dealFoe(f, f.hp + 1));
   else if (a === 'unlock') S.dun.unlocked = Math.min(DUNGEONS.length - 1, S.dun.unlocked + 1);
   else if (a === 'loot') { const it = genItem(ilvlFor(S.dun.current, 1)); const n = addToBag(it); toast(`Dropped ${it.name}${n ? ' (' + n + ')' : ''}.`); }
   else if (a === 'xp') { S.heroes.forEach((h, i) => { h.lv++; heroAnim[i].lvl = 2; }); recalc(); }
@@ -2767,6 +3042,7 @@ function frame(now) {
   }
   renderScene(dt * DEV.speed);
   renderArena();
+  if (tab === 'town') renderTownScene(dt);
   $('#gold').textContent = fmt(Math.floor(S.gold));
   $('#tpts').textContent = skillPoints();
   $('#pilvl').textContent = partyIlvl().toFixed(1);

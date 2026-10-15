@@ -1,6 +1,6 @@
 # Mendwright
 
-A small healing game in a single HTML file. It mixes the party healing of **Master Healer Kale**, WoW-style talent trees, and **Mini Healer** with Cookie Clicker–style idle income and an **Astlibra**-style item mastery system.
+A small healing game in a single HTML file. It mixes the party healing of **Master Healer Kale** and **Mini Healer** with WoW-style talent trees, a town you build up, idle expeditions while you're away, and an **Astlibra**-style item mastery system.
 
 Open `index.html` in a browser. Progress saves to your browser's local storage every 10 seconds.
 
@@ -8,14 +8,13 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - **Heal the party.** Click a hero in the battle scene or a party frame to target them, then click a spell or press its number. Hovering a frame and pressing a key casts on that frame. `Esc` cancels a cast.
 - **Targeting.** A gold ring marks who your next spell will hit. While you cast, a green glow builds on the ally about to receive the heal.
-- **Mana.** Spell costs grow with your healing power. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one.
+- **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one.
 - **Dungeons.** Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **You lose** if you die or the rest of the party dies. Rewards from stages you cleared are kept. With *Repeat dungeon* on, the run starts again by itself.
 
 ## Why heal actively
 
 - **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold, experience and loot from every stage, from ×0.5 when you idle up to ×3. It fades slowly on its own and gains less the higher it gets, so steady, efficient healing holds it around ×1.5–2. Reaching ×3 takes a lot of work.
-- **Heals pay income.** Every heal that actually restores health pays a few seconds of your buildings' gold per second, so healing keeps pace as your income grows. Tithe upgrades raise it from 1 second to 20.
 - **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
 
 ## Cleric talents
@@ -46,12 +45,25 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - **Gear.** Enemies drop items for the Cleric's six slots and the companions' three, in five rarities. The header shows your **party item level**, the average across all 18 slots. **Equip best items** fills every slot automatically: armor goes to the tank first, and weapons and charms go to the hardest hitters first. Enchant equipped items with gold for +10% stats per level.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
-- **The sanctum.** Healing earns gold. Buildings earn gold every second, and blessings are one-time upgrades. Buildings keep earning for up to 8 hours while you're away.
+- **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. Seven buildings, up to level 8 each, cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper unlocks the next tier:
+
+  | Building | What it does |
+  |---|---|
+  | Acolyte Cloister | Hires and upgrades the Acolyte |
+  | Infirmary | Better resting between stages; fallen allies return with more health |
+  | Herb Garden | Mana potions you drink mid-fight with Q |
+  | Chapel | Starts each run with Devotion; Devotion fades slower |
+  | Library | More experience |
+  | Smithy | Cheaper, stronger enchanting |
+  | Barracks | Cheaper training |
+
+  The Town tab also sells one-time blessings for gold.
+- **Expeditions.** Once you build the Acolyte Cloister, an Acolyte heals the party in the background (weakly at first). While the game is closed or in another tab, the Acolyte leads the party through the dungeon you're in, if you've cleared it, otherwise your deepest clear. They run at 20–55% of your active pace for up to 8 hours and bring back gold, experience, materials and items.
 
 ## Playtesting
 
 - **Quickest:** open `index.html` straight from disk by double-clicking it.
 - **Local server:** `python3 -m http.server 8000` in this folder, then open <http://localhost:8000>.
-- **Playtest tools:** add `#dev` to the end of the address (for example `index.html#dev`) to show a panel under the spell bar: game speed 1× / 3× / 10×, +1K gold, gold ×10, +5 Cleric talent points, win the current stage, unlock the next dungeon, drop an item, level everyone up, and infinite mana. Remove `#dev` to hide it again.
+- **Playtest tools:** add `#dev` to the end of the address (for example `index.html#dev`) to show a panel under the spell bar: game speed 1× / 3× / 10×, +1K gold, gold ×10, +5 Cleric talent points, +20 materials, simulate 1 hour away, win the current stage, unlock the next dungeon, drop an item, level everyone up, and infinite mana. Remove `#dev` to hide it again.
 - **Fresh start:** Chronicle tab → *Start over*, or use a private window.
 - **On your phone or for friends:** turn on GitHub Pages (repo Settings → Pages → *Deploy from a branch*, pick the branch and `/ (root)`).

@@ -102,6 +102,18 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .slot.static{cursor:default}
 .mats{display:flex;flex-wrap:wrap;gap:6px}
 .promo{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.rung .portrait.rg{height:22px;width:auto;margin-bottom:2px;opacity:.45;filter:grayscale(.6)}.rung.on .portrait.rg,.rung.next .portrait.rg{opacity:1;filter:none}
+.rung.on{border-color:var(--tc)!important}.rung.on b{color:var(--tc)!important}
+.pnext{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:10px;border-radius:8px;border:1px solid color-mix(in srgb,var(--tc) 50%,transparent);background:linear-gradient(90deg,color-mix(in srgb,var(--tc) 14%,transparent),transparent)}
+.pnext h4{margin:0 0 2px;color:var(--tc);font-family:var(--display);font-weight:500}.pnext p{margin:0 0 4px;font-size:.86rem}
+.pvs{display:flex;align-items:center;gap:6px}.pvs span{color:var(--muted)}.pvs .portrait{height:48px;width:auto}
+.pvs .glow{filter:drop-shadow(0 0 6px var(--tc))}
+@media (max-width:520px){.pnext{grid-template-columns:minmax(0,1fr)}}
+.perklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.82rem}
+.perklist li{display:flex;gap:8px;align-items:baseline;padding:4px 8px;border-radius:6px;color:var(--muted);opacity:.7}
+.perklist li .pt{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;min-width:6.5em;color:var(--tc)}
+.perklist li b{color:var(--ink);white-space:nowrap}
+.perklist li.on{opacity:1;background:color-mix(in srgb,var(--tc) 12%,transparent)}.perklist li.next{opacity:1;border:1px dashed var(--tc)}
 .promo .sub{margin:0;color:var(--muted);font-size:.84rem}.promo .short{color:var(--hurt)}.promo .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .ladder{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
 .rung{display:flex;flex-direction:column;align-items:center;padding:5px 2px;border-radius:6px;background:#ffffff08;border:1px solid transparent;min-width:0}
@@ -109,7 +121,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .rung.on{background:color-mix(in srgb,var(--rc) 22%,transparent);border-color:color-mix(in srgb,var(--rc) 50%,transparent)}.rung.on b{color:var(--rc)}
 .rung.next{border-color:var(--gold);border-style:dashed}
 @media (max-width:520px){.ladder{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.pcard .stars{color:var(--gold);font-size:.62rem;letter-spacing:-1px;min-height:.8em}
+.pcard .portrait{filter:drop-shadow(0 0 4px color-mix(in srgb,var(--tc) 70%,transparent))}
+.pcard .stars{color:var(--tc);font-size:.62rem;letter-spacing:-1px;min-height:.8em}
 .pcard .pup{position:absolute;top:4px;left:5px;color:var(--gold);font-size:.7rem;animation:suggest 1.1s infinite;border-radius:4px}
 .ptitle{font-size:.72rem;color:var(--gold);font-family:var(--body);font-weight:500;margin-left:4px}
 .coffers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -340,6 +353,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 .ttabs{display:flex;gap:6px;flex-wrap:wrap}
 .portrait{image-rendering:pixelated;display:block}
+.frame .portrait.fr{filter:drop-shadow(0 0 2px var(--tc,transparent))}
 .portrait.fr{display:inline-block;height:16px;width:auto;vertical-align:-3px;margin-right:4px}
 .frame{border-left:3px solid var(--rc,var(--line))}
 .pcards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
@@ -867,7 +881,7 @@ const COMP_TREES = [
     { id: 'storm', name: 'Frost', col: '#8fd0ff', desc: 'Ilda chills the pack and shatters ice across it', nodes: [
       T_('rapid', 0, 0, 'Rapid Casting', 'scroll', 5, '+5% attack speed', { spd: 0.05 }),
       T_('robes', 0, 1, 'Ice Barrier', 'chest', 5, '+4% health', { hp: 0.04 }),
-      T_('chain', 1, 0, 'Ice Shards', 's_ward', 1, 'Her bolts shatter, splashing every other enemy for 30%', { splash: 0.3 }, { cost: 2 }),
+      T_('chain', 1, 0, 'Ice Shards', 's_ward', 1, "Ilda's bolts shatter, splashing every other enemy for 30%", { splash: 0.3 }, { cost: 2 }),
       T_('flow', 1, 1, 'Flow', 'scroll', 5, '+4% attack speed', { spd: 0.04 }),
       T_('firestorm', 2, 0, 'Blizzard', 's_ward', 1, 'Splash damage increased to 60%', { splash: 0.3 }, { cost: 2, req: 'chain' }),
       T_('embers', 2, 1, 'Cold Snap', 's_ward', 5, '+4% damage', { dmg: 0.04 }),
@@ -875,13 +889,13 @@ const COMP_TREES = [
 ];
 /* Companion attacks: each spec has one in its third column. Learn it, then improve it with the talents right below. */
 const CABIL = {
-  slam:   { i: 0, tree: 'bulwark',  name: 'Shield Slam',   icon: 'shield',     cd: 8,  step: 0.5, col: '#7ba3ee', learn: 'Every 8s, Bram slams his target for 200% damage and takes 20% less damage for 4s',
+  slam:   { i: 0, tree: 'bulwark',  name: 'Shield Slam',   icon: 'shield',     cd: 8,  step: 0.5, col: '#7ba3ee', learn: 'Every 8s, Bram slams the target for 200% damage and takes 20% less damage for 4s',
             xName: 'Concussion', xDesc: 'Shield Slam stuns the target for 2s and interrupts its spell' },
   clap:   { i: 0, tree: 'venge',    name: 'Thunder Clap',  icon: 'sword',      cd: 12, step: 0.8, col: '#e4b75c', learn: 'Every 12s, Bram hits every enemy for 130% damage',
             xName: 'Aftershock', xDesc: 'Thunder Clap slows enemy attacks by 30% for 5s' },
   whirl:  { i: 1, tree: 'berserk',  name: 'Whirlwind',     icon: 'sword',      cd: 10, step: 0.6, col: '#ff9f43', learn: 'Every 10s, Rook spins three times, hitting every enemy for 70% damage each spin',
             xName: 'Bladestorm', xDesc: 'Whirlwind spins five times' },
-  mortal: { i: 1, tree: 'exec',     name: 'Mortal Strike', icon: 'sword',      cd: 9,  step: 0.5, col: '#e0605a', learn: 'Every 9s, Rook strikes his target for 300% damage',
+  mortal: { i: 1, tree: 'exec',     name: 'Mortal Strike', icon: 'sword',      cd: 9,  step: 0.5, col: '#e0605a', learn: 'Every 9s, Rook strikes the target for 300% damage',
             xName: 'Decapitate', xDesc: 'Mortal Strike deals triple damage to enemies below 35% health' },
   aimed:  { i: 2, tree: 'assassin', name: 'Aimed Shot',    icon: 'scroll',     cd: 9,  step: 0.5, col: '#f3ead8', learn: 'Every 9s, Vess fires a critical shot for 300% damage',
             xName: 'Piercing Shot', xDesc: 'Aimed Shot passes through and hits every other enemy for 60%' },
@@ -981,6 +995,40 @@ const UPG = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
 const PROMO_LV = [5, 10, 15, 20, 25, 30];
 const PROMO_TITLE = ['Recruit', 'Veteran', 'Elite', 'Champion', 'Hero', 'Legend', 'Paragon'];
 const PROMO_MAX = PROMO_LV.length;
+const TIER_COL = ['#7a7488', '#b08a5a', '#c3cad6', '#e4b75c', '#7ad6c8', '#c48bfb', '#ff9f43'];
+// Every rank unlocks a signature perk, on top of the stat boost
+const PROMO_PERKS = [
+  [['Shield Wall', 'Bram starts every stage with a shield worth 15% of max health'], ['Intercept', '35% chance to step in front of a boss attack aimed at an ally'],
+   ['Bulwark', 'While Bram is above half health, the rest of the party takes 5% less damage'], ['Unyielding', 'Once per stage, Bram survives a killing blow with 1 health and a shield'],
+   ['Retribution', 'Bram reflects 20% of the damage taken onto the front enemy'], ['Aegis Aura', 'The whole party takes 8% less damage']],
+  [['Second Swing', '15% chance to strike twice'], ['Battle Cry', 'The party deals 10% more damage for the first 8 seconds of every stage'],
+   ['Bloodthirst', 'Killing blows heal Rook for 10% of max health'], ['Whirling Steel', "Rook's hits also strike every other enemy for 20%"],
+   ['Rampage', 'Each kill gives Rook +10% attack speed for the rest of the stage, up to 5 times'], ['Executioner', 'Rook finishes off normal enemies below 20% health and deals double damage to bosses below 20%']],
+  [['Hawk Eye', '+10% critical chance'], ['Twin Arrows', 'Every 4th shot fires a second arrow at another enemy'],
+   ['Hunting Hawk', 'A hawk joins the fight and dives at enemies every 3 seconds'], ['Keen Shots', '+30% critical damage'],
+   ['Piercing Arrows', 'Arrows pass through and hit a second enemy for 40%'], ['Deadeye', "Vess's first hit on each enemy deals triple damage"]],
+  [['Kindled', 'Fireballs set enemies burning for 20% of the hit over 3 seconds'], ['Mana Font', "Ilda's critical hits restore 1% of your mana"],
+   ['Fire Familiar', 'A fire sprite orbits Ilda and shoots enemies every 2.5 seconds'], ['Arcane Surge', 'Every 6th fireball explodes over every enemy for 150%'],
+   ['Inferno', 'Fireballs splash every other enemy for 25%'], ['Meteor Storm', 'Every 15 seconds a meteor strikes every enemy for 300%']],
+  [['Devout', 'Devotion builds 15% faster'], ['Halo', '10% chance a spell costs no mana'],
+   ['Guardian Angel', 'Once per run, an ally who would die is fully healed instead'], ['Radiance', 'Heal also heals the next most injured ally for 25%'],
+   ['Divine Favor', '+10% critical heals'], ['Ascension', 'Prayer heals 20% more and costs 30% less']],
+];
+const pk = (i, r) => promoRank(i) >= r;
+// Each rank also upgrades the hero's look: better metals, richer cloth, gilded weapons
+const TIER_PAL = [
+  [{ b: '#3c5ac0' }, { w: '#c9d6f0', W: '#9fb0d8' }, { a: '#eef3fb', A: '#b4c4dc', r: '#e4b75c' }, { B: '#9a7330', b: '#2c4ab0' }, { a: '#fff2c8', A: '#d8b860', d: '#8a6a2a' }, { w: '#ffffff', W: '#ffe9a8', r: '#7ad6ff' }],
+  [{ m: '#e8eef8' }, { l: '#7a4a2a' }, { t: '#9aa3b4', T: '#6d7584' }, { m: '#ffd36b', M: '#c9a64a', w: '#5a3d28' }, { t: '#d4554d', T: '#9a7330' }, { m: '#fff2a8', t: '#ff7a5a', T: '#c9a64a' }],
+  [{ f: '#c9504a' }, { g: '#3a8a52', G: '#235a34' }, { b: '#c9a64a', B: '#8a6a2a' }, { l: '#5a6a8a', L: '#3a4a6a' }, { g: '#2a5a7a', G: '#1a3a5a', w: '#e8eef8' }, { b: '#e8eef8', B: '#a8b8d8', c: '#ffd36b', f: '#7ad6ff' }],
+  [{ q: '#b88ae0' }, { F: '#fff2a8' }, { p: '#8a4ad0', P: '#5a2a90' }, { w: '#c9a64a' }, { p: '#3c3a8a', P: '#24224a', q: '#7ad6ff' }, { f: '#7ad6ff', F: '#e8f6ff', g: '#fff2a8' }],
+  [{ L: '#fff2a8' }, { g: '#ffd36b' }, { w: '#ffffff', W: '#e8dcb8' }, { m: '#e4b75c' }, { y: '#ffe9a8', Y: '#e4b75c' }, { L: '#bfe9ff', W: '#ffe9a8' }],
+];
+const palCache = {};
+function tierPal(i, rk) {
+  const k = i + ':' + rk; if (palCache[k]) return palCache[k];
+  const pal = { ...HERO_ART[i].pal }; for (let r2 = 0; r2 < rk; r2++) Object.assign(pal, TIER_PAL[i][r2]);
+  return (palCache[k] = pal);
+}
 const promoRank = i => (S.promo && S.promo[i]) || 0;
 const promoCost = i => Math.round((i === YOU ? 150 : 120) * Math.pow(6, promoRank(i)) * (1 - 0.06 * lvl('barracks')));
 const promoMul = i => Math.pow(i === YOU ? 1.08 : 1.12, promoRank(i));
@@ -1235,6 +1283,8 @@ function makeCs(i, over) {
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow'),
     vsCC: gf('vsCC') + ge.vscc / 100, vsDot: gf('vsDot') + ge.vsdot / 100 };
   const sid = i === YOU ? null : setFor(i), n = sid ? setCount(sid, over) : 0;
+  if (i === 2 && pk(2, 1)) o.crit += 0.1;
+  if (i === 2 && pk(2, 4)) o.critDmg += 0.3;
   if (n >= 2) { if (i === 0) o.hpMul *= 1.15; if (i === 1) o.spd += 0.1; if (i === 2) o.crit += 0.1; if (i === 3) o.dmg *= 1.15; }
   if (n >= 3) { if (i === 0) { o.sunder = Math.max(o.sunder || 0, 0.1); o.sunderDur = 8; } if (i === 1) o.ccCrit = true; if (i === 2) { o.markCrit = Math.max(o.markCrit || 0, 0.12); o.markDur = 8; } if (i === 3) o.chillHit = true; }
   return o;
@@ -1277,6 +1327,8 @@ function recalc() {
   const cset = setCount('cleric');
   if (cset >= 2) D.heal *= 1.1;
   D.lowWard = cset >= 3;
+  if (pk(YOU, 5)) D.crit += 0.1;
+  if (pk(YOU, 6)) { D.sp.prayer.amt *= 1.2; D.sp.prayer.cost *= 0.7; }
   const A = achFx();
   D.heal *= 1 + A.healAll; D.maxMana *= 1 + A.mana; D.regen *= 1 + A.regen; D.crit += A.crit / 100;
   D.greed += A.greed; D.partyDps *= 1 + A.partyDps; D.partyHp *= 1 + A.partyHp; D.xpMult += A.xp;
@@ -1475,7 +1527,7 @@ function enterDungeon(d) {
   C.stage = 1;
   freshParty();
   C.mana = D.maxMana * (modIs('fatigue') ? 0.6 : 1);
-  C.cds = {}; C.medi = null; C.abT = {}; C.slamT = 0; C.peril = perilOf(d);
+  C.cds = {}; C.medi = null; C.abT = {}; C.slamT = 0; C.peril = perilOf(d); C.angelUsed = false;
   C.meter = { d: PARTY.map(() => 0), t: 0 };
   C.rstats = { spell: {}, taken: 0, deaths: 0, cleansed: 0, d };
   C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden'); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
@@ -1488,9 +1540,11 @@ function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
   C.bossIntro = C.foes.some(f => f.boss) ? 2.4 : 0;
+  C.bramSave = false; C.rookRamp = 0; C.battleCry = pk(1, 2) ? 8 : 0; C.petT = [0, 0, 3, 2.5, 0]; C.meteorT = 15;
   C.buff = { sanct: 0, bless: 0 }; C.bossHeat = false; C.bossThorns = false; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach((m, i) => { if (m.alive) afflict(i, 'poison', m.max * 0.008, 12, { ramp: 0.1 }); });
+  if (pk(0, 1) && C.party[0].alive) C.party[0].shield = Math.max(C.party[0].shield, C.party[0].max * 0.15);
   C.foes.forEach(f => { f.hitBy = {}; f.poison = null; });
   C.atkT = PARTY.map(() => rand(0.3, 0.9)); C.hits = []; C.hitN = PARTY.map(() => 0); C.ramp = PARTY.map(() => 0);
   const silenceable = SPELLS.filter(s => known(s.id) && s.id !== 'heal');
@@ -1507,6 +1561,10 @@ function hit(i, amt) {
   if (C.buff.sanct > 0) amt *= 1 - D.sp.sanctuary.amt;
   if (i === 0) amt *= (1 - D.tankDR) * (C.slamT > 0 ? 0.8 : 1);
   if (elixirOn('bark')) amt *= 0.85;
+  const bram = C.party[0];
+  if (i !== 0 && pk(0, 3) && bram && bram.alive && bram.hp / bram.max > 0.5) amt *= 0.95;
+  if (pk(0, 6) && bram && bram.alive) amt *= 0.92;
+  if (i === 0 && pk(0, 5)) { const fr = front(); if (fr) dealFoe(fr, amt * 0.2, '', 0); }
   amt *= ({ agg: 1.1, bal: 1, def: 0.85 })[stance()];
   if (perk('infirmary', 3) && m.hp / m.max < 0.25) amt *= 0.85;
   const cs = D.cs[i];
@@ -1525,6 +1583,8 @@ function hit(i, amt) {
   floatTxt(i, '-' + fmt(amt), 'dmg');
   pnumFx(i, '-' + fmt(amt), '#ff8a7a');
   heroAnim[i].flash = 0.12;
+  if (m.hp <= 0 && i === 0 && pk(0, 4) && !C.bramSave) { C.bramSave = true; m.hp = 1; m.shield = Math.max(m.shield, m.max * 0.25); floatTxt(0, 'Unyielding', 'abs'); fxLabel(0, 'Unyielding!', '#7ba3ee'); }
+  if (m.hp <= 0 && pk(YOU, 3) && !C.angelUsed) { C.angelUsed = true; m.hp = m.max; fxBeam(i, '#fff2a8'); fxLabel(i, 'Guardian Angel', '#fff2a8'); log(`Guardian Angel saved <b>${PARTY[i].name}</b>.`); }
   if (m.hp <= 0 && D.lastRites && !C.ritesUsed) { m.hp = 1; C.ritesUsed = true; floatTxt(i, 'Last Rites', 'heal'); fxRingAt(i, '#fff2a8'); log(`Last Rites kept <b>${PARTY[i].name}</b> standing.`); }
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
@@ -1565,6 +1625,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
 const RUN_SPELL = {
   heal: t => {
     heal(t, D.heal * D.sp.heal.amt); fxBeam(t, '#bff5dd');
+    if (pk(YOU, 4)) { const o = aliveIdx().filter(k => k !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0]; if (o != null) { heal(o, D.heal * D.sp.heal.amt * 0.25); fxBeam(o, '#fff2a8'); } }
     if (Math.random() < D.sp.heal.echo) {
       const o = aliveIdx().filter(i => i !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0];
       if (o != null) { heal(o, D.heal * D.sp.heal.amt * 0.5); fxBeam(o, '#bff5dd'); }
@@ -1641,13 +1702,14 @@ function finishCast(sp, t) {
   if (C.mana < cost) { oomNotice(); return; }
   if (!sp.group && !sp.self && !C.party[t].alive) return;
   if (cost > 0 && Math.random() < D.clarity) { cost = 0; floatTxt(YOU, 'Clarity', 'free'); }
+  else if (cost > 0 && pk(YOU, 2) && Math.random() < 0.1) { cost = 0; floatTxt(YOU, 'Halo', 'free'); }
   C.mana -= cost;
   C.inCast = true; C.castEff = 0; C.castAmt = 0; C.healSrc = sp.id;
   RUN_SPELL[sp.id](t);
   C.inCast = false; C.healSrc = null;
   trackCast(sp.id);
   if (C.castEff > 0) {
-    C.dev = Math.min(100, C.dev + (C.castEff >= C.castAmt * 0.5 ? 8 : 3) * (1 - C.dev / 110));
+    C.dev = Math.min(100, C.dev + (C.castEff >= C.castAmt * 0.5 ? 8 : 3) * (1 - C.dev / 110) * (pk(YOU, 1) ? 1.15 : 1));
   } else if (['heal', 'flash', 'prayer', 'purify'].includes(sp.id)) C.dev = Math.max(0, C.dev - 3);
   if (C.plea && C.party[C.plea.i].alive && ((!sp.group && !sp.self && t === C.plea.i) || sp.id === 'prayer')) claimPlea();
   heroAnim[YOU].cast = 0.35;
@@ -1708,7 +1770,8 @@ function foeAct(e, dt) {
     e.cast.el += dt;
     if (e.cast.el >= e.cast.dur) {
       const c = e.cast; e.cast = null;
-      if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e); C.hitLabel = A.name; A.run(e, t); C.hitLabel = null; }
+      if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e);
+        if (A.pick && t != null && t !== 0 && pk(0, 2) && C.party[0].alive && Math.random() < 0.35) { t = 0; floatTxt(0, 'Intercept!', 'abs'); fxLabel(0, 'Intercept!', '#7ba3ee'); } C.hitLabel = A.name; A.run(e, t); C.hitLabel = null; }
       else {
         const t = randomAlive(); if (t == null) return;
         if (e.spell.dot) { afflict(t, 'hex', e.dmg * 0.3, 8, { healCut: 0.5 }); fxProj(e, t, e.spell.col, 2); }
@@ -1784,6 +1847,13 @@ function stepFight(dt) {
     if (C.abT[id] <= 0) { C.abT[id] = abilityCd(id); ABRUN[id](a.i, cs, f, 1 + (cs[id + '_pow'] || 0), !!cs[id + '_x']); fxLabel(a.i, a.name, a.col); }
   }
   C.slamT = Math.max(0, (C.slamT || 0) - dt);
+  C.battleCry = Math.max(0, (C.battleCry || 0) - dt);
+  if (f && f.enter <= 0) {
+    if (pk(2, 3) && C.party[2].alive && (C.petT[2] -= dt) <= 0) { C.petT[2] = 3; C.hawk = { el: 0, f }; }
+    if (pk(3, 3) && C.party[3].alive && (C.petT[3] -= dt) <= 0) { C.petT[3] = 2.5; const fp = famPos(); FX.push({ t: 'proj', x: fp.x, y: fp.y, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 200, col: '#ffb347', s: 2 }); C.hits.push({ t: Math.hypot(f.x - fp.x, f.y - fp.y) / 200, fn: () => abHit(3, f.alive ? f : front(), 0.5) }); }
+    if (pk(3, 6) && C.party[3].alive && (C.meteorT -= dt) <= 0) { C.meteorT = 15; ready().forEach(e => FX.push({ t: 'beam', x: e.x, y: e.y, life: 0.6, max: 0.6, col: '#ff6a2a' })); shake(); C.hits.push({ t: 0.3, fn: () => ready().forEach(e => { abHit(3, e, 3); burst(e.x, e.y - 4, '#ff9f43', 14, 24); }) }); fxLabel(3, 'Meteor!', '#ff9f43'); }
+  }
+  if (C.hawk) { C.hawk.el += dt; if (C.hawk.el >= 0.35 && !C.hawk.hit) { C.hawk.hit = true; const t = C.hawk.f.alive ? C.hawk.f : front(); if (t) { abHit(2, t, 0.8); burst(t.x, t.y - t.h / 2, '#d8c49a', 6); } } if (C.hawk.el >= 0.8) C.hawk = null; }
   if (S.elixir) for (const k in S.elixir) if (S.elixir[k] > 0) {
     S.elixir[k] -= dt;
     if (S.elixir[k] <= 0) { S.elixir[k] = 0; recalc(); const ex = ELIXIRS.find(x => x.id === k); log(`${ex.name} wore off.`); toast(`${ex.name} wore off.`); }
@@ -1834,7 +1904,8 @@ function dealFoe(f, dmg, col, src) {
   if (src != null && C.meter) C.meter.d[src] += Math.min(dmg, f.hp);
   f.hp -= dmg; f.flash = 0.06; f.kb = 0.14;
   foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
-  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f); }
+  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f);
+    if (src === 1) { if (pk(1, 3) && C.party[1].alive) heal(1, C.party[1].max * 0.1, 0, true); if (pk(1, 5)) C.rookRamp = Math.min(5, (C.rookRamp || 0) + 1); } }
   else if (f.boss && !f.p2 && f.hp / f.max < 0.5) bossPhase(f);
 }
 // Every kill pays gold; Devotion (how well you heal) multiplies it
@@ -1894,7 +1965,7 @@ const abilityCd = id => { const a = CABIL[id], cs = D.cs[a.i]; return Math.max(2
 function abHit(i, f, mult, crit, col) {
   if (!f || !f.alive) return;
   const cs = D.cs[i];
-  let dmg = cs.dmg * mult * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1) * (C.inspire > 0 ? 2 : 1) * rand(0.92, 1.08);
+  let dmg = cs.dmg * mult * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1) * (C.inspire > 0 ? 2 : 1) * (C.battleCry > 0 ? 1.1 : 1) * rand(0.92, 1.08);
   if (f.boss && cs.bossDmg) dmg *= 1 + cs.bossDmg;
   crit = crit || Math.random() < cs.crit;
   if (crit) dmg *= cs.critDmg;
@@ -1978,6 +2049,10 @@ function landHit(h) {
   if (big) dmg *= 3;
   const crit = Math.random() < cs.crit || (cs.ambush && !f.hitBy[h.i]) || (cs.ccCrit && (f.stun > 0 || f.slow > 0));
   if (cs.chillHit) f.slow = Math.max(f.slow || 0, 3);
+  if (C.battleCry > 0) dmg *= 1.1;
+  if (h.i === 1 && pk(1, 6)) { if (!f.boss && f.hp / f.max < 0.2) dmg = Math.max(dmg, f.hp + 1); else if (f.boss && f.hp / f.max < 0.2) dmg *= 2; }
+  if (h.i === 2 && pk(2, 6) && !f.hitBy[2]) dmg *= 3;
+  if (h.i === 3 && pk(3, 2) && crit) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * 0.01);
   if (crit) dmg *= cs.critDmg;
   f.hitBy[h.i] = 1;
   const others = liveFoes().filter(e => e !== f && e.enter <= 0);
@@ -1986,6 +2061,15 @@ function landHit(h) {
   dealFoe(f, dmg, crit || big ? 'crit' : '', h.i);
   burst(f.x - 4, f.y - f.h * 0.5 + rand(-4, 4), big ? '#ffb347' : '#ffe9b0', big ? 10 : 4);
   if (cs.cleave && others.length) dealFoe(pick(others), dmg * cs.cleave, '', h.i);
+  if (!h.extra) {
+    if (h.i === 1 && pk(1, 1) && Math.random() < 0.15) C.hits.push({ i: 1, t: 0.14, foe: f, extra: true });
+    if (h.i === 1 && pk(1, 4)) others.forEach(e => dealFoe(e, dmg * 0.2, '', 1));
+    if (h.i === 2 && pk(2, 2) && n % 4 === 0) { const o = others.length ? pick(others) : f; fxHeroProj(2, o); C.hits.push({ i: 2, t: 0.25, foe: o, extra: true }); }
+    if (h.i === 2 && pk(2, 5) && others.length) dealFoe(others[0], dmg * 0.4, '', 2);
+    if (h.i === 3 && pk(3, 1) && f.alive && !(f.burn && f.burn.rate > dmg * 0.07)) f.burn = { rate: dmg * 0.07, left: 3, acc: 0 };
+    if (h.i === 3 && pk(3, 4) && n % 6 === 0) { ready().forEach(e => { dealFoe(e, dmg * 1.5, 'crit', 3); burst(e.x, e.y - e.h / 2, '#c48bfb', 10, 16); }); fxRing(); }
+    if (h.i === 3 && pk(3, 5)) others.forEach(e => dealFoe(e, dmg * 0.25, '', 3));
+  }
   if (cs.splash) others.forEach(e => dealFoe(e, dmg * cs.splash, '', h.i));
   if (big && cs.meteor) others.forEach(e => dealFoe(e, dmg * cs.meteor, '', h.i));
   if (cs.poison) {
@@ -2101,7 +2185,7 @@ const CAUSE_TIP = {
   'Shadow Bolt': 'Shadow Bolt also hexes its target: Purify them so your heals land in full.',
   'Hex': 'A hex halves the healing its target receives: Purify it, or Ward the target to block it.',
   'Poison': 'Poison ramps up every tick: Purify it early.', 'Bleeding': 'Bleeds ramp up: Purify them, or Renew the target.',
-  'Cleave': 'Cleave hits Bram hard and splashes an ally: keep Bram topped up and Ward him before the cast lands.',
+  'Cleave': 'Cleave hits Bram hard and splashes an ally: keep Bram topped up and Ward Bram before the cast lands.',
   'Festering Bite': 'Festering Bite poisons: Purify the target.', 'Scorching Air': 'Scorching Air hurts everyone every 4 seconds: Renew and Prayer keep up with it.',
   'Fireball': 'Imps throw Fireballs at random allies: watch their cast bars.',
 };
@@ -2333,24 +2417,51 @@ const HERO_ART = [
 ];
 // Head-and-shoulders portrait of a hero, outlined like the battle sprites
 const portraitCache = {};
-function portrait(i) {
-  if (portraitCache[i]) return portraitCache[i];
+function portrait(i, rk = promoRank(i)) {
+  const key = i + ':' + rk; if (portraitCache[key]) return portraitCache[key];
   const art = HERO_ART[i], w = art.map[0].length + 2, h = 14;
   const a = document.createElement('canvas'); a.width = w; a.height = h;
-  const prev = P; P = a.getContext('2d'); sprite(art.map, art.pal, w >> 1, art.map.length + 1); P = prev;
+  const prev = P; P = a.getContext('2d');
+  if (rk >= 2) { P.fillStyle = ROLE_COL[i]; P.fillRect(1, 9, 3, 5); }
+  sprite(art.map, tierPal(i, rk), w >> 1, art.map.length + 1);
+  if (rk >= 5) { P.fillStyle = '#ffd36b'; P.fillRect((w >> 1) - 3, 0, 6, 1); }
+  P = prev;
   const o = document.createElement('canvas'); o.width = w; o.height = h;
   const x = o.getContext('2d');
   for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) x.drawImage(a, dx, dy);
   x.globalCompositeOperation = 'source-in'; x.fillStyle = '#0b0910'; x.fillRect(0, 0, w, h);
   x.globalCompositeOperation = 'source-over'; x.drawImage(a, 0, 0);
-  return (portraitCache[i] = o.toDataURL());
+  return (portraitCache[key] = o.toDataURL());
 }
-const portraitImg = (i, cls = '') => `<img class="portrait ${cls}" src="${portrait(i)}" alt="">`;
-function drawHero(i, X, Y, t, castPose) {
+const portraitImg = (i, cls = '', rk) => `<img class="portrait ${cls}" src="${portrait(i, rk ?? promoRank(i))}" alt="">`;
+function drawHero(i, X, Y, t, castPose, rk = promoRank(i)) {
   const bob = Math.sin(t * 3 + i * 1.7) > 0.4 ? 1 : 0;
   const art = HERO_ART[i];
-  sprite(art.map, art.pal, X, Y - bob);
+  if (rk >= 6) { // Paragon: wings of light
+    const fl = Math.round(Math.sin(t * 3 + i)), wy = Y - 25 - bob + fl;
+    [3, 6, 8, 9, 8, 6, 4, 2].forEach((len, k) => { P.fillStyle = k % 2 ? '#ffe9a8' : '#ffffff'; P.fillRect(X - 4 - len, wy + k, len, 1); P.fillStyle = '#e4b75c'; P.fillRect(X - 4 - len, wy + k, 1, 1); });
+    [2, 3, 3, 2].forEach((len, k) => { P.fillStyle = '#ffe9a8'; P.fillRect(X + 3, wy + 1 + k, len, 1); });
+  }
+  sprite(art.map, tierPal(i, rk), X, Y - bob);
   if (castPose && i === YOU) { P.fillStyle = '#fff6c4'; P.fillRect(X + 2, Y - 22 - bob, 3, 3); }
+}
+// Pets from promotions: Vess's hawk circles overhead and dives; Ilda's familiar orbits and shoots
+const famPos = () => { const p = HERO_POS[3]; return { x: p.x + Math.cos(sceneT * 2.5) * 10, y: p.y - 24 + Math.sin(sceneT * 2.5) * 4 }; };
+function drawPets() {
+  if (pk(2, 3) && C.party[2] && C.party[2].alive) {
+    const p = HERO_POS[2], home = { x: p.x + Math.cos(sceneT * 1.6) * 12, y: p.y - 40 + Math.sin(sceneT * 3.2) * 3 };
+    let hx = home.x, hy = home.y;
+    if (C.hawk) { const t = C.hawk.f, k = C.hawk.el < 0.35 ? C.hawk.el / 0.35 : 1 - (C.hawk.el - 0.35) / 0.45; hx = home.x + (t.x - home.x) * k; hy = home.y + (t.y - t.h * 0.6 - home.y) * k; }
+    const fl = (sceneT * 10 | 0) % 2, X = Math.round(hx), Y = Math.round(hy);
+    cx.fillStyle = '#5a3d28'; cx.fillRect(X - 1, Y, 3, 2); cx.fillStyle = '#d8c49a'; cx.fillRect(X + 2, Y, 1, 1); cx.fillStyle = '#e4b75c'; cx.fillRect(X + 3, Y, 1, 1);
+    cx.fillStyle = '#7a5434'; cx.fillRect(X - 4, Y - 1 + fl * 2, 3, 1); cx.fillRect(X + 2, Y - 1 + fl * 2, 3, 1);
+  }
+  if (pk(3, 3) && C.party[3] && C.party[3].alive) {
+    const fp = famPos(), X = Math.round(fp.x), Y = Math.round(fp.y), f = (sceneT * 12 | 0) % 2;
+    cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = 0.35; cx.fillStyle = '#ff9f43'; cx.beginPath(); cx.arc(X, Y, 4, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+    cx.fillStyle = pk(3, 6) ? '#7ad6ff' : '#ff9f43'; cx.fillRect(X - 1, Y - 1, 3, 3); cx.fillStyle = '#fff2a8'; cx.fillRect(X, Y - 1 - f, 1, 2);
+    if (Math.random() < 0.3) FX.push({ t: 'p', x: X, y: Y + 1, vx: rand(-3, 3), vy: rand(2, 6), g: 0, life: 0.3, max: 0.3, col: '#ff9f43', s: 1 });
+  }
 }
 // where each hero's weapon sits relative to their feet, for gear sparkles
 const WEAPON_TIP = [[6, -12], [5, -18], [6, -11], [4, -18], [5, -20]];
@@ -2996,6 +3107,7 @@ function renderScene(dt) {
     if (rank >= 4 && Math.random() < dt * 3) FX.push({ t: 'p', x: hx + rand(-8, 8), y: hy - rand(0, 6), vx: 0, vy: -rand(6, 12), g: 0, life: 0.8, max: 0.8, col: rc, s: 1 });
     if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
     miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
+    if (rank) { cx.fillStyle = TIER_COL[rank]; for (let k = 0; k < rank; k++) cx.fillRect(p.x - rank * 1.5 + k * 3, p.y - 30, 2, 1); }
     if (m.shield > 0) {
       cx.globalAlpha = 0.55 + 0.15 * Math.sin(sceneT * 5); cx.strokeStyle = '#d3dbff'; cx.lineWidth = 1;
       cx.beginPath(); cx.arc(p.x, p.y - 11, 14, 0, Math.PI * 2); cx.stroke(); cx.globalAlpha = 1;
@@ -3027,6 +3139,7 @@ function renderScene(dt) {
       cx.globalAlpha = 1;
     });
   }
+  drawPets();
   const yp = HERO_POS[YOU];
   if (C.cast && Math.random() < dt * 24) FX.push({ t: 'p', x: yp.x + 3 + rand(-3, 3), y: yp.y - 22 + rand(-3, 3), vx: rand(-6, 6), vy: rand(-12, -4), g: 0, life: 0.4, max: 0.4, col: '#fff2a8', s: 1 });
   if (C.medi && Math.random() < dt * 16) FX.push({ t: 'p', x: yp.x + rand(-8, 8), y: yp.y - rand(0, 6), vx: 0, vy: -18, g: 0, life: 0.8, max: 0.8, col: '#7ba3ee', s: 1 });
@@ -3139,7 +3252,7 @@ function buildArena() {
     f.addEventListener('mouseleave', () => { if (C.hover === i) C.hover = null; });
     p.appendChild(f);
     frameEls.push({ f, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
-      floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '' });
+      floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '', por: f.querySelector('.portrait'), rk: promoRank(i) });
   });
   wireActionBar();
 }
@@ -3331,6 +3444,7 @@ function renderArena() {
     fe.lv.textContent = 'Lv ' + h.lv;
     fe.xpf.style.width = (100 * h.xp / xpNeed(h.lv)) + '%';
     fe.f.classList.toggle('dead', !m.alive);
+    if (fe.rk !== promoRank(i)) { fe.rk = promoRank(i); fe.por.src = portrait(i); fe.f.style.setProperty('--tc', TIER_COL[fe.rk]); }
     fe.f.classList.toggle('sel', C.target === i);
     fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
     fe.f.classList.toggle('plea', !!C.plea && C.plea.i === i);
@@ -3534,7 +3648,7 @@ function renderTalents() {
 
 const attackInterval = i => {
   const cs = D.cs[i], m = C.party[i];
-  return PARTY[i].spd / (1 + cs.spd + (cs.bloodlust && m && m.hp / m.max < 0.5 ? 0.35 : 0) + (cs.rampage ? 0.02 * (C.ramp[i] || 0) : 0));
+  return PARTY[i].spd / (1 + cs.spd + (cs.bloodlust && m && m.hp / m.max < 0.5 ? 0.35 : 0) + (cs.rampage ? 0.02 * (C.ramp[i] || 0) : 0) + (i === 1 ? 0.1 * (C.rookRamp || 0) : 0));
 };
 const AB_EST = { slam: 2, clap: 1.3, whirl: x => x ? 3.5 : 2.1, mortal: x => x ? 3.6 : 3, aimed: 0, volley: 1.4, flame: x => x ? 3.9 : 2.7, frost: 2 };
 const memberDps = i => {
@@ -3550,9 +3664,10 @@ function renderParty() {
   const i = partySel, p = PARTY[i], comp = i !== YOU;
   if (tSel && !tSel.startsWith(i + '|')) tSel = null;
   const pr = promoRank(i), per = comp ? '+12% damage and health' : '+8% healing and max mana';
-  const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}"><b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
+  const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}" style="--tc:${TIER_COL[k]}">${portraitImg(i, 'rg', k)}<b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
+  const perks = PROMO_PERKS[i].map(([n, dsc], k) => `<li class="${pr > k ? 'on' : k === pr ? 'next' : ''}" style="--tc:${TIER_COL[k + 1]}"><span class="pt">${PROMO_TITLE[k + 1]}</span><b>${n}</b> ${dsc}</li>`).join('');
   pane.innerHTML = `
-    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
+    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
     ${perk('barracks', 2) ? `<div class="stances"><span class="label">Battle stance</span>${Object.entries(STANCES).map(([k, v]) => `<button class="chipbtn" data-stance="${k}" aria-pressed="${stance() === k}" title="${v.desc}">${v.name}</button>`).join('')}<span class="label sub">${STANCES[stance()].desc}</span></div>` : ''}
     <div class="phead" style="--rc:${ROLE_COL[i]}">${portraitImg(i, 'lg')}<div><h3>${p.name} <small class="ptitle">${PROMO_TITLE[promoRank(i)]}</small></h3><span class="label">${p.role} · Level ${S.heroes[i].lv}${comp ? ` · ${fmt(memberDps(i))} damage per second` : ''}</span></div></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
@@ -3561,8 +3676,11 @@ function renderParty() {
     <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(it ? itemIcon(it) : CBASES[i][cs.id][0][2], it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="${nameCls(it)}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
     <div class="section-h"><h3>Promotion</h3><span class="label">${PROMO_TITLE[pr]} · each rank ${per}</span></div>
     <div class="promo" style="--rc:${ROLE_COL[i]}"><div class="ladder">${ladder}</div>
-      ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div>
-      <p class="sub">Now ×${promoMul(i).toFixed(2)}. ${PROMO_TITLE[pr + 1]} makes it ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}.</p>`}</div>
+      ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="pnext" style="--tc:${TIER_COL[pr + 1]}">
+        <div class="pvs">${portraitImg(i, 'lg', pr)}<span>→</span>${portraitImg(i, 'lg glow', pr + 1)}</div>
+        <div><h4>${PROMO_TITLE[pr + 1]}: ${PROMO_PERKS[i][pr][0]}</h4><p>${PROMO_PERKS[i][pr][1]}.</p><p class="sub">Plus ${per} (×${promoMul(i).toFixed(2)} → ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}) and an upgraded look.</p>
+        <div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div></div></div>`}
+      <ul class="perklist">${perks}</ul></div>
     ${comp ? `
     <div class="section-h"><h3>${p.name}'s talents</h3><span class="label">Points <b style="color:var(--xp);font-family:var(--mono)">${pointsOf(i)}</b> · one every 2 levels</span></div>
     <div class="ctrees">${COMP_TREES[i].map(tr => { const ab = Object.keys(CABIL).find(id => CABIL[id].tree === tr.id);

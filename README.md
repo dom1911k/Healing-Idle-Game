@@ -78,7 +78,17 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Damage meter.** Under the action bar, the damage meter ranks the party by damage per second over the current run, with each member's share. Use it to spot who is falling behind and push their gear, promotions or talents.
 - **Gear.** Each companion has three gear slots (weapon, armor, charm), and every companion item belongs to one companion: Bram wears plate and swings swords, maces and warhammers; Rook uses greataxes, claymores and halberds; Vess uses bows and crossbows, leathers and quivers; Ilda uses spellstaffs, wands and grimoires, robes and orbs. Each base has its own icon and items are named from their material (iron, yew, silk, drakehide and so on) and their main stat. Selecting one in the Armory shows what it changes for its owner.
 - **Synergies.** Companions leave marks on enemies that the rest of the party exploits, shown as colored pips over each enemy: sunder (red), mark (gold), poison (green), burn (orange), chill (blue) and stun (white). Each spec has a synergy talent in its fourth row: Bram's *Sunder Armor* and *Concussive Force*, Rook's *Shatter* and *Opportunist*, Vess's *Mark for Death* and *Festering Wounds*, Ilda's *Volatile Venom* and *Brittle Ice*. Companion gear can also roll *Damage vs. Slowed or Stunned* and *Damage vs. Poisoned or Burning*.
-- **Promotions.** Each party member climbs seven ranks (Recruit, Veteran, Elite, Champion, Hero, Legend, Paragon). Each rank unlocks at a level (5, 10, 15 and so on) and costs six times the last. Companions gain +12% damage and health per rank and the Cleric +8% healing and max mana. Promoted members show stars on their Party card, and a ▲ marks a promotion you can afford.
+- **Promotions.** Each party member climbs seven ranks (Recruit, Veteran, Elite, Champion, Hero, Legend, Paragon). Each rank unlocks at a level (5, 10, 15 and so on) and costs six times the last. Every rank gives a stat boost (+12% damage and health for companions, +8% healing and max mana for the Cleric), a **signature perk** and **upgraded gear** you see in combat, on the party frames and on the portraits.
+
+  | Member | Veteran | Elite | Champion | Hero | Legend | Paragon |
+  |---|---|---|---|---|---|---|
+  | Bram | Shield Wall | Intercept boss attacks | Bulwark (party −5% damage) | Unyielding | Retribution | Aegis Aura (party −8% damage) |
+  | Rook | Second Swing | Battle Cry | Bloodthirst | Whirling Steel | Rampage | Executioner |
+  | Vess | Hawk Eye | Twin Arrows | **Hunting Hawk** pet | Keen Shots | Piercing Arrows | Deadeye |
+  | Ilda | Kindled | Mana Font | **Fire Familiar** pet | Arcane Surge | Inferno | Meteor Storm |
+  | Cleric | Devout | Halo | Guardian Angel | Radiance | Divine Favor | Ascension |
+
+  Gear changes with every rank: Bram's armor goes from steel to polished silver to gold, Rook's tunic becomes chainmail and then red-gold plate, Vess's bow turns gold and then silver, Ilda's robes deepen to arcane blue and the staff's flame turns blue, and the Cleric's robes brighten. Capes come at Elite, auras at Hero, halos at Legend and wings of light at Paragon. Colored rank pips sit over each hero in combat. The Party tab shows a portrait for every rank, a before-and-after preview of the next promotion and the full perk list.
 
 ## Other progression
 

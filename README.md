@@ -97,13 +97,25 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Ilda | Kindled | Mana Font | **Fire Familiar** pet | Arcane Surge | Inferno | Meteor Storm |
   | Cleric | Devout | Halo | Guardian Angel | Radiance | Divine Favor | Ascension |
 
-  Gear changes with every rank: Bram's armor goes from steel to polished silver to gold, Rook's tunic becomes chainmail and then red-gold plate, Vess's bow turns gold and then silver, Ilda's robes deepen to arcane blue and the staff's flame turns blue, and the Cleric's robes brighten. Capes come at Elite, auras at Hero, halos at Legend and wings of light at Paragon. Colored rank pips sit over each hero in combat. The Party tab shows a portrait for every rank, a before-and-after preview of the next promotion and the full perk list.
+  Every hero starts scrappy and gears up in four steps, each with new pixel art, not just new colors:
+
+  | Hero | Recruit | Veteran–Elite | Champion–Hero | Legend–Paragon |
+  |---|---|---|---|---|
+  | Bram | Padded jerkin, plank shield | Nasal helm, chainmail, kite shield | Plumed great helm, plate, tower shield | Winged gold helm with a glowing visor, gilded plate |
+  | Rook | Torn shirt, rusty hatchet | Headband, leather, battle axe | Steel helm, mail and surcoat, double axe | Horned black plate, burning axe |
+  | Vess | Peasant hood, stick bow | Green hood, leather, longbow | Ranger mantle, bracers, gilded recurve | Silver scale, feathered hood, moonlit bow |
+  | Ilda | Patched robe, twig wand | Pointed hat, robe, staff | Banded hat, trimmed robe, orb staff | Starry arch-mage robe, crystal staff |
+  | You (Priest) | Novice's robe and staff | White robe, gold stole | Mitre and vestments, sun staff | Halo, gilded vestments, radiant staff |
+  | You (Druid) | Hide tunic, sapling | Leaf circlet, green robe | Antlers, bark pauldrons | Blossoming antlers, leaf cloak |
+  | You (Occultist) | Rags and a bone charm | Dark hood, skull staff | Horned bone mask, bone pauldrons | Bone crown, rune robes, skull lantern |
+
+  The second rank of each pair adds a cape (Elite) or a shining gem (Hero), and Paragon adds feathered wings of light. Reaching a new gear step gets a bigger flash and a "New gear!" toast. Colored rank pips sit over each hero in combat. The Party tab shows a portrait for every rank, a before-and-after preview of the next promotion and the full perk list.
 
 ## Other progression
 
 - **Gear.** Enemies drop items for the Cleric's six slots and the companions' three, in five rarities. The header shows your **party item level**, the average across all 18 slots. **Equip best items** fills every slot automatically: armor goes to the tank first, and weapons and charms go to the hardest hitters first. Enchant equipped items with gold for +10% stats per level.
 - **Item sets.** Each companion and the Cleric has a three-piece set that sometimes drops in place of a rare-or-better item (set pieces are always epic, with teal names). Two pieces give a stat bonus, and three unlock a synergy: Bram's hits sunder armor, Rook always crits slowed or stunned enemies, Vess's crits mark enemies for 8 seconds, Ilda's fireballs chill, and the Cleric's heals on low allies also shield them. The item view shows the set's pieces and bonuses.
-- **Looks.** Promotions show on the battlefield: a cape in the companion's color from Elite, gold trim at Champion, a glowing aura and rising motes at Hero, and a halo at Legend. Epic or legendary armor gives a colored outline, and epic or legendary weapons sparkle.
+- **Looks.** Promotions show on the battlefield as new armor and weapons (see the table above), with a glowing aura and rising motes from Hero. Epic or legendary armor gives a colored outline, and epic or legendary weapons sparkle.
 - **Loot filter.** In the Armory, choose to auto-sell drops below a rarity (upgrades are never sold), and optionally equip upgrades as they drop. When the bag is full, the weakest non-upgrade is sold to make room.
 - **Merchant.** Once you build a Market, the Armory sells sealed items for the deepest dungeon you've reached: a Supply Crate (any rarity), a Gilded Coffer (rare or better) and a Royal Reliquary (epic or better, 20% legendary).
 - **Elixirs.** As the Herb Garden grows, the Dungeons tab sells three elixirs (+25% party damage, 15% less damage taken, +40% mana regeneration). Each lasts 10 minutes of fighting and stacks up to an hour. Their price scales with your deepest dungeon.

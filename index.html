@@ -1162,25 +1162,6 @@ const PROMO_PERKS = [
    ['Divine Favor', '+10% critical heals'], ['Ascension', 'Prayer heals 20% more and costs 30% less']],
 ];
 const pk = (i, r) => promoRank(i) >= r;
-// Each rank also upgrades the hero's look: better metals, richer cloth, gilded weapons
-const TIER_PAL = [
-  [{ b: '#3c5ac0' }, { w: '#c9d6f0', W: '#9fb0d8' }, { a: '#eef3fb', A: '#b4c4dc', r: '#e4b75c' }, { B: '#9a7330', b: '#2c4ab0' }, { a: '#fff2c8', A: '#d8b860', d: '#8a6a2a' }, { w: '#ffffff', W: '#ffe9a8', r: '#7ad6ff' }],
-  [{ m: '#e8eef8' }, { l: '#7a4a2a' }, { t: '#9aa3b4', T: '#6d7584' }, { m: '#ffd36b', M: '#c9a64a', w: '#5a3d28' }, { t: '#d4554d', T: '#9a7330' }, { m: '#fff2a8', t: '#ff7a5a', T: '#c9a64a' }],
-  [{ f: '#c9504a' }, { g: '#3a8a52', G: '#235a34' }, { b: '#c9a64a', B: '#8a6a2a' }, { l: '#5a6a8a', L: '#3a4a6a' }, { g: '#2a5a7a', G: '#1a3a5a', w: '#e8eef8' }, { b: '#e8eef8', B: '#a8b8d8', c: '#ffd36b', f: '#7ad6ff' }],
-  [{ q: '#b88ae0' }, { F: '#fff2a8' }, { p: '#8a4ad0', P: '#5a2a90' }, { w: '#c9a64a' }, { p: '#3c3a8a', P: '#24224a', q: '#7ad6ff' }, { f: '#7ad6ff', F: '#e8f6ff', g: '#fff2a8' }],
-  [{ L: '#fff2a8' }, { g: '#ffd36b' }, { w: '#ffffff', W: '#e8dcb8' }, { m: '#e4b75c' }, { y: '#ffe9a8', Y: '#e4b75c' }, { L: '#bfe9ff', W: '#ffe9a8' }],
-];
-const CLASS_PAL = {
-  druid: { w: '#6a8a4a', W: '#4a6a32', y: '#8a6a3a', Y: '#5a4028', m: '#7a5434', L: '#9be06a', g: '#c9a64a' },
-  occultist: { w: '#4a2a4a', W: '#2a1a2e', y: '#2a2433', Y: '#1b1622', m: '#5a5560', L: '#e0605a', g: '#8a2a3a' },
-};
-const palCache = {};
-function tierPal(i, rk) {
-  const c = i === YOU ? clsId() : '', k = i + ':' + rk + c; if (palCache[k]) return palCache[k];
-  const pal = { ...HERO_ART[i].pal }; for (let r2 = 0; r2 < rk; r2++) Object.assign(pal, TIER_PAL[i][r2]);
-  if (CLASS_PAL[c]) { Object.assign(pal, CLASS_PAL[c]); for (let r2 = 0; r2 < rk; r2++) for (const kk of ['g', 'L']) if (TIER_PAL[i][r2][kk] && r2 >= 3) pal[kk] = TIER_PAL[i][r2][kk]; }
-  return (palCache[k] = pal);
-}
 const promoRank = i => (S.promo && S.promo[i]) || 0;
 const promoCost = i => Math.round((i === YOU ? 150 : 120) * Math.pow(6, promoRank(i)) * (1 - 0.06 * lvl('barracks')));
 const promoMul = i => Math.pow(i === YOU ? 1.08 : 1.12, promoRank(i));
@@ -2536,131 +2517,612 @@ function blit(draw, x, y, { flash = 0, alpha = 1, outline = '#0b0910', rot = 0 }
   if (rot) cx.restore();
   cx.globalAlpha = 1;
 }
-function sprite(map, pal, X, Y) {
-  const w = map[0].length, h = map.length, x0 = X - (w >> 1), y0 = Y - h;
+function sprite(map, pal, X, Y, ax) {
+  const w = map[0].length, h = map.length, x0 = X - (ax ?? (w >> 1)), y0 = Y - h;
   for (let y = 0; y < h; y++) {
     const row = map[y];
     for (let x = 0; x < row.length; x++) {
       const ch = row[x]; if (ch === '.') continue;
-      P.fillStyle = pal[ch] || '#f0f'; P.fillRect(x0 + x, y0 + y, 1, 1);
+      const col = pal[ch]; if (col === '') continue;
+      P.fillStyle = col || '#f0f'; P.fillRect(x0 + x, y0 + y, 1, 1);
     }
   }
 }
 
 /* Hero sprites (facing right). Outlines are added automatically. */
 const SKIN = { s: '#efc29a', S: '#c98c67', e: '#1b1622' };
-const HERO_ART = [
-  { pal: { ...SKIN, r: '#d4554d', a: '#dde3ee', A: '#9aa4b8', d: '#5e6679', w: '#f3ead8', W: '#cfc5b0', b: '#4466b0', B: '#2c4479', g: '#e4b75c', l: '#4a4f5e' }, map: [
-    '....rr........',
-    '...rrr........',
-    '...aaaaaa.....',
-    '..aaaaaaAa....',
-    '..aAAAAAAA....',
-    '..aAddddddd...',
-    '..aAAAAAAA....',
-    '...wwWWww.....',
-    '....wwWw......',
-    '.aaaAAAAAa.bb.',
-    'aaAAgggAAabBBb',
-    'aAAAAAAAAabgBb',
-    'aAAAAAAAAabggb',
-    '.AAAddddAabgBb',
-    '.AAAAAAAAabBBb',
-    '.dddddddd..bb.',
-    '..AAA.AAA.....',
-    '..ddd.ddd.....',
-    '..ddd.ddd.....',
-    '.llll.llll....',
-  ] },
-  { pal: { ...SKIN, h: '#8a5a2b', H: '#5e3c1c', t: '#c24c43', T: '#83302b', m: '#d3d9e4', M: '#8d95a8', w: '#7a5434', l: '#5a3b2a', k: '#3a2a20' }, map: [
-    '...........mm.',
-    '..........mmMm',
-    '...hhhh...mMMm',
-    '..hhhhhh...mm.',
-    '..hHssss...w..',
-    '..hHsese...w..',
-    '..hHssSs...w..',
-    '...sssS....w..',
-    '..tttttt.s.w..',
-    '.ttTttttsssw..',
-    '.tTTtttt...w..',
-    '.tTTtttt...w..',
-    '.tTkkkkk...w..',
-    '..TTtttT......',
-    '..llll.ll.....',
-    '..ll...ll.....',
-    '..ll...ll.....',
-    '.kkk...kkk....',
-  ] },
-  { pal: { ...SKIN, g: '#3f7a44', G: '#27502c', l: '#8a6440', L: '#5e4128', b: '#b08850', B: '#7a5434', w: '#e8e2d4', q: '#6b4a2e', f: '#e8e2d4', k: '#3a2a20', c: '#c9504a' }, map: [
-    '..ggg.....b...',
-    '.ggggg.....b..',
-    'fgGGsss....wb.',
-    'fgGsese....w.b',
-    'qgGssss....w.b',
-    'qgGGsS.....w.b',
-    'qglllll....w.b',
-    'qlLlllsssssw.B',
-    '.lLlllll...w.b',
-    '.lLcccll...w.b',
-    '.lLllll....wb.',
-    '..LllLL....b..',
-    '..gg..gg..b...',
-    '..gg..gg......',
-    '..GG..GG......',
-    '.kkk.kkk......',
-  ] },
-  { pal: { ...SKIN, p: '#7a4aab', P: '#55307c', q: '#9b6fd0', h: '#e07a3a', g: '#e4b75c', w: '#7a5434', f: '#ff9f43', F: '#ffe08a' }, map: [
-    '....P.....F...',
-    '....PP...FfF..',
-    '...PPP...fFf..',
-    '...PPPP...w...',
-    '..PPPPPP..w...',
-    '.PPPPPPPP.w...',
-    '..hhssss..w...',
-    '..hhsese..w...',
-    '..hhssSs..w...',
-    '..hpppppssw...',
-    '..ppqqppp.w...',
-    '..ppqgppp.w...',
-    '..ppqpppp.w...',
-    '.pppqpppp.w...',
-    '.pppqppppPw...',
-    '.ppppppppPw...',
-    '.gggggggggw...',
-    '..PP...PP.....',
-  ] },
-  { pal: { ...SKIN, w: '#f1eadc', W: '#c8bfa8', g: '#e4b75c', y: '#ecd07a', Y: '#b8913a', m: '#c3cad6', L: '#fff6c4' }, map: [
-    '..........L...',
-    '.........LLL..',
-    '...yyyy...L...',
-    '..yyyyyy..m...',
-    '..yYssss..m...',
-    '..yYsese..m...',
-    '..yYssSs..m...',
-    '...Ysss...m...',
-    '..wwwwwwssm...',
-    '.wwWwggww.m...',
-    '.wWWwggww.m...',
-    '.wWWwggww.m...',
-    '.wWWwggww.m...',
-    '.wWWwggwwwm...',
-    'wwWWwggwwwm...',
-    'wWWWwggwwwm...',
-    'ggggggggggm...',
-    '..WW...WW.....',
-  ] },
+/* Hero looks by promotion stage: 0 Recruit, 1 Veteran–Elite, 2 Champion–Hero, 3 Legend–Paragon.
+   Keys 'n'/'N' are the cape and 'j' a gem: stages hide or dull them until the upper rank of that stage. */
+const HERO_STAGES = [
+  // Bram, Guardian: padded jerkin and a plank shield → chain and kite shield → plate and tower shield → gilded winged plate
+  [
+    { pal: { ...SKIN, h: '#7a5434', H: '#4e3420', u: '#b89a6a', U: '#8a7048', o: '#9a7048', O: '#6a4a2e', i: '#7a8296', k: '#c9b07a', l: '#6a5a48', f: '#3a2a20', x: '#d8cfbc' }, map: [
+      '.....hhhh......',
+      '....hhhhhh.....',
+      '....hHssss.....',
+      '....hHsese.....',
+      '....hHssSs.....',
+      '.....SsssS.....',
+      '....uuuUuu.....',
+      '...uuxuUuuuoooo',
+      '...uUuuUuusoOio',
+      '...uUuuUuusoOio',
+      '...uUuuuxu.iiii',
+      '...uUkkkkk.oOio',
+      '...uUuuUuu.oOio',
+      '....uuUuu..oooo',
+      '....uu.uu......',
+      '....ll.ll......',
+      '....ll.ll......',
+      '...fff.fff.....',
+    ] },
+    { pal: { ...SKIN, a: '#c3cad6', A: '#8a94a8', c: '#9aa3b4', C: '#6d7584', k: '#5a3d28', g: '#c9a64a', b: '#4466b0', B: '#2c4479', w: '#e8e2d4', l: '#5e5a6a', f: '#4a3426', n: '#b04a42', N: '#7a2e2a' }, map: [
+      '......aaaa......',
+      '.....aaaaaa.....',
+      '.....aAAAAAa....',
+      '.....AAsssa.....',
+      '.....AAsesa.....',
+      '.....AAssSa.....',
+      '......SsssS.....',
+      '...n.cccccc.....',
+      '..nncccCcccbbbbb',
+      '..nccCcccssbBwBb',
+      '..ncCcccCc.bwwwb',
+      '..ncCcccCc.bBwBb',
+      '..ncCkgkkk.bBwBb',
+      '..nNcCcccc..bwb.',
+      '...NcCcCcc...b..',
+      '.....cC.cC......',
+      '.....ll.ll......',
+      '.....ll.ll......',
+      '....fff.fff.....',
+    ] },
+    { pal: { ...SKIN, r: '#d4554d', a: '#dde3ee', A: '#9aa4b8', d: '#5e6679', w: '#f3ead8', W: '#cfc5b0', b: '#3c5ac0', B: '#2c4479', g: '#e4b75c', l: '#4a4f5e', n: '#b04a42', N: '#7a2e2a', j: '#c9a64a' }, map: [
+      '.......rr........',
+      '......rrr........',
+      '.....aaaaaa......',
+      '....aaaaaaAa.....',
+      '....aAAAAAAA.....',
+      '....aAddddddd....',
+      '....aAAAAAAA.....',
+      '.....wwWWww......',
+      '..n...wwWw.......',
+      '.nnaaaAAAAAa.bbb.',
+      '.naaAAgjgAAabBBBb',
+      '.naAAAAAAAAabBgBb',
+      '.naAAAAAAAAabgjgb',
+      '.nnAAAddddAabBgBb',
+      '.nnAAAAAAAAabBBBb',
+      '.nNdddddddd..bbb.',
+      '..N.AAA.AAA......',
+      '....ddd.ddd......',
+      '....ddd.ddd......',
+      '...llll.llll.....',
+    ] },
+    { pal: { ...SKIN, a: '#f4f1ea', A: '#c9c2b0', d: '#7a6a4a', y: '#ffd36b', Y: '#c9a64a', v: '#7ad6ff', b: '#e8eef8', B: '#a8b8d8', g: '#ffd36b', n: '#a8303a', N: '#6a1a24', j: '#c9a64a', W: '#ffffff' }, map: [
+      '.......yy..........',
+      '.W....yyy.....W....',
+      '.WW..aaaaaa..WW....',
+      '..WWaaaaaaAaWW.....',
+      '...WaAAAAAAAW......',
+      '....aAvvvvvvv......',
+      '....aAAAjAAA.......',
+      '.....yyAAAyy.......',
+      '.n.yyyaaaaayyy.....',
+      'nnyyaAAyyyAAayy....',
+      'nnyaAAAyjyAAaybbbbb',
+      'nnyAAAAAyAAAAbBgggB',
+      'nnyAAAAAyAAAAbgyjyb',
+      'nnnAAAdyyydAAbBgggB',
+      'nnnAAAAAAAAAAbBBgBB',
+      'nNNyyyyyyyyyy.bBBB.',
+      'nN..AAA.AAA....bb..',
+      '.N..aaa.aaa........',
+      '....AAA.AAA........',
+      '...yyyy.yyyy.......',
+    ] },
+  ],
+  // Rook, Warrior: torn shirt and a rusty hatchet → leather and an axe → mail, surcoat and a great axe → horned black plate and a burning axe
+  [
+    { pal: { ...SKIN, h: '#8a5a2b', H: '#5e3c1c', t: '#8a7a68', T: '#5e5246', m: '#9a8a7a', M: '#7a5a3a', w: '#5a3d28', k: '#3a2a20', l: '#5a4a3a', x: '#e8e2d4' }, map: [
+      '..hh.hh.......',
+      '..hhhhhh......',
+      '..hHssss...MM.',
+      '..hHsese..mMm.',
+      '..hHssSs...w..',
+      '...sssS....w..',
+      '..tttttt...w..',
+      '.tTtttTtssxw..',
+      '.tTtTtt....w..',
+      '.xTttTtt...w..',
+      '.xTtttTt......',
+      '..Tkkkkk......',
+      '..TttTtT......',
+      '..ll..ll......',
+      '..ll..ll......',
+      '..ss..ss......',
+      '.xxs.xxs......',
+    ] },
+    { pal: { ...SKIN, h: '#8a5a2b', H: '#5e3c1c', r: '#c24c43', t: '#8a5a3a', T: '#5e3c24', p: '#6a4a2e', m: '#d3d9e4', M: '#8d95a8', w: '#7a5434', l: '#5a3b2a', k: '#3a2a20', g: '#c9a64a', n: '#c24c43', N: '#83302b' }, map: [
+      '.............mm.',
+      '............mmMm',
+      '.....hhhh...mMMm',
+      '....rrrrrr...mm.',
+      '....hHssss...w..',
+      '....hHsese...w..',
+      '....hHssSs...w..',
+      '.....sssS....w..',
+      '..n.pptttt.s.w..',
+      '.nn.ppTtgtsssw..',
+      '.nn.tTTtgt...w..',
+      '.nn.tTTtgt...w..',
+      '.nN.tTkkkk...w..',
+      '..N..TTttT......',
+      '....llll.ll.....',
+      '....ll...ll.....',
+      '....ll...ll.....',
+      '...kkk...kkk....',
+    ] },
+    { pal: { ...SKIN, a: '#c3cad6', A: '#8a94a8', t: '#c24c43', T: '#83302b', c: '#9aa3b4', m: '#e8eef8', M: '#9aa3b4', w: '#5a3d28', g: '#e4b75c', k: '#3a2a20', l: '#6d7584', n: '#c24c43', N: '#83302b', j: '#c9a64a' }, map: [
+      '...........mm..mm',
+      '..........mmMwMmm',
+      '....aaaa..mMMwMMm',
+      '...aaaaaa..mmwmm.',
+      '...aAssss....w...',
+      '...aAsese....w...',
+      '...aAssSs....w...',
+      '....AsssA....w...',
+      '..aaattttaa..w...',
+      '.aAAattTtAAssw...',
+      '.n..ctTjTtc..w...',
+      'nn..ctTtTtc..w...',
+      'nn..cTkgkkc..w...',
+      'nnN..tTtTt...w...',
+      '.NN..tTtTt.......',
+      '.....AA.AA.......',
+      '.....aa.aa.......',
+      '.....AA.AA.......',
+      '....kkk.kkk......',
+    ] },
+    { pal: { ...SKIN, a: '#3a3446', A: '#24202e', y: '#ffd36b', Y: '#c9a64a', v: '#ff7a5a', t: '#a8303a', T: '#6a1a24', m: '#ffe08a', M: '#ff9f43', f: '#ff6a3a', F: '#fff2a8', w: '#3a2a20', n: '#a8303a', N: '#6a1a24', j: '#c9a64a', k: '#1b1622', x: '#e8e2d4' }, map: [
+      '............f..f..',
+      '...........fFffFf.',
+      '.x.....x..fmmwmmf.',
+      '.xx...xx..mMMwMMm.',
+      '..xaaaax..mMMwMMm.',
+      '...aaaaaa..mmwmm..',
+      '...aAAAAA....w....',
+      '...aAvvAv....w....',
+      '...aAAAAA....w....',
+      '..yyaAAAyy...w....',
+      '.yaaattttaay.w....',
+      'nyAAattjtAAAyw....',
+      'nn..aTtTtTa..w....',
+      'nn..aTtyTta..w....',
+      'nn..aTkykka..w....',
+      'nnN..tTtTt...w....',
+      '.NN..tTtTt........',
+      '.....aa.aa........',
+      '.....AA.AA........',
+      '....yyy.yyy.......',
+    ] },
+  ],
+  // Vess, Hunter: a peasant hood and a stick bow → green hood, leather and a longbow → ranger mantle and a gilded recurve → silver scale, feathered hood and a moonlit bow
+  [
+    { pal: { ...SKIN, g: '#8a7a5a', G: '#5e5240', l: '#8a6440', L: '#5e4128', b: '#9a7a50', B: '#6a5038', w: '#d8cfbc', k: '#3a2a20' }, map: [
+      '..ggg.....b..',
+      '.ggggg.....b.',
+      '.gGGsss....wb',
+      '.gGsese....wb',
+      '.gGssss....wb',
+      '.gGGsS.....wb',
+      '.gllllls...wb',
+      '.lLllllsssswb',
+      '.lLlllll...wb',
+      '.lLlLlll...wb',
+      '..LllLL....b.',
+      '..ll..ll..b..',
+      '..ll..ll.....',
+      '..LL..LL.....',
+      '.kkk.kkk.....',
+    ] },
+    { pal: { ...SKIN, g: '#3f7a44', G: '#27502c', l: '#8a6440', L: '#5e4128', b: '#b08850', B: '#7a5434', w: '#e8e2d4', q: '#6b4a2e', f: '#e8e2d4', k: '#3a2a20', c: '#c9504a', n: '#3f7a44', N: '#27502c' }, map: [
+      '....ggg.....b...',
+      '...ggggg.....b..',
+      '..fgGGsss....wb.',
+      '..fgGsese....w.b',
+      '..qgGssss....w.b',
+      '..qgGGsS.....w.b',
+      '.nqglllll....w.b',
+      'nnqlLlllsssssw.B',
+      'nn.lLlllll...w.b',
+      'nn.lLcccll...w.b',
+      'nN.lLllll....wb.',
+      '.N..LllLL....b..',
+      '....gg..gg..b...',
+      '....gg..gg......',
+      '....GG..GG......',
+      '...kkk.kkk......',
+    ] },
+    { pal: { ...SKIN, g: '#2f6a4a', G: '#1f4a32', m: '#5a7a4a', l: '#7a5434', L: '#4e3420', b: '#c9a64a', B: '#8a6a2a', w: '#f3ead8', q: '#4e3420', f: '#f3ead8', k: '#2a1e18', c: '#c9a64a', a: '#9aa3b4', M: '#3a5a32', n: '#2f6a4a', N: '#1f4a32', j: '#c9a64a' }, map: [
+      '.....ggg......bb..',
+      '....ggggg.......b.',
+      '...fgGGsss......wb',
+      '..ffgGsese......w.b',
+      '..qqgGssss......w.b',
+      '..qqgGGsS.......w.b',
+      '.nmmmmmmmm......w.b',
+      'nnmMmmmmmmsssssswjB',
+      'nn.lLaalll......w.b',
+      'nn.lLcccll......w.b',
+      'nN.lLllll.......w.b',
+      'nN..LaaLL.......wb.',
+      '.N..LllLL......bb..',
+      '....gg..gg........',
+      '....aa..aa........',
+      '....gg..gg........',
+      '...kkk..kkk.......',
+    ] },
+    { pal: { ...SKIN, g: '#e8eef8', G: '#a8b8d8', m: '#3a6a5a', M: '#24483c', l: '#bfd6d0', L: '#7a9a94', b: '#e8eef8', B: '#a8b8d8', w: '#7ad6ff', q: '#4e3420', f: '#ffd36b', F: '#c9a64a', k: '#24202e', c: '#ffd36b', a: '#7ad6c8', n: '#3a6a5a', N: '#24483c', j: '#7ad6c8', v: '#bff5ff' }, map: [
+      '..ff.ggg.......bb...',
+      '...ffgggg........b..',
+      '....fgGGsss.......b.',
+      '...ffgGsese.......wb',
+      '..qqqgGssss.......w.b',
+      '..qqqgGGsS........w.b',
+      '.nmmmmmmmmm.......w.b',
+      'nnmMmmmmmmmssssssswjB',
+      'nnM.lLaalll.......w.b',
+      'nnM.lLcjcll.......w.b',
+      'nNM.lLllll........w.b',
+      'nN..LaaLL.........wb.',
+      'nN..LllLL........bb..',
+      '.N..gg..gg..........',
+      '....aa..aa..........',
+      '....gg..gg..........',
+      '...kkk..kkk.........',
+    ] },
+  ],
+  // Ilda, Mage: an apprentice's patched robe and a twig → pointed hat and staff → banded hat, trimmed robe and an orb staff → arch-mage's starry robe and a crystal staff
+  [
+    { pal: { ...SKIN, h: '#e07a3a', H: '#a8542a', p: '#8a7a68', P: '#5e5246', q: '#a8987a', w: '#7a5434', f: '#ff9f43', F: '#ffe08a', x: '#6a5a8a' }, map: [
+      '...hhhh.......',
+      '..hhhhhh...F..',
+      '..hHssss..fF..',
+      '..hHsese...w..',
+      '..hHssSs...w..',
+      '..hhsss....w..',
+      '..hpppppss.w..',
+      '..ppqpppp..w..',
+      '..ppqpxpp..w..',
+      '..ppqpppp..w..',
+      '.pppqppPp.....',
+      '.pPpqpppP.....',
+      '.pppppppP.....',
+      '..PP...PP.....',
+    ] },
+    { pal: { ...SKIN, p: '#7a4aab', P: '#55307c', q: '#9b6fd0', h: '#e07a3a', g: '#e4b75c', w: '#7a5434', f: '#ff9f43', F: '#ffe08a', n: '#55307c', N: '#3a2058' }, map: [
+      '......P.....F...',
+      '......PP...FfF..',
+      '.....PPP...fFf..',
+      '.....PPPP...w...',
+      '....PPPPPP..w...',
+      '...PPPPPPPP.w...',
+      '....hhssss..w...',
+      '....hhsese..w...',
+      '....hhssSs..w...',
+      '...nhpppppssw...',
+      '..nnppqqppp.w...',
+      '..nnppqgppp.w...',
+      '..nnppqpppp.w...',
+      '..nNpppqpppp.w..',
+      '..N.pppqppppPw..',
+      '....ppppppppPw..',
+      '....gggggggggw..',
+      '.....PP...PP....',
+    ] },
+    { pal: { ...SKIN, p: '#5a3a9a', P: '#3c2470', q: '#e4b75c', h: '#e07a3a', g: '#e4b75c', G: '#ffd36b', w: '#5a3d28', o: '#ff9f43', O: '#ffe08a', y: '#7ad6ff', n: '#3c2470', N: '#24164a', j: '#c9a64a', m: '#8a5ac0' }, map: [
+      '.......P.....OO..',
+      '.......PP...OooO.',
+      '......PPG...oOOo.',
+      '......PPPP...oo..',
+      '.....PPPPPP..w...',
+      '....ggggjggg.w...',
+      '...PPPPPPPPPPw...',
+      '.....hhssss..w...',
+      '.....hhsese..w...',
+      '.....hhssSs..w...',
+      '..nmmmmmmmmssw...',
+      '.nnmmpqqqppm.w...',
+      '.nn.ppqGqpp..w...',
+      '.nn.ppqqqpp..w...',
+      '.nN.pppqpppp.w...',
+      '.nN.pppqppppPw...',
+      '..N.pppqppppPw...',
+      '....ggggggggg....',
+      '.....PP...PP.....',
+    ] },
+    { pal: { ...SKIN, p: '#24305a', P: '#161c3a', q: '#7ad6ff', h: '#ff9f43', g: '#7ad6ff', G: '#bff5ff', w: '#a8b8d8', o: '#7ad6ff', O: '#e8f6ff', y: '#fff2a8', n: '#3a2a6a', N: '#24164a', j: '#c48bfb', m: '#3a2a6a', s: '#efc29a' }, map: [
+      '..y....P.....OO..',
+      '.......PP...OooO.',
+      '......PPy..OoOOoO',
+      '...y..PPPP..OooO.',
+      '.....PPPPPP..OO..',
+      '....GgggjgggG.w..',
+      '...PPPPPPPPPP.w..',
+      '.....hhssss...w..',
+      '.....hhsese...w..',
+      '.....hhssSs...w..',
+      '..nmmmmmmmmsssw..',
+      '.nnmmpqpqppmy.w..',
+      '.nn.ppqjqpp...w..',
+      '.nn.pypqppy...w..',
+      '.nN.pppqpppp..w..',
+      'nnN.ppypppypP.w..',
+      'nN..pppqppppP.w..',
+      '....GgggggggG....',
+      '.....PP...PP.....',
+    ] },
+  ],
+  // You, the healer: one ladder per class
+  {
+    priest: [
+      { pal: { ...SKIN, h: '#b8913a', w: '#9a8a70', W: '#6e6250', k: '#c9b07a', m: '#8a6440', L: '#ffd36b' }, map: [
+        '..........L..',
+        '...hhhh...m..',
+        '..hhssss..m..',
+        '..hssese..m..',
+        '..hsssSs..m..',
+        '...ssss...m..',
+        '..wwwwwwssm..',
+        '.wwWwwwww.m..',
+        '.wWWwwkww.m..',
+        '.wWWwwkww.m..',
+        '.wWWwwwww.m..',
+        'wwWWwwwwwwm..',
+        'wWWWwwwwww...',
+        '..WW...WW....',
+      ] },
+      { pal: { ...SKIN, w: '#f1eadc', W: '#c8bfa8', g: '#e4b75c', y: '#ecd07a', Y: '#b8913a', m: '#c3cad6', L: '#fff6c4', n: '#c8bfa8', N: '#9a9080' }, map: [
+        '...........L...',
+        '..........LLL..',
+        '....yyyy...L...',
+        '...yyyyyy..m...',
+        '...yYssss..m...',
+        '...yYsese..m...',
+        '...yYssSs..m...',
+        '....Ysss...m...',
+        '..n.wwwwwwssm..',
+        '.nnwwWwggww.m..',
+        '.nnwWWwggww.m..',
+        '.nnwWWwggww.m..',
+        '.nnwWWwggww.m..',
+        '.nNwWWwggwwwm..',
+        '.nNwwWWwggwwwm.',
+        '..NwWWWwggwwwm.',
+        '...gggggggggg..',
+        '....WW...WW....',
+      ] },
+      { pal: { ...SKIN, w: '#f8f4ea', W: '#d0c6ae', g: '#e4b75c', G: '#ffd36b', y: '#ecd07a', Y: '#b8913a', m: '#e4b75c', M: '#b8913a', L: '#fff6c4', n: '#e4b75c', N: '#b8913a', j: '#c9a64a', r: '#c94a4a' }, map: [
+        '............LLL.',
+        '....gwg....LLjLL',
+        '...gwwwg....LLL.',
+        '...wwgww.....m..',
+        '...wWgWw.....m..',
+        '...ysssss....m..',
+        '...yseses....m..',
+        '...ysssSs....m..',
+        '....Ysss.....m..',
+        '..nGGGGGGGGssm..',
+        '.nnwWwgrgww..m..',
+        '.nnwWWwgww...m..',
+        '.nnwWWwgww...m..',
+        '.nNwWWwgwwww.m..',
+        '.nNwWWwgwwww.m..',
+        '..NwWWWgwwwww...',
+        '...GGGGGGGGGG...',
+        '....WW....WW....',
+      ] },
+      { pal: { ...SKIN, w: '#ffffff', W: '#e8dcb8', g: '#ffd36b', G: '#fff2a8', y: '#fff2a8', Y: '#e4b75c', m: '#ffd36b', M: '#c9a64a', L: '#ffffff', H: '#fff2a8', n: '#ffd36b', N: '#c9a64a', j: '#e4b75c', r: '#7ad6ff' }, map: [
+        '...HHHHH....L.L.L',
+        '..H.....H....LLL.',
+        '....gwg.....LLjLL',
+        '...gwwwg.....LLL.',
+        '...wwgww......m..',
+        '...wWgWw......m..',
+        '...ysssss.....m..',
+        '...yseses.....m..',
+        '...ysssSs.....m..',
+        '....Ysss......m..',
+        '.nGGGGGGGGGGssm..',
+        'nnGwWwgrgwwG..m..',
+        'nn.wWWwgww....m..',
+        'nn.wWWgjgw....m..',
+        'nN.wWWwgwww...m..',
+        'nN.wWWwgwwww..m..',
+        '.NwwWWWgwwwww....',
+        '..GGGGGGGGGGGG...',
+        '....WW....WW.....',
+      ] },
+    ],
+    druid: [
+      { pal: { ...SKIN, h: '#6a4a2e', w: '#8a6a44', W: '#5e4630', k: '#6a8a4a', m: '#7a5434', L: '#8fdc6a' }, map: [
+        '..........L..',
+        '...hhhh..LmL.',
+        '..hhssss..m..',
+        '..hssese..m..',
+        '..hsssSs..m..',
+        '...ssss...m..',
+        '..wwwwwwssm..',
+        '.wwWwwwww.m..',
+        '.wWWkkwww.m..',
+        '.wWWwwwww.m..',
+        '.wWwwwwww.m..',
+        '..WWwwwww....',
+        '..ss...ss....',
+      ] },
+      { pal: { ...SKIN, h: '#6a4a2e', H: '#4e3420', w: '#6a8a4a', W: '#4a6a32', y: '#8fdc6a', Y: '#4a8a3a', m: '#7a5434', L: '#9be06a', g: '#c9a64a', n: '#4a6a32', N: '#32502a' }, map: [
+        '...........L...',
+        '..y..y....LmL..',
+        '...yyyyy...m...',
+        '...hhhhhh..m...',
+        '...hHssss..m...',
+        '...hHsese..m...',
+        '...hHssSs..m...',
+        '....hsss...m...',
+        '..n.wwwwwwssm..',
+        '.nnwwWwyyww.m..',
+        '.nnwWWwyyww.m..',
+        '.nnwWWwyyww.m..',
+        '.nNwWWwggww.m..',
+        '.nNwWWwyywwwm..',
+        '..NwWWWwyywww..',
+        '...wwwwwwwww...',
+        '....WW...WW....',
+      ] },
+      { pal: { ...SKIN, h: '#6a4a2e', H: '#4e3420', w: '#4a7a3a', W: '#32502a', y: '#9be06a', Y: '#6fbf73', b: '#8a6440', B: '#5e4128', m: '#6a4a2e', L: '#d6ff9a', g: '#c9a64a', n: '#32502a', N: '#24381e', j: '#6fbf73', a: '#e8dcb8' }, map: [
+        '.a.....a....LLL.',
+        '.aa...aa...LLjL.',
+        '..a.y.a.....Lm..',
+        '...ayyya.....m..',
+        '...hhhhhh....m..',
+        '...hHssss....m..',
+        '...hHsese....m..',
+        '...hHssSs....m..',
+        '....hsss.....m..',
+        '..nbbwwwwbbssm..',
+        '.nnbBwwyywBB.m..',
+        '.nnwWWwyyww..m..',
+        '.nnwWWwjyww..m..',
+        '.nNwWWwyywww.m..',
+        '.nNwWWwyywwww...',
+        '..NwWWWwyywwww..',
+        '...yYyYyYyYyY...',
+        '....WW....WW....',
+      ] },
+      { pal: { ...SKIN, h: '#e8dcb8', H: '#b8a888', w: '#2f6a3a', W: '#1f4a28', y: '#d6ff9a', Y: '#8fdc6a', b: '#a8763a', B: '#6a4a2e', m: '#6a4a2e', L: '#e8ffd0', g: '#ffd36b', n: '#3f7a44', N: '#27502c', j: '#ff8ac8', a: '#f4ead0', p: '#ff8ac8' }, map: [
+        'a.a.......a.a..LLL.',
+        '.aa.p...p.aa..LLjLL',
+        '..aa.....aa....LLL.',
+        '...aayyyaa......m..',
+        '....yYpYyy......m..',
+        '....hhhhhh......m..',
+        '....hHssss......m..',
+        '....hHsese......m..',
+        '....hHssSs......m..',
+        '.....hsss.......m..',
+        '.nnbbbwwwbbbsssm...',
+        'nnnbBBwyywBBy...m..',
+        'nnywWWwyyww.....m..',
+        'nn.wWWwjyww.....m..',
+        'nNywWWwyywww....m..',
+        'nN.wWWwyywwwy.......',
+        '.NywWWWwyywwww.....',
+        '...yYyYyYyYyYy.....',
+        '....WW....WW.......',
+      ] },
+    ],
+    occultist: [
+      { pal: { ...SKIN, s: '#d8b8a8', S: '#a88878', w: '#4a3e46', W: '#2e262c', k: '#8a7a6a', m: '#6a5a4a', L: '#e8e2d4', r: '#c44a4a' }, map: [
+        '..........L..',
+        '...www....m..',
+        '..wwwww...m..',
+        '..wWsss...m..',
+        '..wWses...m..',
+        '..wWssS...m..',
+        '..wwwwwwssm..',
+        '.wwWwwwww.m..',
+        '.wWWwkwww.m..',
+        '.wWwwwrww.m..',
+        '.wWwwwwWw.m..',
+        '.wWwWwwWw....',
+        '..W..W..W....',
+      ] },
+      { pal: { ...SKIN, s: '#d8b8a8', S: '#a88878', w: '#4a2a4a', W: '#2a1a2e', y: '#2a2433', Y: '#1b1622', m: '#5a5560', L: '#e8e2d4', g: '#8a2a3a', r: '#e0605a', n: '#4a2a4a', N: '#2a1a2e' }, map: [
+        '...........LL..',
+        '....yyyy..LrLL.',
+        '...yyyyyy..LL..',
+        '..yyYssss..m...',
+        '..yYYsrsr..m...',
+        '..yYYssSs..m...',
+        '..yyYsss...m...',
+        '..nywwwwwwssm..',
+        '.nnwwWwggww.m..',
+        '.nnwWWwggww.m..',
+        '.nnwWWwggww.m..',
+        '.nNwWWwggww.m..',
+        '.nNwWWwggwwwm..',
+        '..NwWWWwggwww..',
+        '...ggggggggg...',
+        '....WW...WW....',
+      ] },
+      { pal: { ...SKIN, s: '#d8b8a8', S: '#a88878', w: '#3a1a34', W: '#24101f', y: '#2a2433', Y: '#1b1622', m: '#4a4450', L: '#e8e2d4', a: '#e8e2d4', A: '#b8b0a0', g: '#a8303a', r: '#ff5a4a', n: '#3a1a34', N: '#24101f', j: '#a8303a', x: '#e8e2d4' }, map: [
+        '.a......a...LLL.',
+        '.aa....aa..LrLrL',
+        '..ayyyya....LLL.',
+        '...yyyyyy....m..',
+        '..yyAAAAA....m..',
+        '..yYArArA....m..',
+        '..yYAAAAA....m..',
+        '..yyYsss.....m..',
+        '..naaawwwaaassm.',
+        '.nnAawWgWwaA.m..',
+        '.nnwWWwjgww..m..',
+        '.nnwWWwggww..m..',
+        '.nNwWWxgxwww.m..',
+        '.nNwWWwggwwww...',
+        '..NwWWWwggwww...',
+        '...ggggggggggg..',
+        '....WW....WW....',
+      ] },
+      { pal: { ...SKIN, s: '#c8b0c8', S: '#987898', w: '#2a1a3a', W: '#180e24', y: '#1b1622', Y: '#0e0b14', m: '#4a4450', L: '#e8e2d4', a: '#f4ead0', A: '#c8bfa8', g: '#c44a8a', r: '#ff5a4a', R: '#ff9a7a', n: '#4a1a3a', N: '#2a0e22', j: '#ff5a4a', x: '#f4ead0', v: '#c48bfb' }, map: [
+        'a.a.a.a.a.......L.L..',
+        '.aaaaaaaa......LLLLL.',
+        '..ayyyyya.....LLrLrLL',
+        '...yyyyyy......LLLLL.',
+        '..yyAAAAA.......LLL..',
+        '..yYArArA.......vm...',
+        '..yYAAAAA........m...',
+        '..yyYAAA.........m...',
+        '.naaaaWwWaaaasssm....',
+        'nnaAawWjWwaAa....m...',
+        'nnvwWWwggwwv.....m...',
+        'nn.wWWxgxww......m...',
+        'nNvwWWwggwwwv....m...',
+        'nN.wWWxgxwwww....m...',
+        '.NvwWWWwggwwwwv......',
+        '...gvgvgvgvgvgg......',
+        '....WW....WW.........',
+      ] },
+    ],
+  },
 ];
+
+// Recruit looks scrappy; Veteran–Elite, Champion–Hero and Legend–Paragon each bring new gear. The upper rank of each pair adds a cape or a shining gem.
+const stageOf = rk => rk <= 0 ? 0 : rk <= 2 ? 1 : rk <= 4 ? 2 : 3;
+const artCache = {};
+function heroArt(i, rk = promoRank(i)) {
+  const c = i === YOU ? clsId() : '', key = i + ':' + rk + c; if (artCache[key]) return artCache[key];
+  const st = stageOf(rk), base = i === YOU ? HERO_STAGES[YOU][c][st] : HERO_STAGES[i][st], map = base.map, h = map.length;
+  const pal = { ...base.pal };
+  if (st === 1 && rk < 2) pal.n = pal.N = '';
+  if (rk === 4 || rk === 6) pal.j = rk === 6 ? '#ff5a4a' : '#7ad6c8';
+  const feet = map[h - 1], fx0 = feet.search(/[^.]/), fx1 = feet.length - 1 - [...feet].reverse().join('').search(/[^.]/);
+  const ax = Math.round((fx0 + fx1) / 2);
+  let face = map.findIndex(row => /e|v|Ar|sr/.test(row)); if (face < 0) face = 5;
+  // the weapon's tip: the highest pixel well in front of the body
+  let tip = [6, -12];
+  for (let y = 0; y < h && tip[1] === -12; y++) for (let x = map[y].length - 1; x > ax + 2; x--) if (map[y][x] !== '.') { tip = [x - ax, y - h]; break; }
+  return (artCache[key] = { map, pal, ax, face, tip, st });
+}
 // Head-and-shoulders portrait of a hero, outlined like the battle sprites
 const portraitCache = {};
 function portrait(i, rk = promoRank(i)) {
   const key = i + ':' + rk + (i === YOU ? clsId() : ''); if (portraitCache[key]) return portraitCache[key];
-  const art = HERO_ART[i], w = art.map[0].length + 2, h = 14;
+  const art = heroArt(i, rk), w = 20, h = 16;
   const a = document.createElement('canvas'); a.width = w; a.height = h;
   const prev = P; P = a.getContext('2d');
-  if (rk >= 2) { P.fillStyle = ROLE_COL[i]; P.fillRect(1, 9, 3, 5); }
-  sprite(art.map, tierPal(i, rk), w >> 1, art.map.length + 1);
-  if (rk >= 5) { P.fillStyle = '#ffd36b'; P.fillRect((w >> 1) - 3, 0, 6, 1); }
+  sprite(art.map, art.pal, w >> 1, 7 - art.face + art.map.length, art.ax);
   P = prev;
   const o = document.createElement('canvas'); o.width = w; o.height = h;
   const x = o.getContext('2d');
@@ -2670,16 +3132,18 @@ function portrait(i, rk = promoRank(i)) {
   return (portraitCache[key] = o.toDataURL());
 }
 const portraitImg = (i, cls = '', rk) => `<img class="portrait ${cls}" src="${portrait(i, rk ?? promoRank(i))}" alt="">`;
+const WING_PAL = { w: '#ffffff', W: '#ffe9a8', g: '#e4b75c' };
+const WING = ['......wwW', '...wwwwWW', '.wwwwwWWg', 'wwwWWWWg.', '.wwWWWgg.', '..wWWgg..', '...wgg...', '....g....'];
+const WING_UP = ['wW.......', 'wwwW.....', '.wwwwWW..', '..wwwWWWg', '..wwWWWg.', '...wWWg..', '....wg...', '.....g...'];
 function drawHero(i, X, Y, t, castPose, rk = promoRank(i)) {
   const bob = Math.sin(t * 3 + i * 1.7) > 0.4 ? 1 : 0;
-  const art = HERO_ART[i];
-  if (rk >= 6) { // Paragon: wings of light
-    const fl = Math.round(Math.sin(t * 3 + i)), wy = Y - 25 - bob + fl;
-    [3, 6, 8, 9, 8, 6, 4, 2].forEach((len, k) => { P.fillStyle = k % 2 ? '#ffe9a8' : '#ffffff'; P.fillRect(X - 4 - len, wy + k, len, 1); P.fillStyle = '#e4b75c'; P.fillRect(X - 4 - len, wy + k, 1, 1); });
-    [2, 3, 3, 2].forEach((len, k) => { P.fillStyle = '#ffe9a8'; P.fillRect(X + 3, wy + 1 + k, len, 1); });
+  const art = heroArt(i, rk);
+  if (rk >= 6) { // Paragon: feathered wings of light behind the shoulders, slowly beating
+    const up = Math.sin(t * 3 + i) > 0 ? 1 : 0, wy = Y - art.map.length + 4 - bob - up;
+    sprite(up ? WING_UP : WING, WING_PAL, X - 4, wy + WING.length, WING[0].length);
   }
-  sprite(art.map, tierPal(i, rk), X, Y - bob);
-  if (castPose && i === YOU) { P.fillStyle = '#fff6c4'; P.fillRect(X + 2, Y - 22 - bob, 3, 3); }
+  sprite(art.map, art.pal, X, Y - bob, art.ax);
+  if (castPose && i === YOU) { P.fillStyle = CLASS_FX[clsId()][2]; P.fillRect(X + art.tip[0] - 1, Y + art.tip[1] - 1 - bob, 3, 3); }
 }
 // Pets from promotions: Vess's hawk circles overhead and dives; Ilda's familiar orbits and shoots
 const famPos = () => { const p = HERO_POS[3]; return { x: p.x + Math.cos(sceneT * 2.5) * 10, y: p.y - 24 + Math.sin(sceneT * 2.5) * 4 }; };
@@ -2699,8 +3163,6 @@ function drawPets() {
     if (Math.random() < 0.3) FX.push({ t: 'p', x: X, y: Y + 1, vx: rand(-3, 3), vy: rand(2, 6), g: 0, life: 0.3, max: 0.3, col: '#ff9f43', s: 1 });
   }
 }
-// where each hero's weapon sits relative to their feet, for gear sparkles
-const WEAPON_TIP = [[6, -12], [5, -18], [6, -11], [4, -18], [5, -20]];
 const ACO_POS = { x: 30, y: 128 };
 const ACO_ART = { pal: { ...SKIN, R: '#8a8296', r: '#6b6478', g: '#e4b75c', m: '#b4bccc' }, map: [
   '...RRRR...',
@@ -3369,21 +3831,13 @@ function renderScene(dt) {
       if (Math.random() < dt * 30 * incoming) FX.push({ t: 'p', x: p.x + rand(-9, 9), y: p.y - rand(0, 4), vx: 0, vy: -rand(14, 26), g: 0, life: 0.5, max: 0.5, col: '#bff5dd', s: 1 });
     }
     const rank = promoRank(i), rc = ROLE_COL[i], hx = p.x + dx - (a.kb > 0 ? 2 * a.kb / 0.14 : 0) - (a.shot > 0 ? 1 : 0), hy = p.y + walk;
-    if (a.shot > 0.12 && (i === 3 || i === 2)) { const wp = WEAPON_TIP[i]; FX.push({ t: 'p', x: hx + wp[0] + 2, y: hy + wp[1], vx: rand(4, 14), vy: rand(-6, 6), g: 0, life: 0.18, max: 0.18, col: i === 3 ? '#ffd36b' : '#f3ead8', s: 1 }); }
+    if (a.shot > 0.12 && (i === 3 || i === 2)) { const tp = heroArt(i).tip, wp = i === 3 ? tp : [tp[0], -9]; FX.push({ t: 'p', x: hx + wp[0] + 2, y: hy + wp[1], vx: rand(4, 14), vy: rand(-6, 6), g: 0, life: 0.18, max: 0.18, col: i === 3 ? '#ffd36b' : '#f3ead8', s: 1 }); }
     if (rank >= 4) { cx.globalAlpha = 0.18 + 0.08 * Math.sin(sceneT * 3 + i); cx.fillStyle = rc; cx.beginPath(); cx.ellipse(hx, hy, 12, 4, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; }
-    if (rank >= 2) {
-      // a cape in the hero's color, trailing behind them
-      const wave = Math.round(Math.sin(sceneT * 4 + i));
-      cx.fillStyle = '#0b0910'; cx.fillRect(hx - 8, hy - 18, 5, 15 + wave);
-      cx.fillStyle = rc; cx.fillRect(hx - 7, hy - 17, 3, 13 + wave); cx.fillStyle = '#00000044'; cx.fillRect(hx - 7, hy - 17, 1, 13 + wave);
-      if (rank >= 3) { cx.fillStyle = '#e4b75c'; cx.fillRect(hx - 7, hy - 5 + wave, 3, 1); }
-    }
     const arm = i === YOU ? S.equip.chest : S.cequip[i].carmor, wpn = i === YOU ? S.equip.staff : S.cequip[i].cweapon;
     blit((X, Y) => drawHero(i, X, Y, sceneT, casting), hx, hy, { flash: a.flash, outline: arm && arm.rarity >= 3 ? RCOL[arm.rarity][1] : '#0b0910' });
     if (wpn && wpn.rarity >= 3 && Math.random() < dt * (wpn.rarity === 4 ? 10 : 5)) {
-      const wp = WEAPON_TIP[i]; FX.push({ t: 'p', x: hx + wp[0] + rand(-2, 2), y: hy + wp[1] + rand(-2, 2), vx: rand(-3, 3), vy: -rand(4, 10), g: 0, life: 0.6, max: 0.6, col: RCOL[wpn.rarity][0], s: 1 });
+      const wp = heroArt(i).tip; FX.push({ t: 'p', x: hx + wp[0] + rand(-2, 2), y: hy + wp[1] + rand(-2, 2), vx: rand(-3, 3), vy: -rand(4, 10), g: 0, life: 0.6, max: 0.6, col: RCOL[wpn.rarity][0], s: 1 });
     }
-    if (rank >= 5) { cx.fillStyle = '#ffd36b'; cx.globalAlpha = 0.8; cx.fillRect(hx - 3, hy - 33, 7, 1); cx.fillRect(hx - 4, hy - 34, 1, 1); cx.fillRect(hx + 4, hy - 34, 1, 1); cx.globalAlpha = 1; }
     if (rank >= 4 && Math.random() < dt * 3) FX.push({ t: 'p', x: hx + rand(-8, 8), y: hy - rand(0, 6), vx: 0, vy: -rand(6, 12), g: 0, life: 0.8, max: 0.8, col: rc, s: 1 });
     if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
     miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
@@ -3969,7 +4423,7 @@ function renderParty() {
   const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}" style="--tc:${TIER_COL[k]}">${portraitImg(i, 'rg', k)}<b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
   const perks = PROMO_PERKS[i].map(([n, dsc], k) => `<li class="${pr > k ? 'on' : k === pr ? 'next' : ''}" style="--tc:${TIER_COL[k + 1]}"><span class="pt">${PROMO_TITLE[k + 1]}</span><b>${n}</b> ${dsc}</li>`).join('');
   pane.innerHTML = `
-    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${k === YOU ? cls().name : q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
+    <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${k === YOU ? cls().name : q.role}<br>Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
     ${perk('barracks', 2) ? `<div class="stances"><span class="label">Battle stance</span>${Object.entries(STANCES).map(([k, v]) => `<button class="chipbtn" data-stance="${k}" aria-pressed="${stance() === k}" title="${v.desc}">${v.name}</button>`).join('')}<span class="label sub">${STANCES[stance()].desc}</span></div>` : ''}
     <div class="phead" style="--rc:${ROLE_COL[i]}">${portraitImg(i, 'lg')}<div><h3>${p.name} <small class="ptitle">${PROMO_TITLE[promoRank(i)]}</small></h3><span class="label">${p.role} · Level ${S.heroes[i].lv}${comp ? ` · ${fmt(memberDps(i))} damage per second` : ''}</span></div></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
@@ -3980,7 +4434,7 @@ function renderParty() {
     <div class="promo" style="--rc:${ROLE_COL[i]}"><div class="ladder">${ladder}</div>
       ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="pnext" style="--tc:${TIER_COL[pr + 1]}">
         <div class="pvs">${portraitImg(i, 'lg', pr)}<span>→</span>${portraitImg(i, 'lg glow', pr + 1)}</div>
-        <div><h4>${PROMO_TITLE[pr + 1]}: ${PROMO_PERKS[i][pr][0]}</h4><p>${PROMO_PERKS[i][pr][1]}.</p><p class="sub">Plus ${per} (×${promoMul(i).toFixed(2)} → ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}) and an upgraded look.</p>
+        <div><h4>${PROMO_TITLE[pr + 1]}: ${PROMO_PERKS[i][pr][0]}</h4><p>${PROMO_PERKS[i][pr][1]}.</p><p class="sub">Plus ${per} (×${promoMul(i).toFixed(2)} → ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}) and ${stageOf(pr + 1) > stageOf(pr) ? '<b>a whole new set of gear</b>' : pr + 1 === 6 ? 'wings of light' : 'a cape or a shining gem'}.</p>
         <div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div></div></div>`}
       <ul class="perklist">${perks}</ul></div>
     ${comp ? `
@@ -3995,8 +4449,10 @@ function promote(i) {
   const c = promoCost(i);
   if (!canPromote(i) || S.gold < c) return;
   S.gold -= c; S.promo[i] = promoRank(i) + 1; recalc();
-  heroAnim[i].lvl = 2; burst(HERO_POS[i].x, HERO_POS[i].y - 14, '#ffd36b', 30, 24); fxLabel(i, PROMO_TITLE[S.promo[i]] + '!', '#ffd36b'); sfx('level');
-  log(`<span class="g">${PARTY[i].name} was promoted to ${PROMO_TITLE[S.promo[i]]}.</span>`); toast(`${PARTY[i].name} is now ${PROMO_TITLE[S.promo[i]]}!`);
+  const newGear = stageOf(S.promo[i]) > stageOf(S.promo[i] - 1);
+  heroAnim[i].lvl = 2; heroAnim[i].flash = newGear ? 0.5 : 0.2; burst(HERO_POS[i].x, HERO_POS[i].y - 14, '#ffd36b', newGear ? 60 : 30, newGear ? 36 : 24); fxRingAt(i, TIER_COL[S.promo[i]]);
+  fxLabel(i, PROMO_TITLE[S.promo[i]] + '!', '#ffd36b'); sfx('level');
+  log(`<span class="g">${PARTY[i].name} was promoted to ${PROMO_TITLE[S.promo[i]]}${newGear ? ' and suits up in new gear' : ''}.</span>`); toast(`${PARTY[i].name} is now ${PROMO_TITLE[S.promo[i]]}!${newGear ? ' New gear!' : ''}`);
 }
 let lastCoffer = null;
 function openCoffer(id) {

@@ -20,6 +20,12 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Wipe report.** When the party falls, the summary explains what happened: who died to what and what would have helped, whether the enemies went berserk, how much of the fight you were out of mana, how much healing was overheal, and anything left unspent.
 - **You lose** if you die or the rest of the party dies. Rewards from stages you cleared are kept. With *Repeat dungeon* on, the run starts again by itself.
 
+## Look and feel
+
+- **Every dungeon has its own scenery:** sewer pipes and a murky channel, a bog with hanging roots and drifting fog, a crypt of burial niches and candles, glowing cracks over a lava channel, a moonlit forest, barred cells with swaying chains, a flooded nave under stained glass, and a starry void with a black sun.
+- Characters and monsters get light-and-shadow shading. Hits knock targets back, Vess and Ilda recoil when they fire, fallen heroes topple before their grave rises, and every boss arrives with a name card. Bosses have been redrawn, including the Grave Warden, Thornmother, Ashjaw, the Iron Penitent, the Leviathan and the Eclipse Seraph.
+- The town sits under a dusk sky with drifting clouds, birds, a windmill and a castle on the ridge. It has cobbled streets, a plaza fountain, lamp posts, a pond and villagers who walk the main street (more of them as the town grows). Buildings are shaded and outlined, chimneys smoke, and buildings gain flower boxes at level 3 and an annex at level 5.
+
 ## Getting started
 
 - One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril and sets.

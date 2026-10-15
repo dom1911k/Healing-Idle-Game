@@ -1487,6 +1487,7 @@ function enterDungeon(d) {
 function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
+  C.bossIntro = C.foes.some(f => f.boss) ? 2.4 : 0;
   C.buff = { sanct: 0, bless: 0 }; C.bossHeat = false; C.bossThorns = false; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach((m, i) => { if (m.alive) afflict(i, 'poison', m.max * 0.008, 12, { ramp: 0.1 }); });
@@ -1520,7 +1521,7 @@ function hit(i, amt) {
   }
   if (amt <= 0) return;
   trackStat('taken', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
-  m.hp -= amt;
+  m.hp -= amt; heroAnim[i].kb = 0.14;
   floatTxt(i, '-' + fmt(amt), 'dmg');
   pnumFx(i, '-' + fmt(amt), '#ff8a7a');
   heroAnim[i].flash = 0.12;
@@ -1528,6 +1529,7 @@ function hit(i, amt) {
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
     if (perk('infirmary', 6) && !C.windUsed) { C.windUsed = true; m.windT = 3; }
+    heroAnim[i].fall = 0.55;
     log(`<b>${PARTY[i].name}</b> has fallen.`); sfx('death');
     trackStat('deaths'); if (C.rstats) (C.rstats.deathLog = C.rstats.deathLog || []).push({ i, by: C.hitLabel || 'enemy attacks' }); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
     burst(HERO_POS[i].x, HERO_POS[i].y - 10, '#9a93a8', 12);
@@ -1807,7 +1809,7 @@ function heroAttack(i, f) {
   if (PARTY[i].ranged) {
     const p = HERO_POS[i];
     delay = Math.hypot(f.x - 4 - (p.x + 6), f.y - f.h * 0.5 - (p.y - 22)) / 180;
-    fxHeroProj(i, f);
+    fxHeroProj(i, f); heroAnim[i].shot = 0.18;
   } else heroAnim[i].atk = 0;
   C.hits.push({ i, t: delay, foe: f });
 }
@@ -1830,7 +1832,7 @@ function dealFoe(f, dmg, col, src) {
   if (src != null && src !== YOU) dmg *= foeVuln(f, src);
   if (f.eshield > 0) { const a = Math.min(f.eshield, dmg * 0.6); f.eshield -= a; dmg -= a; }
   if (src != null && C.meter) C.meter.d[src] += Math.min(dmg, f.hp);
-  f.hp -= dmg; f.flash = 0.06;
+  f.hp -= dmg; f.flash = 0.06; f.kb = 0.14;
   foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
   if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f); }
   else if (f.boss && !f.p2 && f.hp / f.max < 0.5) bossPhase(f);
@@ -2183,20 +2185,35 @@ let sceneT = 0, bgCache = null, bgFor = -1, vign = null;
 
 // offscreen actor canvases for outlines and hit flashes
 const AW = 100, AH = 90, OX = 50, OY = 86;
-const ac = document.createElement('canvas'); ac.width = AW; ac.height = AH; const actx = ac.getContext('2d');
+const ac = document.createElement('canvas'); ac.width = AW; ac.height = AH; const actx = ac.getContext('2d', { willReadFrequently: true });
 const sc = document.createElement('canvas'); sc.width = AW; sc.height = AH; const sctx = sc.getContext('2d');
 let P = actx;
 function r(x, y, w, h, c) { P.fillStyle = c; P.fillRect(Math.round(x), Math.round(y), w, h); }
-function blit(draw, x, y, { flash = 0, alpha = 1, outline = '#0b0910' } = {}) {
+// Light from the top left: brighten top/left edges and darken bottom/right edges of every sprite
+function shadePass(c2 = actx, W = AW, Hh = AH) {
+  const im = c2.getImageData(0, 0, W, Hh), d = im.data, row = W * 4;
+  for (let i = row + 4; i < d.length - row - 4; i += 4) {
+    if (!d[i + 3]) continue;
+    let f = 0;
+    if (!d[i - row + 3] || !d[i - 1]) f = 0.2; else if (!d[i + row + 3] || !d[i + 7]) f = -0.28;
+    if (f > 0) { d[i] += (255 - d[i]) * f; d[i + 1] += (255 - d[i + 1]) * f; d[i + 2] += (255 - d[i + 2]) * f; }
+    else if (f < 0) { d[i] *= 1 + f; d[i + 1] *= 1 + f; d[i + 2] *= 1 + f; }
+  }
+  c2.putImageData(im, 0, 0);
+}
+function blit(draw, x, y, { flash = 0, alpha = 1, outline = '#0b0910', rot = 0 } = {}) {
   actx.clearRect(0, 0, AW, AH);
   P = actx; draw(OX, OY);
+  if (flash <= 0) shadePass();
   sctx.globalCompositeOperation = 'copy'; sctx.drawImage(ac, 0, 0);
   sctx.globalCompositeOperation = 'source-in'; sctx.fillStyle = flash > 0 ? '#ffffff' : outline; sctx.fillRect(0, 0, AW, AH);
   sctx.globalCompositeOperation = 'source-over';
-  const ox = Math.round(x - OX), oy = Math.round(y - OY);
+  let ox = Math.round(x - OX), oy = Math.round(y - OY);
   cx.globalAlpha = alpha;
+  if (rot) { cx.save(); cx.translate(Math.round(x), Math.round(y)); cx.rotate(rot); ox = -OX; oy = -OY; }
   if (flash <= 0) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) cx.drawImage(sc, ox + dx, oy + dy);
   cx.drawImage(flash > 0 ? sc : ac, ox, oy);
+  if (rot) cx.restore();
   cx.globalAlpha = 1;
 }
 function sprite(map, pal, X, Y) {
@@ -2456,58 +2473,101 @@ function drawBoss(kind, c, X, Y, t) {
       r(X - 16, y - 46, 26, 4, '#2a2433'); r(X - 10, y - 54, 14, 8, '#2a2433'); r(X - 6, y - 58, 8, 4, '#2a2433'); r(X, y - 60, 6, 3, '#2a2433');
       r(X - 18, y - 28, 8, 3, c2); r(X - 19, y - 40, 1, 40, '#7a5434'); r(X - 21, y - 44, 5, 5, '#e2dccb'); r(X - 20, y - 42, 1, 1, '#1b1622');
       break;
-    case 'skeleton':
-      r(X - 4, Y - 14, 3, 14, c2); r(X + 3, Y - 14, 3, 14, c2); r(X - 7, y - 18, 16, 4, c2);
-      r(X - 1, y - 38, 4, 20, c2);
-      for (let k = 0; k < 4; k++) r(X - 9, y - 36 + k * 4, 20, 2, c1);
-      r(X - 9, y - 52, 18, 14, c1); r(X - 7, y - 47, 4, 4, '#1b1622'); r(X + 1, y - 47, 4, 4, '#1b1622');
-      r(X - 6, y - 46, 2, 2, c3); r(X + 2, y - 46, 2, 2, c3); r(X - 5, y - 41, 10, 2, '#1b1622');
-      r(X - 16, y - 34, 6, 3, c1); r(X - 18, y - 60, 2, 50, '#7a5434'); r(X - 34, y - 62, 18, 4, '#c3cad6'); r(X - 34, y - 58, 4, 4, '#c3cad6');
+    case 'skeleton': { // the Grave Warden: a crowned lich in a tattered cloak, scythe in hand
+      const cl = '#2a2433', cl2 = '#3d3550', sw = Math.round(Math.sin(t * 2));
+      r(X - 14, y - 44, 28, 40, cl); r(X - 16, y - 30, 32, 26, cl);
+      for (let k = 0; k < 8; k++) r(X - 16 + k * 4, Y - 6, 3, 4 + ((k + sw) % 2) * 2, cl);
+      r(X - 14, y - 44, 4, 40, cl2); r(X + 10, y - 40, 2, 34, '#1a1622');
+      r(X - 5, y - 40, 10, 18, '#120e16'); for (let k = 0; k < 4; k++) r(X - 5, y - 38 + k * 4, 10, 2, c2); r(X - 1, y - 40, 2, 18, c1);
+      r(X - 17, y - 47, 9, 5, c1); r(X + 8, y - 47, 9, 5, c1);
+      r(X - 8, y - 62, 16, 12, c1); r(X - 8, y - 52, 16, 2, c2); r(X - 6, y - 50, 12, 4, c1);
+      r(X - 6, y - 58, 5, 5, '#120e16'); r(X + 1, y - 58, 5, 5, '#120e16'); r(X - 4, y - 56, 2, 2, c3); r(X + 3, y - 56, 2, 2, c3);
+      r(X - 1, y - 52, 2, 2, '#120e16'); for (let k = 0; k < 4; k++) r(X - 5 + k * 3, y - 48, 1, 2, '#120e16');
+      r(X - 9, y - 66, 18, 4, '#9a7330'); r(X - 9, y - 70, 2, 4, '#9a7330'); r(X - 1, y - 72, 2, 6, '#c9a64a'); r(X + 7, y - 70, 2, 4, '#9a7330'); r(X - 1, y - 69, 2, 2, c3);
+      r(X - 22, y - 45, 6, 3, c1); r(X - 24, y - 43, 3, 10, c1);
+      r(X - 24, y - 78, 3, 78, '#5a3d28'); r(X - 23, y - 78, 1, 78, '#7a5434');
+      r(X - 46, y - 80, 24, 4, '#c3cad6'); r(X - 50, y - 76, 8, 3, '#c3cad6'); r(X - 52, y - 72, 4, 3, '#c3cad6'); r(X - 46, y - 80, 24, 1, '#ffffff');
+      const g = (t * 3 | 0) % 2; r(X + 14, y - 30 - g * 2, 2, 2, c3); r(X - 13, y - 18 + g, 2, 2, c3); r(X + 6, y - 70 + g, 1, 1, c3);
       break;
-    case 'drake':
-      r(X + 4, y - 50, 4, 16, c1); r(X + 8, y - 54, 4, 20, c1); r(X + 12, y - 58, 4, 24, c1); r(X + 16, y - 52, 4, 18, c1); r(X + 20, y - 46, 4, 12, c1);
-      r(X + 6, y - 48, 16, 1, c3);
-      r(X + 14, Y - 14, 18, 4, c1); r(X + 28, Y - 18, 8, 4, c1);
-      r(X - 12, y - 34, 32, 24, c1); r(X - 8, y - 18, 24, 8, c2);
-      r(X - 10, Y - 10, 6, 10, c1); r(X + 8, Y - 10, 6, 10, c1);
-      r(X - 20, y - 46, 12, 16, c1); r(X - 34, y - 48, 18, 10, c1); r(X - 34, y - 38, 16, 4, c2);
-      r(X - 26, y - 46, 3, 3, c3); r(X - 22, y - 53, 3, 5, '#e2dccb'); r(X - 17, y - 52, 3, 5, '#e2dccb');
-      r(X - 33, y - 38, 1, 2, '#f3ead8'); r(X - 29, y - 38, 1, 2, '#f3ead8');
-      if ((t * 6 | 0) % 3 === 0) r(X - 38, y - 42, 4, 3, c3);
+    }
+    case 'drake': { // Ashjaw: a horned drake with folded wings, a spiked tail and a smouldering maw
+      const br = Math.round(Math.sin(t * 2)), fl = (t * 5 | 0) % 2;
+      r(X + 14, Y - 16, 14, 5, c1); r(X + 26, Y - 21, 8, 6, c1); r(X + 32, Y - 27, 5, 8, c1); r(X + 35, Y - 31, 4, 5, c1);
+      for (let k = 0; k < 4; k++) r(X + 16 + k * 5, Y - 19, 2, 3, c3);
+      r(X + 4, Y - 15, 9, 15, c1); r(X + 2, Y - 3, 13, 3, c1); r(X + 2, Y - 1, 1, 1, '#f3ead8'); r(X + 6, Y - 1, 1, 1, '#f3ead8');
+      r(X - 6, y - 52 + br, 28, 18, '#6a2424'); r(X - 4, y - 58 + br, 6, 8, '#6a2424'); r(X + 10, y - 56 + br, 5, 6, '#6a2424');
+      r(X - 4, y - 50 + br, 2, 16, c1); r(X + 4, y - 50 + br, 2, 16, c1); r(X + 13, y - 50 + br, 2, 14, c1);
+      r(X - 14, y - 34, 32, 22, c1); r(X - 12, y - 37, 26, 4, c1); r(X - 10, y - 16, 24, 5, c2);
+      for (let k = 0; k < 5; k++) r(X - 9 + k * 5, y - 15, 1, 4, '#b85a2a');
+      for (let k = 0; k < 5; k++) r(X - 12 + k * 6, y - 40, 3, 3, c3);
+      r(X - 12, Y - 15, 8, 15, c1); r(X - 15, Y - 3, 12, 3, c1); r(X - 15, Y - 1, 1, 1, '#f3ead8'); r(X - 11, Y - 1, 1, 1, '#f3ead8');
+      r(X - 20, y - 48, 10, 20, c1); r(X - 24, y - 56, 10, 10, c1); for (let k = 0; k < 3; k++) r(X - 18, y - 46 + k * 5, 6, 2, c2);
+      r(X - 40, y - 62, 22, 12, c1); r(X - 44, y - 57, 6, 6, c1); r(X - 40, y - 50 + fl, 18, 4, c2);
+      for (let k = 0; k < 4; k++) r(X - 39 + k * 4, y - 51 + fl, 1, 2, '#f3ead8');
+      r(X - 30, y - 59, 3, 2, c3); r(X - 29, y - 59, 1, 1, '#ffffff'); r(X - 43, y - 58, 2, 1, '#1b1622');
+      r(X - 22, y - 69, 3, 8, '#d8cfbf'); r(X - 26, y - 67, 3, 6, '#d8cfbf'); r(X - 22, y - 69, 1, 2, '#ffffff');
+      if (fl) { r(X - 50, y - 50, 5, 2, c3); r(X - 55, y - 49, 4, 1, '#ff9f43'); }
       break;
-    case 'tree':
-      r(X - 24, Y - 4, 48, 4, c1); r(X - 30, Y - 3, 8, 3, c1); r(X + 22, Y - 3, 8, 3, c1);
-      r(X - 10, y - 50, 20, 48, c1); r(X - 6, y - 50, 4, 48, c2);
-      r(X - 26, y - 56, 18, 4, c1); r(X + 8, y - 60, 18, 4, c1); r(X - 4, y - 66, 8, 16, c1);
-      r(X - 30, y - 62, 10, 6, c3); r(X + 18, y - 68, 12, 8, c3); r(X - 8, y - 72, 16, 8, c3);
-      r(X - 6, y - 40, 4, 3, '#1b1622'); r(X + 2, y - 40, 4, 3, '#1b1622'); r(X - 5, y - 39, 2, 1, '#ffd36b'); r(X + 3, y - 39, 2, 1, '#ffd36b');
-      r(X - 4, y - 30, 8, 4, '#1b1622');
-      for (let k = 0; k < 5; k++) r(X - 12 + (k % 2) * 22, y - 46 + k * 8, 2, 2, '#c9504a');
+    }
+    case 'tree': { // Thornmother: a gnarled tree-woman crowned with leaves and blossoms
+      const sw = Math.sin(t * 1.5) * 2, a1 = Math.round(sw), lf = Math.round(sw * 0.5);
+      r(X - 30, Y - 4, 60, 4, c1); for (const [rx, rw] of [[-38, 10], [26, 12], [-22, 6], [14, 6]]) r(X + rx, Y - 3, rw, 3, c1);
+      r(X - 11, y - 48, 22, 46, c1); r(X - 14, y - 28, 28, 26, c1); r(X - 9, y - 48, 3, 46, c2); r(X + 8, y - 44, 2, 40, '#2e2016');
+      for (let k = 0; k < 6; k++) r(X - 4 + (k % 2) * 7, y - 26 + k * 4, 1, 5, '#2e2016');
+      r(X - 26, y - 42 + a1, 16, 4, c1); r(X - 32, y - 48 + a1, 8, 4, c1); r(X - 36, y - 54 + a1, 4, 8, c1); r(X - 39, y - 57 + a1, 2, 4, c2); r(X - 34, y - 58 + a1, 2, 4, c2);
+      r(X + 10, y - 40 - a1, 16, 4, c1); r(X + 24, y - 46 - a1, 8, 4, c1); r(X + 30, y - 52 - a1, 4, 8, c1); r(X + 33, y - 55 - a1, 2, 4, c2); r(X + 28, y - 56 - a1, 2, 4, c2);
+      r(X - 7, y - 44, 14, 13, '#3a2818'); r(X - 5, y - 41, 4, 3, '#120e0a'); r(X + 1, y - 41, 4, 3, '#120e0a');
+      r(X - 4, y - 40, 2, 1, '#ffd36b'); r(X + 2, y - 40, 2, 1, '#ffd36b'); r(X - 3, y - 35, 6, 2, '#120e0a');
+      for (const [lx, ly, lw, lh] of [[-24, -68, 16, 10], [-8, -76, 16, 12], [8, -70, 18, 10], [-30, -60, 10, 8], [22, -62, 10, 8], [-16, -60, 32, 9]]) {
+        r(X + lx + lf, y + ly, lw, lh, '#2f6a2a'); r(X + lx + 2 + lf, y + ly + 1, lw - 4, 3, c3); r(X + lx + lf, y + ly + lh - 1, lw, 1, '#1f4a1c'); }
+      for (let k = 0; k < 8; k++) { const fx = X - 22 + Math.floor(hash(k * 3.1) * 44) + lf, fy = y - 74 + Math.floor(hash(k * 5.7) * 18); r(fx, fy, 2, 2, '#ff7aa8'); r(fx, fy, 1, 1, '#ffd36b'); }
+      for (let k = 0; k < 6; k++) r(X - 14 + (k % 2) * 27, y - 26 + k * 4, 2, 1, '#c9504a');
       break;
-    case 'knight':
-      r(X - 10, Y - 14, 7, 14, c1); r(X + 3, Y - 14, 7, 14, c1);
-      r(X - 14, y - 40, 28, 26, c2); r(X - 14, y - 22, 28, 3, c1); r(X - 18, y - 42, 8, 8, c1); r(X + 10, y - 42, 8, 8, c1);
-      r(X - 12, y - 38, 2, 14, '#ffffff22');
-      r(X - 9, y - 54, 18, 14, c2); r(X - 7, y - 48, 14, 2, '#120e16'); r(X - 3, y - 48, 2, 2, c3);
-      r(X - 1, y - 58, 2, 4, c3);
-      for (let k = 0; k < 6; k++) r(X - 16 + k * 5, y - 30 + (k % 2) * 2, 3, 2, '#9aa4b8');
-      r(X - 24, y - 64, 4, 52, '#c3cad6'); r(X - 28, y - 14, 12, 3, '#7a5434'); r(X - 23, y - 64, 2, 52, '#e8ecf2');
+    }
+    case 'knight': { // the Iron Penitent: plate, chains, a red tabard and a planted greatsword
+      const br = Math.round(Math.sin(t * 2));
+      r(X - 10, Y - 16, 8, 16, c1); r(X + 2, Y - 16, 8, 16, c1); r(X - 11, Y - 3, 10, 3, '#3a3f4a'); r(X + 1, Y - 3, 10, 3, '#3a3f4a'); r(X - 9, Y - 14, 2, 10, c2);
+      r(X - 8, y - 24, 16, 14, c3); r(X - 8, y - 24, 16, 2, '#7e2b2a'); r(X - 1, y - 22, 2, 10, '#e8c46a'); r(X - 8, y - 11, 16, 1, '#7e2b2a');
+      r(X - 14, y - 44, 28, 22, c1); r(X - 12, y - 42, 4, 18, c2); r(X - 14, y - 26, 28, 3, '#3a3f4a'); r(X - 4, y - 40, 8, 6, '#3a3f4a'); r(X - 2, y - 38, 4, 2, c3);
+      r(X - 21, y - 47, 11, 9, c2); r(X + 10, y - 47, 11, 9, c2); r(X - 21, y - 47, 11, 2, '#c3cad6'); r(X + 10, y - 47, 11, 2, '#c3cad6');
+      r(X - 20, y - 38, 6, 14, c1); r(X + 14, y - 38, 6, 14, c1); for (let k = 0; k < 4; k++) r(X + 13, y - 28 + k * 3, 8, 1, '#3a3f4a');
+      r(X + 16, y - 24 + br, 2, 12, '#5d6372'); r(X + 15, y - 12 + br, 4, 3, '#5d6372');
+      r(X - 8, y - 59, 16, 15, c2); r(X - 8, y - 59, 16, 2, '#c3cad6'); r(X - 6, y - 52, 12, 2, '#120e16'); r(X - 3, y - 52, 2, 2, c3); r(X + 1, y - 52, 2, 2, c3);
+      r(X - 1, y - 65, 2, 6, c3); r(X - 3, y - 67, 6, 3, c3); r(X - 5, y - 66, 2, 2, '#7e2b2a');
+      r(X - 28, y - 72 + br, 4, 66, '#c3cad6'); r(X - 27, y - 72 + br, 1, 66, '#ffffff'); r(X - 34, y - 14 + br, 16, 3, '#9a7330'); r(X - 27, y - 11 + br, 3, 9, '#5a3d28'); r(X - 28, y - 3 + br, 5, 3, '#c9a64a');
       break;
-    case 'serpent':
-      r(X - 40, Y - 6, 80, 6, '#1f4050'); for (let k = 0; k < 8; k++) r(X - 40 + k * 10 + ((t * 10 | 0) % 10), Y - 7, 4, 1, '#4fa3a8');
-      r(X + 14, y - 22, 12, 18, c1); r(X + 16, y - 26, 8, 4, c2);
-      r(X - 4, y - 40, 14, 36, c1); r(X - 2, y - 40, 4, 36, c2);
-      r(X - 22, y - 52, 26, 14, c1); r(X - 30, y - 46, 10, 8, c1); r(X - 30, y - 40, 10, 2, c3);
-      r(X - 18, y - 50, 3, 3, '#ffd36b'); r(X - 2, y - 60, 3, 8, c2); r(X + 3, y - 58, 3, 6, c2);
-      for (let k = 0; k < 4; k++) r(X + 10, y - 36 + k * 8, 3, 3, c2);
+    }
+    case 'serpent': { // the Leviathan: a scaled sea serpent rising from churning water
+      const sw = Math.round(Math.sin(t * 1.8) * 2);
+      r(X + 6, Y - 9, 26, 9, c1); r(X + 6, Y - 9, 26, 2, c2); r(X - 24, Y - 9, 20, 9, c1); r(X - 24, Y - 9, 20, 2, c2);
+      for (let k = 0; k < 10; k++) {
+        const sx = X + 4 - k * 2 + Math.round(Math.sin(k * 0.7 + t * 1.8) * 3), sy = Y - 8 - k * 6;
+        r(sx - 6, sy - 6, 12, 8, c1); r(sx - 6, sy, 12, 2, c2); r(sx - 6, sy - 6, 2, 8, '#3f8a96'); r(sx + 5, sy - 5, 3, 2, c3);
+      }
+      const hx = X - 16 + sw, hy = y - 74;
+      r(hx - 14, hy, 22, 11, c1); r(hx - 18, hy + 4, 6, 6, c1); r(hx - 16, hy + 9, 18, 4, c2);
+      for (let k = 0; k < 4; k++) r(hx - 15 + k * 4, hy + 9, 1, 2, '#f3ead8');
+      r(hx - 6, hy + 2, 3, 2, '#ffd36b'); r(hx - 5, hy + 2, 1, 1, '#ffffff');
+      r(hx + 2, hy - 6, 3, 7, c3); r(hx + 6, hy - 4, 3, 6, c3); r(hx - 2, hy - 4, 2, 5, c3);
+      r(hx - 20, hy + 6, 4, 1, c3); r(hx - 22, hy + 7, 3, 1, c3);
+      for (let k = 0; k < 14; k++) r(X - 30 + k * 5 + ((t * 6 | 0) + k) % 3, Y - 2 - (k % 2), 3, 2, '#c8f0e0aa');
       break;
-    case 'seraph': {
-      const fl = Math.round(Math.sin(t * 3) * 2);
-      for (let k = 0; k < 4; k++) { r(X - 34 + k * 3, y - 54 + k * 6 + fl, 22 - k * 3, 4, c1); r(X + 12, y - 54 + k * 6 + fl, 22 - k * 3, 4, c1); }
-      r(X - 6, y - 40, 12, 36, c2); r(X - 4, y - 40, 8, 36, c1); r(X - 2, y - 30, 4, 22, c2);
-      r(X - 6, y - 62, 12, 12, c3);
-      P.strokeStyle = c2; P.lineWidth = 2; P.beginPath(); P.arc(X, y - 56, 10, 0, Math.PI * 2); P.stroke();
-      r(X - 5, y - 50, 10, 10, c1); r(X - 3, y - 46, 2, 2, '#1b1622'); r(X + 1, y - 46, 2, 2, '#1b1622');
+    }
+    case 'seraph': { // the Eclipse Seraph: six wings, a gold mask and a darkened halo
+      const fl = Math.round(Math.sin(t * 2.2) * 3), yy = y - 6 + fl;
+      for (let pr = 0; pr < 3; pr++) for (let k = 0; k < 5; k++) {
+        const wl = 28 - k * 4 - pr * 3, wy = yy - 64 + pr * 13 + k * 4, flap = Math.round(Math.sin(t * 3 + pr) * 2), col = pr === 1 ? c2 : c1;
+        r(X - 9 - wl, wy + flap, wl, 3, col); r(X + 9, wy + flap, wl, 3, col);
+        r(X - 9 - wl, wy + flap + 2, wl, 1, '#b8ae96'); r(X + 9, wy + flap + 2, wl, 1, '#b8ae96');
+        r(X - 9 - wl, wy + flap, 2, 3, '#ffffff'); r(X + 7 + wl, wy + flap, 2, 3, '#ffffff');
+      }
+      P.fillStyle = c2; P.beginPath(); P.arc(X, yy - 58, 12, 0, Math.PI * 2); P.fill();
+      P.fillStyle = '#0b0816'; P.beginPath(); P.arc(X, yy - 58, 9, 0, Math.PI * 2); P.fill();
+      r(X - 7, yy - 44, 14, 34, c1); r(X - 9, yy - 22, 18, 16, c1); r(X - 12, yy - 8, 24, 6, c1);
+      r(X - 7, yy - 44, 2, 34, '#ffffff'); r(X - 1, yy - 44, 2, 40, c2); r(X - 8, yy - 26, 16, 2, c2); r(X - 12, yy - 3, 24, 1, c2);
+      r(X - 5, yy - 57, 10, 12, c2); r(X - 3, yy - 52, 2, 1, c3); r(X + 1, yy - 52, 2, 1, c3); r(X - 1, yy - 48, 2, 1, c3); r(X - 5, yy - 57, 10, 1, '#ffe9a8');
+      r(X - 14, yy - 40, 5, 3, c1); r(X + 9, yy - 40, 5, 3, c1); r(X - 16, yy - 38, 3, 10, c1); r(X + 13, yy - 38, 3, 10, c1);
+      const g = (t * 4 | 0) % 3; r(X - 20 + g * 2, yy - 20, 1, 1, '#ffd36b'); r(X + 18 - g, yy - 30, 1, 1, '#ffd36b');
       break;
     }
   }
@@ -2515,6 +2575,132 @@ function drawBoss(kind, c, X, Y, t) {
 
 /* Background: one 320px tile drawn twice, so it can scroll while the party walks between stages. */
 function hash(n) { const s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); }
+
+// Per-dungeon scenery painted onto the background tile
+function decorBg(d, x) {
+  const R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
+  const H = (k) => hash(k * 7.31 + d * 13.7);
+  switch (d) {
+    case 0: { // sewers: outlet pipes, a grate, moss and a channel of murky water
+      for (const px of [104, 262]) {
+        x.fillStyle = '#5a6a5e'; x.beginPath(); x.arc(px, 68, 10, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#3a4a3e'; x.beginPath(); x.arc(px + 1, 69, 9, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#080b09'; x.beginPath(); x.arc(px, 68, 7, 0, Math.PI * 2); x.fill();
+        R(px - 9, 63, 2, 2, '#7a8a7e'); R(px - 2, 76, 3, FLOOR - 76, '#5b8a4a'); R(px - 1, 76, 1, FLOOR - 76, '#9be06a'); R(px - 5, FLOOR - 2, 10, 2, '#5b8a4a');
+      }
+      R(171, 28, 22, 16, '#0d110e'); for (let k = 0; k < 6; k++) R(172 + k * 4, 28, 2, 16, '#5a6a5e'); R(171, 28, 22, 1, '#7a8a7e'); R(171, 43, 22, 1, '#3a4a3e');
+      for (let k = 0; k < 160; k++) R(Math.floor(H(k) * SW), FLOOR - 1 - Math.floor(H(k + 400) * H(k + 800) * 14), 2, 1, H(k + 1200) > 0.5 ? '#3f6a3a' : '#5b8a4a');
+      R(0, FLOOR + 1, SW, 10, '#16241c'); R(0, FLOOR + 2, SW, 8, '#2c4a3a'); R(0, FLOOR + 2, SW, 1, '#3f6a52'); R(0, FLOOR + 11, SW, 1, '#4a5a4e');
+      break;
+    }
+    case 1: { // bog: hanging roots, moss, reeds, glowing mushrooms and puddles
+      for (let k = 0; k < 12; k++) { const rx = Math.floor(H(k) * SW), len = 14 + Math.floor(H(k + 50) * 36);
+        for (let yy = 0; yy < len; yy++) R(rx + Math.round(Math.sin(yy / 5 + k) * 1.5), yy, 2, 1, yy % 9 === 0 ? '#2a1d12' : '#3a2a1a');
+        R(rx - 1, len, 4, 1, '#3a2a1a'); }
+      for (let k = 0; k < 14; k++) { const mx = Math.floor(H(k + 90) * SW), my = Math.floor(H(k + 140) * 70) + 10;
+        for (let j = 0; j < 14; j++) R(mx + Math.floor(H(k * 20 + j) * 10), my + Math.floor(H(k * 30 + j) * 6), 2, 1, j % 3 ? '#4a6a2a' : '#6a8a3a'); }
+      for (let k = 0; k < 60; k++) { const rx = Math.floor(H(k + 300) * SW), hh = 4 + Math.floor(H(k + 360) * 10); R(rx, FLOOR - hh, 1, hh, k % 3 ? '#4a6a2a' : '#8fbf4a'); }
+      for (let k = 0; k < 9; k++) { const mx = Math.floor(H(k + 500) * SW); R(mx, FLOOR - 3, 1, 3, '#d8cfbf'); R(mx - 2, FLOOR - 5, 5, 2, '#8fbf4a'); R(mx - 1, FLOOR - 5, 1, 1, '#d6ff9a'); }
+      for (let k = 0; k < 6; k++) { const px = Math.floor(H(k + 600) * SW), py = FLOOR + 12 + Math.floor(H(k + 650) * 40), pw = 18 + Math.floor(H(k + 700) * 22);
+        x.fillStyle = '#16211699'; x.beginPath(); x.ellipse(px, py, pw / 2, 3, 0, 0, Math.PI * 2); x.fill(); R(px - pw / 3, py - 1, pw / 2, 1, '#5b8a4a66'); }
+      break;
+    }
+    case 2: { // crypt: burial niches with skulls, cobwebs, scattered bones
+      for (const nx of [102, 180, 258]) for (const ny of [24, 58]) {
+        R(nx - 11, ny - 3, 22, 21, '#3a3a48'); R(nx - 9, ny, 18, 16, '#08080d'); R(nx - 7, ny - 2, 14, 2, '#08080d'); R(nx - 4, ny - 3, 8, 1, '#08080d');
+        if (H(nx + ny) > 0.35) { R(nx - 3, ny + 8, 7, 6, '#d8d2c0'); R(nx - 2, ny + 10, 2, 2, '#08080d'); R(nx + 1, ny + 10, 2, 2, '#08080d'); R(nx - 2, ny + 13, 5, 1, '#9a9384'); }
+        else { R(nx - 7, ny + 13, 14, 2, '#bdb6a4'); R(nx - 5, ny + 11, 10, 2, '#d8d2c0'); }
+      }
+      for (const px of [60, 220]) for (const sd of [-1, 1]) for (let k = 0; k < 14; k++) {
+        R(px + sd * (10 + k), k, 1, 1, '#ffffff26'); if (k % 4 === 0) for (let j = 0; j < k; j += 2) R(px + sd * (10 + j), k, 1, 1, '#ffffff14'); }
+      for (let k = 0; k < 10; k++) { const bx = Math.floor(H(k + 900) * SW), by = FLOOR + 10 + Math.floor(H(k + 950) * 46); R(bx, by, 6, 1, '#bdb6a4'); R(bx - 1, by - 1, 2, 3, '#d8d2c0'); R(bx + 5, by - 1, 2, 3, '#d8d2c0'); }
+      for (const px of [60, 220]) for (const sd of [-15, 15]) { R(px + sd - 1, FLOOR - 6, 3, 6, '#e8e2d4'); R(px + sd + 3, FLOOR - 4, 2, 4, '#d8cfbf'); }
+      break;
+    }
+    case 3: { // cinder pit: glowing cracks and a lava channel
+      for (let k = 0; k < 8; k++) { let cx0 = H(k) * SW, cy0 = 6 + H(k + 40) * (FLOOR - 30);
+        for (let j = 0; j < 16; j++) { R(Math.round(cx0) - 1, Math.round(cy0) - 1, 3, 3, '#ff6a2a22'); R(Math.round(cx0), Math.round(cy0), 1, 1, j % 5 ? '#ff9f43' : '#ffd36b'); cx0 += H(k * 50 + j) * 3 - 1; cy0 += 1 + H(k * 70 + j) * 1.5; } }
+      R(0, FLOOR + 1, SW, 10, '#7a2a14'); R(0, FLOOR + 2, SW, 7, '#c9501f'); R(0, FLOOR + 3, SW, 2, '#ff9f43');
+      for (let k = 0; k < 40; k++) R(Math.floor(H(k + 200) * SW), FLOOR + 3 + Math.floor(H(k + 260) * 5), 2, 1, '#ffd36b');
+      R(0, FLOOR + 11, SW, 2, '#1d0f0c');
+      for (let k = 0; k < 18; k++) { const ox = Math.floor(H(k + 330) * SW), oy = FLOOR + 16 + Math.floor(H(k + 370) * 40); R(ox, oy, 4, 2, '#140a08'); R(ox, oy, 2, 1, '#3a201b'); }
+      break;
+    }
+    case 4: { // thornwood: night forest instead of walls
+      const sky = x.createLinearGradient(0, 0, 0, FLOOR); sky.addColorStop(0, '#081210'); sky.addColorStop(1, '#1d2b20');
+      x.fillStyle = sky; x.fillRect(0, 0, SW, FLOOR);
+      for (let k = 0; k < 40; k++) R(Math.floor(H(k) * SW), Math.floor(H(k + 40) * 40), 1, 1, H(k + 80) > 0.7 ? '#e8f0d8' : '#7a8a7a');
+      x.fillStyle = '#e8f0d822'; x.beginPath(); x.arc(250, 20, 12, 0, Math.PI * 2); x.fill(); x.fillStyle = '#e8f0d8'; x.beginPath(); x.arc(250, 20, 6, 0, Math.PI * 2); x.fill();
+      for (let xx = 0; xx < SW; xx += 5) { const h1 = 26 + Math.floor(H(xx) * 18); R(xx, FLOOR - h1 - 14, 6, h1 + 14, '#0f1a12'); R(xx + 1, FLOOR - h1 - 18, 4, 4, '#0f1a12'); }
+      for (let xx = 0; xx < SW; xx += 7) { const h2 = 14 + Math.floor(H(xx + 500) * 14); R(xx, FLOOR - h2, 8, h2, '#15241a'); R(xx + 2, FLOOR - h2 - 3, 4, 3, '#15241a'); }
+      for (const [tx, tw] of [[60, 20], [220, 20], [140, 10], [300, 10]]) {
+        R(tx - tw / 2, 0, tw, FLOOR, '#3a2a1c'); R(tx - tw / 2, 0, 3, FLOOR, '#5a4028'); R(tx + tw / 2 - 3, 0, 3, FLOOR, '#24180e');
+        for (let k = 0; k < 10; k++) R(tx - tw / 2 + 4 + Math.floor(H(tx + k) * (tw - 8)), Math.floor(H(tx + k + 20) * FLOOR), 1, 6, '#24180e');
+        R(tx - tw / 2 - 4, FLOOR - 4, tw + 8, 4, '#3a2a1c'); R(tx - tw / 2 - 7, FLOOR - 2, 4, 2, '#3a2a1c'); R(tx + tw / 2 + 3, FLOOR - 2, 4, 2, '#3a2a1c');
+        if (tw > 12) { R(tx - tw / 2 - 18, 18, 18, 3, '#3a2a1c'); R(tx + tw / 2, 26, 16, 3, '#3a2a1c'); R(tx - tw / 2 - 26, 8, 14, 12, '#16301a'); R(tx + tw / 2 + 10, 16, 14, 12, '#16301a'); }
+      }
+      for (let k = 0; k < 70; k++) { const bx = Math.floor(H(k + 700) * SW), by = FLOOR - 2 - Math.floor(H(k + 760) * 12); R(bx, by, 3, 1, '#1f2a14'); R(bx + 1, by - 1, 1, 1, '#5a4a2a'); if (k % 9 === 0) R(bx + 2, by - 1, 2, 2, '#c9504a'); }
+      R(0, FLOOR, SW, SH - FLOOR, '#24321e'); R(0, FLOOR, SW, 3, '#1a2416');
+      for (let k = 0; k < 260; k++) { const gx = Math.floor(H(k + 1000) * SW), gy = FLOOR + 3 + Math.floor(H(k + 1300) * (SH - FLOOR - 3)); R(gx, gy, 1, 2, k % 7 === 0 ? '#a8763a' : k % 3 ? '#3f5a2c' : '#5b7a3a'); }
+      break;
+    }
+    case 5: { // iron bastille: barred cells and heavy slabs
+      for (const cx0 of [102, 180, 258]) {
+        R(cx0 - 14, 30, 28, FLOOR - 30, '#4a4a54'); R(cx0 - 12, 34, 24, FLOOR - 34, '#0c0c10');
+        for (let k = 0; k < 6; k++) { R(cx0 - 11 + k * 4, 34, 2, FLOOR - 34, '#6d7584'); R(cx0 - 11 + k * 4, 34, 1, FLOOR - 34, '#9aa3b4'); }
+        R(cx0 - 12, 50, 24, 3, '#5d6372'); R(cx0 - 12, 80, 24, 3, '#5d6372'); R(cx0 + 8, 62, 3, 6, '#c9a64a');
+      }
+      for (let yy = FLOOR + 8; yy < SH; yy += 14) R(0, yy, SW, 1, '#1a1a20');
+      for (let k = 0; k < SW; k += 32) R(k + ((Math.floor(k / 32)) % 2) * 16, FLOOR, 1, SH - FLOOR, '#1a1a20');
+      R(152, FLOOR + 20, 18, 8, '#101014'); for (let k = 0; k < 4; k++) R(154 + k * 4, FLOOR + 20, 2, 8, '#4a4a54');
+      break;
+    }
+    case 6: { // drowned nave: stained glass and algae
+      const glass = ['#3c5aa0', '#4fa3a8', '#e4b75c', '#a8433d', '#6f9be8', '#7ad6c8'];
+      for (const wx of [102, 180, 258]) {
+        R(wx - 10, 18, 20, 52, '#2a3a44'); R(wx - 8, 22, 16, 46, '#0e1a22');
+        for (let gy = 22; gy < 68; gy += 4) for (let gx = -8; gx < 8; gx += 4) { const top = gy < 30 && Math.abs(gx + 2) > 8 - (gy - 22); if (!top) R(wx + gx, gy, 3, 3, glass[Math.floor(H(wx + gx * 3 + gy) * glass.length)]); }
+        R(wx - 1, 22, 2, 46, '#1a1a22'); R(wx - 8, 44, 16, 1, '#1a1a22'); R(wx - 6, 18, 12, 2, '#2a3a44');
+      }
+      for (let k = 0; k < 120; k++) R(Math.floor(H(k + 200) * SW), FLOOR - Math.floor(H(k + 260) * H(k + 320) * 30), 1, 2, k % 2 ? '#2f6f7a' : '#3f8a8a');
+      x.fillStyle = '#4fa3a830'; x.fillRect(0, FLOOR + 2, SW, SH - FLOOR - 2);
+      for (let k = 0; k < 40; k++) R(Math.floor(H(k + 500) * SW), FLOOR + 6 + Math.floor(H(k + 540) * (SH - FLOOR - 10)), 6, 1, '#c8f0e033');
+      break;
+    }
+    case 7: { // eclipse spire: a starry void above a marble floor
+      const sky = x.createLinearGradient(0, 0, 0, FLOOR - 14); sky.addColorStop(0, '#07050f'); sky.addColorStop(1, '#241d3a');
+      x.fillStyle = sky; x.fillRect(0, 0, SW, FLOOR - 14);
+      for (let k = 0; k < 4; k++) { x.fillStyle = '#8e5fc014'; x.beginPath(); x.ellipse(H(k) * SW, 20 + H(k + 9) * 50, 40, 14, 0, 0, Math.PI * 2); x.fill(); }
+      for (let k = 0; k < 70; k++) R(Math.floor(H(k + 30) * SW), Math.floor(H(k + 90) * (FLOOR - 20)), 1, 1, H(k + 150) > 0.8 ? '#ffd36b' : '#d8d0ff');
+      for (const [fx, fy, fw] of [[90, 62, 26], [266, 48, 20]]) { R(fx - fw / 2, fy, fw, 5, '#2e2846'); R(fx - fw / 2 + 3, fy + 5, fw - 6, 4, '#221d36'); R(fx - fw / 2 + 7, fy + 9, fw - 14, 3, '#1a1530'); R(fx - fw / 2, fy, fw, 1, '#e4b75c'); }
+      R(0, FLOOR - 14, SW, 14, '#3a3254'); R(0, FLOOR - 14, SW, 1, '#e4b75c'); for (let k = 0; k < SW; k += 8) R(k + 3, FLOOR - 11, 2, 10, '#2a2440');
+      for (const px of [60, 220]) { R(px - 9, 0, 18, FLOOR, '#3a3254'); R(px - 9, 0, 3, FLOOR, '#4e4670'); R(px + 6, 0, 3, FLOOR, '#2a2440'); R(px - 12, 16, 24, 4, '#e4b75c'); R(px - 12, FLOOR - 8, 24, 3, '#e4b75c'); }
+      for (let yy = FLOOR; yy < SH; yy += 8) for (let xx = 0; xx < SW; xx += 16) R(xx + ((yy / 8) % 2) * 8, yy, 8, 8, '#2e2846');
+      for (let yy = FLOOR; yy < SH; yy += 16) R(0, yy, SW, 1, '#e4b75c55');
+      break;
+    }
+  }
+}
+// Moving scenery drawn every frame on top of the background
+function animBg(d, off, dt) {
+  const at = tx => { const b = ((tx - off) % SW + SW) % SW; return [b, b - SW]; };
+  const R = (a, b, w, h, c) => { cx.fillStyle = c; cx.fillRect(Math.round(a), Math.round(b), w, h); };
+  switch (d) {
+    case 0: for (let k = 0; k < 14; k++) for (const xx of at((k * 29 + sceneT * 12) % SW)) R(xx, FLOOR + 3 + (k % 3) * 2, 5, 1, '#7aaa8a88');
+      if (Math.random() < dt * 3) { const px = pick([104, 262]); for (const xx of at(px)) FX.push({ t: 'p', x: xx, y: 78, vx: 0, vy: 30, g: 60, life: 0.5, max: 0.5, col: '#9be06a', s: 1 }); } break;
+    case 1: cx.globalAlpha = 0.07; for (let k = 0; k < 4; k++) { const fx = ((k * 97 + sceneT * (6 + k)) % (SW + 120)) - 60; cx.fillStyle = '#c8e0b0'; cx.beginPath(); cx.ellipse(fx, FLOOR - 6 + k * 10, 70, 8, 0, 0, Math.PI * 2); cx.fill(); } cx.globalAlpha = 1; break;
+    case 2: for (const px of [60, 220]) for (const sd of [-15, 15]) for (const xx of at(px + sd)) { const f = (sceneT * 10 + px + sd) | 0; R(xx, FLOOR - 9 + (f % 2), 1, 3 - (f % 2), '#ffd36b'); cx.globalAlpha = 0.25; R(xx - 2, FLOOR - 10, 5, 5, '#ff9f43'); cx.globalAlpha = 1; } break;
+    case 3: { const pulse = 0.12 + 0.08 * Math.sin(sceneT * 2.3); cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = pulse; R(0, FLOOR + 1, SW, 10, '#ffd36b'); cx.globalAlpha = pulse * 0.4; R(0, FLOOR - 20, SW, 21, '#ff6a2a'); cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if (Math.random() < dt * 4) { const bx = Math.random() * SW; FX.push({ t: 'p', x: bx, y: FLOOR + 4, vx: 0, vy: -20, g: 30, life: 0.5, max: 0.5, col: '#ffd36b', s: 1 }); } break; }
+    case 4: if (Math.random() < dt * 1.2) FX.push({ t: 'p', x: Math.random() * SW, y: 0, vx: rand(4, 12), vy: rand(10, 18), g: 0, life: 6, max: 6, col: pick(['#a8763a', '#7a5a2a', '#c9504a']), s: 1 }); break;
+    case 5: for (const ch of [30, 166, 240]) for (const xx of at(ch)) { const sw = Math.sin(sceneT * 1.4 + ch) * 2; for (let k = 0; k < 9; k++) R(xx + sw * k / 9, k * 4, 2, 3, k % 2 ? '#8d95a8' : '#5d6372'); R(xx + sw - 2, 36, 6, 2, '#5d6372'); R(xx + sw - 2, 38, 2, 3, '#5d6372'); } break;
+    case 6: { cx.globalCompositeOperation = 'lighter'; for (const wx of [102, 180, 258]) for (const xx of at(wx)) { cx.globalAlpha = 0.05 + 0.03 * Math.sin(sceneT * 1.5 + wx); cx.fillStyle = '#9fe0ff'; cx.beginPath(); cx.moveTo(xx - 8, 68); cx.lineTo(xx + 8, 68); cx.lineTo(xx + 30, SH); cx.lineTo(xx + 4, SH); cx.fill(); } cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      for (let k = 0; k < 10; k++) for (const xx of at((k * 37 + sceneT * 8) % SW)) R(xx, FLOOR + 8 + (k % 5) * 10, 7, 1, '#c8f0e044'); break; }
+    case 7: { for (const xx of at(180)) { const g = 13 + Math.sin(sceneT * 2) * 1.5; cx.globalCompositeOperation = 'lighter'; cx.fillStyle = '#e4b75c30'; cx.beginPath(); cx.arc(xx, 30, g + 6, 0, Math.PI * 2); cx.fill(); cx.globalCompositeOperation = 'source-over';
+        cx.fillStyle = '#e4b75c'; cx.beginPath(); cx.arc(xx, 30, g, 0, Math.PI * 2); cx.fill(); cx.fillStyle = '#05030a'; cx.beginPath(); cx.arc(xx, 30, 10, 0, Math.PI * 2); cx.fill(); }
+      for (let k = 0; k < 6; k++) if (Math.sin(sceneT * 3 + k * 2) > 0.7) for (const xx of at(hash(k + 30) * SW)) R(xx, hash(k + 90) * 70, 1, 1, '#ffffff'); break; }
+  }
+}
 function buildBg(d) {
   const tile = document.createElement('canvas'); tile.width = SW; tile.height = SH;
   const x = tile.getContext('2d');
@@ -2560,6 +2746,7 @@ function buildBg(d) {
       for (let k = 0; k < 14; k++) { x.fillStyle = '#ffffff0a'; x.fillRect(o + Math.floor(hash(ri * 13 + k + d) * SW), y + 1 + Math.floor(hash(k * 7 + ri) * (h - 1)), 2, 1); }
       y += h; h += 2; ri++;
     }
+    decorBg(d, x);
     x.fillStyle = '#00000066'; x.fillRect(o, FLOOR, SW, 3);
     x.fillStyle = '#00000033'; x.fillRect(o, FLOOR + 3, SW, 3);
   }
@@ -2691,17 +2878,19 @@ function renderScene(dt) {
       cx.fillStyle = '#ffd36b'; cx.fillRect(xx, 38 + (f % 3 === 0 ? 1 : 0), 1, 4);
     }
   }
+  animBg(d, off, dt);
   ambient(dt, dg.amb);
 
   const f0 = front();
   heroAnim.forEach(a => {
     a.flash = Math.max(0, a.flash - dt); a.lvl = Math.max(0, a.lvl - dt); a.cast = Math.max(0, a.cast - dt);
     if (a.atk >= 0) { a.atk += dt; if (a.atk > 0.32) a.atk = -1; }
+    a.kb = Math.max(0, (a.kb || 0) - dt); a.shot = Math.max(0, (a.shot || 0) - dt);
   });
 
-  cx.fillStyle = '#00000050';
-  HERO_POS.forEach(p => cx.fillRect(p.x - 6, p.y - 1, 12, 2));
-  C.foes.forEach(e => { if (e.alive || e.die > 0) cx.fillRect(Math.round(e.x - (e.boss ? 24 : 7) + (e.enter > 0 ? e.enter * 120 : 0)), e.y - 1, e.boss ? 48 : 14, 2); });
+  cx.fillStyle = '#00000058';
+  HERO_POS.forEach((p, i) => { if (C.party[i] && C.party[i].alive) { cx.beginPath(); cx.ellipse(p.x, p.y, 7, 2, 0, 0, Math.PI * 2); cx.fill(); } });
+  C.foes.forEach(e => { if (e.alive || e.die > 0) { const fl = e.kind === 'bat' || e.kind === 'wisp' || e.kind === 'seraph'; cx.globalAlpha = fl ? 0.5 : 1; cx.beginPath(); cx.ellipse(e.x + (e.enter > 0 ? e.enter * 120 : 0), e.y, e.boss ? 26 : fl ? 5 : 8, e.boss ? 4 : 2, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; } });
 
   if (C.buff.sanct > 0) {
     cx.globalAlpha = 0.18 + 0.05 * Math.sin(sceneT * 6); cx.fillStyle = '#e4b75c';
@@ -2736,7 +2925,8 @@ function renderScene(dt) {
       if (Math.random() < dt * 8) FX.push({ t: 'p', x: e.x + enterX + rand(-8, 8), y: e.y - rand(0, e.h), vx: 0, vy: 6, g: 0, life: 0.6, max: 0.6, col: '#e6f6ff', s: 1 });
     }
     if (e.alive && e.stun > 0) for (let k = 0; k < 3; k++) { const a = sceneT * 5 + k * 2.1; cx.fillStyle = '#fff2a8'; cx.fillRect(Math.round(e.x + enterX + Math.cos(a) * 6), Math.round(e.y - e.h - 3 + Math.sin(a) * 2), 1, 1); }
-    blit((X, Y) => e.boss ? drawBoss(e.kind, e.c, X, Y, sceneT) : drawMob(e.kind, e.c, X, Y, sceneT, e.seed), e.x + enterX + lx, e.y + (e.alive ? 0 : (1 - alpha) * 6), { flash: e.flash, alpha });
+    e.kb = Math.max(0, (e.kb || 0) - dt);
+    blit((X, Y) => e.boss ? drawBoss(e.kind, e.c, X, Y, sceneT) : drawMob(e.kind, e.c, X, Y, sceneT, e.seed), e.x + enterX + lx + (e.kb > 0 ? (e.boss ? 1 : 2) * e.kb / 0.14 : 0), e.y + (e.alive ? 0 : (1 - alpha) * 6), { flash: e.flash, alpha });
     if (e.alive && e.enter <= 0) {
       const pips = [e.sunder > 0 && '#e0605a', e.mark > 0 && '#ffd36b', e.poison && '#8fdc6a', e.burn && '#ff9f43', e.slow > 0 && '#8fd0ff', e.stun > 0 && '#ffffff'].filter(Boolean);
       const py = e.boss ? e.y - e.h - 8 : e.y - e.h - 15, px = Math.round(e.x - pips.length * 1.5);
@@ -2757,7 +2947,13 @@ function renderScene(dt) {
   [...HERO_POS.keys()].sort((a, c) => HERO_POS[a].y - HERO_POS[c].y).forEach(i => {
     const p = HERO_POS[i], m = C.party[i], a = heroAnim[i];
     if (!m) return;
-    if (!m.alive) { blit((X, Y) => drawGrave(X, Y), p.x, p.y); return; }
+    if (!m.alive) {
+      // fall over, then a grave rises in their place
+      if (a.fall > 0) { a.fall -= dt; const k = 1 - Math.max(0, a.fall) / 0.55; blit((X, Y) => drawHero(i, X, Y, sceneT, false), p.x - k * 4, p.y, { rot: -k * Math.PI / 2, alpha: 1 - k * 0.6 }); return; }
+      a.grave = Math.min(1, (a.grave || 0) + dt * 3);
+      cx.save(); cx.beginPath(); cx.rect(p.x - 12, p.y - 16 * a.grave, 24, 16 * a.grave + 1); cx.clip(); blit((X, Y) => drawGrave(X, Y), p.x, p.y); cx.restore(); return;
+    }
+    a.grave = 0; a.fall = 0;
     const walk = C.phase === 'rest' ? (Math.sin(sceneT * 14 + i) > 0 ? -1 : 0) : 0;
     const dx = a.atk >= 0 ? Math.sin(Math.PI * a.atk / 0.32) * 12 : 0;
     const casting = i === YOU && (C.cast || a.cast > 0);
@@ -2781,7 +2977,8 @@ function renderScene(dt) {
       cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
       if (Math.random() < dt * 30 * incoming) FX.push({ t: 'p', x: p.x + rand(-9, 9), y: p.y - rand(0, 4), vx: 0, vy: -rand(14, 26), g: 0, life: 0.5, max: 0.5, col: '#bff5dd', s: 1 });
     }
-    const rank = promoRank(i), rc = ROLE_COL[i], hx = p.x + dx, hy = p.y + walk;
+    const rank = promoRank(i), rc = ROLE_COL[i], hx = p.x + dx - (a.kb > 0 ? 2 * a.kb / 0.14 : 0) - (a.shot > 0 ? 1 : 0), hy = p.y + walk;
+    if (a.shot > 0.12 && (i === 3 || i === 2)) { const wp = WEAPON_TIP[i]; FX.push({ t: 'p', x: hx + wp[0] + 2, y: hy + wp[1], vx: rand(4, 14), vy: rand(-6, 6), g: 0, life: 0.18, max: 0.18, col: i === 3 ? '#ffd36b' : '#f3ead8', s: 1 }); }
     if (rank >= 4) { cx.globalAlpha = 0.18 + 0.08 * Math.sin(sceneT * 3 + i); cx.fillStyle = rc; cx.beginPath(); cx.ellipse(hx, hy, 12, 4, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; }
     if (rank >= 2) {
       // a cape in the hero's color, trailing behind them
@@ -2909,6 +3106,14 @@ function renderScene(dt) {
   });
 
   cx.drawImage(vign, 0, 0);
+  if (C.bossIntro > 0) {
+    C.bossIntro -= dt; const b = C.foes.find(f => f.boss), k = Math.min(1, C.bossIntro / 0.4, (2.4 - C.bossIntro) / 0.3);
+    if (b) {
+      cx.globalAlpha = 0.75 * k; cx.fillStyle = '#0b0910'; cx.fillRect(0, 56, SW, 30); cx.globalAlpha = k; cx.fillStyle = '#e4b75c'; cx.fillRect(0, 56, SW, 1); cx.fillRect(0, 85, SW, 1);
+      cx.textAlign = 'center'; cx.font = 'bold 12px serif'; cx.lineWidth = 3; cx.strokeStyle = '#0b0910'; cx.strokeText(b.name.toUpperCase(), SW / 2, 72); cx.fillStyle = '#f3ead8'; cx.fillText(b.name.toUpperCase(), SW / 2, 72);
+      cx.font = '7px monospace'; cx.fillStyle = '#e4b75c'; cx.fillText(b.title, SW / 2, 81); cx.globalAlpha = 1;
+    }
+  }
   if (C.phase === 'rest') {
     cx.fillStyle = '#e4b75c'; cx.font = '8px monospace'; cx.textAlign = 'center';
     cx.globalAlpha = 0.9; cx.fillText(C.stage + 1 === dg.stages ? 'The boss awaits…' : `Onward to stage ${C.stage + 1}`, SW / 2, 20); cx.globalAlpha = 1;
@@ -3435,25 +3640,89 @@ const TOWN_ANIM = {};
 let townSel = 'cloister', townHover = null, townT = 0, townBg = null, TFX = [];
 function buildTownBg() {
   const c = document.createElement('canvas'); c.width = TW; c.height = TH;
-  const x = c.getContext('2d');
-  const gr = x.createLinearGradient(0, 0, 0, 40); gr.addColorStop(0, '#2b2a4a'); gr.addColorStop(1, '#6a6a8a');
-  x.fillStyle = gr; x.fillRect(0, 0, TW, 40);
-  x.fillStyle = '#3e4a5a'; for (let k = 0; k < TW; k += 2) x.fillRect(k, 26 + Math.round(Math.sin(k / 23) * 4 + Math.sin(k / 9) * 2), 2, 20);
-  x.fillStyle = '#4c7a3c'; x.fillRect(0, 36, TW, TH - 36);
-  for (let k = 0; k < 500; k++) { x.fillStyle = hash(k) > 0.5 ? '#558a42' : '#43703a'; x.fillRect(Math.floor(hash(k * 3.1) * TW), 36 + Math.floor(hash(k * 7.7) * (TH - 36)), 2, 1); }
-  // roads: the main street, the lane up to the chapel and paths to each plot
-  x.fillStyle = '#a8916a';
-  x.fillRect(0, 92, TW, 12); x.fillRect(154, 66, 12, TH - 66);
-  for (const id in PLOTS) { const p = PLOTS[id]; if (p.y < 92) x.fillRect(p.x - 3, p.y, 6, 92 - p.y); else x.fillRect(p.x - 3, 104, 6, p.y - 104); }
-  x.fillStyle = '#8f7a56'; for (let k = 0; k < 160; k++) x.fillRect(Math.floor(hash(k * 5.3) * TW), 93 + Math.floor(hash(k * 2.9) * 10), 2, 1);
-  // trees around the edges
-  for (const [tx, ty] of [[12, 70], [26, 90], [10, 160], [150, 172], [306, 168], [128, 84], [196, 84], [100, 112], [222, 116], [314, 120]]) {
-    x.fillStyle = '#00000033'; x.fillRect(tx - 6, ty - 1, 12, 2);
-    x.fillStyle = '#5a3d28'; x.fillRect(tx - 1, ty - 6, 2, 6);
-    x.fillStyle = '#2f5d34'; x.fillRect(tx - 6, ty - 15, 12, 9); x.fillRect(tx - 4, ty - 18, 8, 3);
-    x.fillStyle = '#3f7a44'; x.fillRect(tx - 4, ty - 14, 5, 4);
-  }
+  const x = c.getContext('2d'), R = (a, b, w, h, col) => { x.fillStyle = col; x.fillRect(a, b, w, h); }, H = k => hash(k * 3.17 + 11);
+  // dusk sky, a low sun, far mountains and a castle on the ridge
+  const sky = x.createLinearGradient(0, 0, 0, 46); sky.addColorStop(0, '#2c2c58'); sky.addColorStop(0.55, '#8a5f78'); sky.addColorStop(1, '#e8a878');
+  x.fillStyle = sky; x.fillRect(0, 0, TW, 46);
+  x.fillStyle = '#ffd9a055'; x.beginPath(); x.arc(52, 34, 16, 0, Math.PI * 2); x.fill(); x.fillStyle = '#ffe2b0'; x.beginPath(); x.arc(52, 34, 8, 0, Math.PI * 2); x.fill();
+  for (let k = 0; k < TW; k += 2) R(k, 22 + Math.round(Math.sin(k / 23) * 5 + Math.sin(k / 9) * 2), 2, 30, '#58587e');
+  R(236, 12, 30, 18, '#48486c'); R(232, 6, 6, 24, '#48486c'); R(262, 4, 6, 26, '#48486c'); R(246, 0, 8, 14, '#48486c');
+  for (const tx of [232, 262, 246]) { R(tx - 1, tx === 246 ? 0 : 3, tx === 246 ? 10 : 8, 2, '#48486c'); R(tx + 2, 14, 1, 2, '#ffd36b'); }
+  for (let k = 0; k < TW; k += 2) R(k, 32 + Math.round(Math.sin(k / 31 + 2) * 4), 2, 20, '#4f6e58');
+  // grass with texture and wildflowers
+  R(0, 38, TW, TH - 38, '#5a8f42');
+  for (let k = 0; k < 900; k++) { const gx = Math.floor(H(k) * TW), gy = 38 + Math.floor(H(k + 900) * (TH - 38)); R(gx, gy, 2, 1, ['#64994a', '#4f8039', '#6aa350'][k % 3]); }
+  for (let k = 0; k < 90; k++) R(Math.floor(H(k + 2000) * TW), 44 + Math.floor(H(k + 2100) * (TH - 44)), 1, 1, ['#f3ead8', '#ffd36b', '#ff9ac0', '#b8a0ff'][k % 4]);
+  // a pond with reeds and lily pads
+  x.fillStyle = '#3c6a8a'; x.beginPath(); x.ellipse(24, 162, 22, 9, 0, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#5a8ab0'; x.beginPath(); x.ellipse(22, 160, 16, 5, 0, 0, Math.PI * 2); x.fill();
+  R(14, 159, 4, 2, '#4f8039'); R(28, 163, 3, 2, '#4f8039'); R(15, 159, 1, 1, '#ff9ac0');
+  for (let k = 0; k < 8; k++) R(40 + (k % 4) * 2, 150 + (k > 3 ? 4 : 0), 1, 6, '#3d6a2a');
+  // cobbled roads: main street, the chapel lane, paths to each plot, and a round plaza
+  const cob = (rx, ry, rw, rh) => { R(rx, ry, rw, rh, '#9a8462'); for (let yy = ry; yy < ry + rh; yy += 3) for (let xx = rx + ((yy / 3) % 2) * 2; xx < rx + rw; xx += 4) R(xx, yy, 3, 2, H(xx * 7 + yy) > 0.5 ? '#b09a76' : '#a48e6a'); };
+  cob(0, 92, TW, 12); R(0, 91, TW, 1, '#6e5e42'); R(0, 104, TW, 1, '#6e5e42');
+  cob(154, 66, 12, TH - 66); R(153, 104, 1, TH - 104, '#6e5e42'); R(166, 104, 1, TH - 104, '#6e5e42');
+  for (const id in PLOTS) { const p = PLOTS[id]; if (p.y < 92) cob(p.x - 3, p.y, 6, 92 - p.y); else cob(p.x - 3, 104, 6, p.y - 104); }
+  x.fillStyle = '#a48e6a'; x.beginPath(); x.ellipse(160, 99, 26, 12, 0, 0, Math.PI * 2); x.fill();
+  for (let k = 0; k < 60; k++) { const an = H(k + 300) * Math.PI * 2, rr = H(k + 400) * 22; R(Math.round(160 + Math.cos(an) * rr), Math.round(99 + Math.sin(an) * rr * 0.45), 3, 2, H(k + 500) > 0.5 ? '#b8a27e' : '#968060'); }
+  // lamp posts along the main street
+  for (const lx of [36, 112, 206, 292]) { R(lx, 78, 1, 14, '#2a2430'); R(lx - 2, 76, 5, 3, '#2a2430'); R(lx - 1, 77, 3, 1, '#ffd36b'); }
+  // trees (oaks and pines), bushes and a fence along the bottom
+  const oak = (tx, ty) => { R(tx - 7, ty - 1, 14, 2, '#00000033'); R(tx - 1, ty - 7, 3, 7, '#5a3d28'); R(tx - 7, ty - 17, 14, 10, '#2f5d34'); R(tx - 5, ty - 20, 10, 3, '#2f5d34'); R(tx - 5, ty - 16, 6, 4, '#3f7a44'); R(tx - 3, ty - 19, 3, 2, '#4f8a50'); R(tx + 3, ty - 10, 4, 3, '#244a2a'); };
+  const pine = (tx, ty) => { R(tx - 5, ty - 1, 10, 2, '#00000033'); R(tx, ty - 4, 2, 4, '#5a3d28'); for (let k = 0; k < 4; k++) R(tx - 5 + k, ty - 8 - k * 4, 12 - k * 2, 4, k % 2 ? '#2a5a3a' : '#22503a'); R(tx - 3, ty - 9, 2, 2, '#3a7a52'); };
+  [[12, 70], [26, 88], [10, 140], [150, 172], [306, 168], [128, 84], [196, 84], [100, 114], [222, 118], [314, 120], [62, 104], [250, 104]].forEach(([tx, ty], k) => (k % 3 === 1 ? pine : oak)(tx, ty));
+  for (let k = 0; k < 10; k++) { const bx = Math.floor(H(k + 700) * TW), by = 110 + Math.floor(H(k + 760) * 60); R(bx - 3, by - 3, 7, 4, '#3f7a44'); R(bx - 2, by - 4, 4, 1, '#4f8a50'); }
+  for (let k = 0; k < TW; k += 6) { R(k, 170, 1, 6, '#8a6a44'); } R(0, 171, TW, 1, '#a8865c'); R(0, 174, TW, 1, '#8a6a44');
   return c;
+}
+// Town life: clouds, birds, villagers, smoke, lamps and a windmill on the hill
+const CLOUDS = [{ x: 20, y: 8, w: 30 }, { x: 140, y: 14, w: 22 }, { x: 230, y: 6, w: 36 }];
+let VILLAGERS = [], BIRDS = [];
+function townLife(x, dt) {
+  const R = (a, b, w, h, col) => { x.fillStyle = col; x.fillRect(Math.round(a), Math.round(b), w, h); };
+  CLOUDS.forEach(c => { c.x += dt * 3; if (c.x > TW + 40) c.x = -c.w - 10;
+    const cx0 = Math.round(c.x); x.fillStyle = '#ffe9d488';
+    for (const [ox, oy, rw, rh] of [[0.2, 0, 0.22, 3], [0.45, -2, 0.28, 4], [0.75, 0, 0.2, 3], [0.5, 1, 0.5, 2.5]]) { x.beginPath(); x.ellipse(cx0 + c.w * ox, c.y + oy, c.w * rw, rh, 0, 0, Math.PI * 2); x.fill(); } });
+  // windmill on the ridge
+  const wx = 198, wy = 28; R(wx - 3, wy, 6, 12, '#d8cfbf'); R(wx - 4, wy - 2, 8, 3, '#8a4a3a');
+  x.strokeStyle = '#f3ead8'; x.lineWidth = 1; for (let k = 0; k < 4; k++) { const an = townT * 0.8 + k * Math.PI / 2; x.beginPath(); x.moveTo(wx + 0.5, wy + 0.5); x.lineTo(wx + 0.5 + Math.cos(an) * 10, wy + 0.5 + Math.sin(an) * 10); x.stroke(); }
+  // birds
+  if (BIRDS.length < 3 && Math.random() < dt * 0.2) BIRDS.push({ x: -10, y: 8 + Math.random() * 24, sp: 14 + Math.random() * 10 });
+  BIRDS = BIRDS.filter(b => { b.x += b.sp * dt; const f = (townT * 6 + b.y | 0) % 2; R(b.x - 2, b.y + f, 2, 1, '#2a2430'); R(b.x + 1, b.y + f, 2, 1, '#2a2430'); R(b.x, b.y + 1 - f, 1, 1, '#2a2430'); return b.x < TW + 10; });
+  // villagers stroll the main street; a busier town has more of them
+  const want = 2 + Math.floor(TOWN.reduce((a, b) => a + (lvl(b.id) ? 1 : 0), 0) * 0.8);
+  while (VILLAGERS.length < want) VILLAGERS.push({ x: Math.random() * TW, y: 94 + Math.random() * 7, dir: Math.random() < 0.5 ? -1 : 1, sp: 6 + Math.random() * 8, col: pick(['#c9504a', '#3c5aa0', '#6a8a3a', '#8a5a9a', '#b8863a', '#4a4a5a']), hair: pick(['#3a2a1c', '#b8863a', '#1b1622', '#d8cfbf']), stop: 0 });
+  VILLAGERS.forEach(v => {
+    if (v.stop > 0) v.stop -= dt; else { v.x += v.dir * v.sp * dt; if (Math.random() < dt * 0.05) v.stop = 1 + Math.random() * 3; }
+    if (v.x < 4) v.dir = 1; if (v.x > TW - 4) v.dir = -1;
+    const st = v.stop > 0 ? 0 : (townT * 6 + v.x | 0) % 2;
+    R(v.x - 2, v.y + 7, 5, 1, '#00000033');
+    R(v.x - 1, v.y + 5, 1, 2 - st, '#3a2a1c'); R(v.x + 1, v.y + 5, 1, 1 + st, '#3a2a1c');
+    R(v.x - 1, v.y + 1, 3, 4, v.col); R(v.x - 1, v.y - 2, 3, 3, '#efc29a'); R(v.x - 1, v.y - 2, 3, 1, v.hair);
+  });
+  // lamp glow at dusk
+  x.globalCompositeOperation = 'lighter';
+  for (const lx of [36, 112, 206, 292]) { const g = x.createRadialGradient(lx, 78, 0, lx, 78, 14); g.addColorStop(0, '#ffd36b' + (40 + (Math.sin(townT * 3 + lx) * 8 | 0)).toString(16)); g.addColorStop(1, '#ffd36b00'); x.fillStyle = g; x.fillRect(lx - 14, 64, 28, 28); }
+  x.globalCompositeOperation = 'source-over';
+}
+// draw a building on its own little canvas so it gets the same outline and shading as the battle sprites
+const TB = document.createElement('canvas'); TB.width = 96; TB.height = 90; const TBX = TB.getContext('2d', { willReadFrequently: true });
+const TBO = document.createElement('canvas'); TBO.width = 96; TBO.height = 90; const TBOX = TBO.getContext('2d');
+function townBlit(x, id, X, Y, t, L) {
+  TBX.clearRect(0, 0, 96, 90); const prev = P; P = TBX;
+  drawBuilding(id, 48, 84, t);
+  if (L >= 5) { // an annex grows beside the main building
+    const roof = { cloister: '#4a4560', infirmary: '#a8433d', garden: '#5e3c1c', chapel: '#6b5a8a', library: '#3c5aa0', smithy: '#3a2a20', barracks: '#5e3c1c', market: '#c9504a' }[id];
+    r(48 + 21, 84 - 14, 12, 14, '#b8ae9a'); r(48 + 20, 84 - 18, 14, 4, roof); r(48 + 25, 84 - 9, 3, 5, '#e8c86a');
+  }
+  if (L >= 3) { r(48 - 14, 84 - 2, 4, 2, '#c9504a'); r(48 + 10, 84 - 2, 4, 2, '#ffd36b'); r(48 - 13, 84 - 3, 2, 1, '#6fbf73'); r(48 + 11, 84 - 3, 2, 1, '#6fbf73'); }
+  P = prev;
+  shadePass(TBX, 96, 90);
+  TBOX.clearRect(0, 0, 96, 90);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) TBOX.drawImage(TB, dx, dy);
+  TBOX.globalCompositeOperation = 'source-in'; TBOX.fillStyle = '#1b1622'; TBOX.fillRect(0, 0, 96, 90); TBOX.globalCompositeOperation = 'source-over';
+  TBOX.drawImage(TB, 0, 0);
+  x.drawImage(TBO, Math.round(X - 48), Math.round(Y - 84));
 }
 function drawBuilding(id, X, Y, t) {
   switch (id) {
@@ -3533,9 +3802,11 @@ function renderTownScene(dt) {
   const x = tc.getContext('2d'); x.imageSmoothingEnabled = false;
   if (!townBg) townBg = buildTownBg();
   x.drawImage(townBg, 0, 0);
-  // fountain in the square
-  x.fillStyle = '#8d8a9a'; x.fillRect(150, 100, 20, 6); x.fillStyle = '#6f9be8'; x.fillRect(152, 101, 16, 3);
-  x.fillStyle = '#b4bccc'; x.fillRect(159, 92, 2, 9);
+  // fountain in the plaza
+  x.fillStyle = '#6d6a7a'; x.fillRect(148, 99, 24, 8); x.fillStyle = '#8d8a9a'; x.fillRect(148, 99, 24, 2); x.fillStyle = '#5f8fd8'; x.fillRect(150, 101, 20, 4);
+  x.fillStyle = '#9fc4f0'; x.fillRect(152 + ((townT * 4 | 0) % 14), 102, 3, 1);
+  x.fillStyle = '#b4bccc'; x.fillRect(158, 90, 4, 10); x.fillStyle = '#d8dce6'; x.fillRect(156, 89, 8, 2);
+  const lifeLayer = () => townLife(x, dt);
   for (let k = 0; k < 4; k++) { const f = (townT * 2 + k / 4) % 1; x.fillStyle = '#bfe0ff'; x.fillRect(Math.round(160 + (k - 1.5) * 4 * f), Math.round(92 - 6 * Math.sin(f * Math.PI)), 1, 1); }
   const prevP = P; P = x;
   Object.keys(PLOTS).sort((a, b) => PLOTS[a].y - PLOTS[b].y).forEach(id => {
@@ -3545,8 +3816,8 @@ function renderTownScene(dt) {
     else {
       let prog = 1;
       if (TOWN_ANIM[id] != null) { TOWN_ANIM[id] += dt; prog = Math.min(1, TOWN_ANIM[id] / 0.8); if (prog >= 1) delete TOWN_ANIM[id]; }
-      x.save(); x.beginPath(); x.rect(p.x - 34, p.y - p.top * prog - 2, 68, p.top * prog + 4); x.clip();
-      drawBuilding(id, p.x, p.y, townT);
+      x.save(); x.beginPath(); x.rect(p.x - 44, p.y - p.top * prog - 3, 88, p.top * prog + 6); x.clip();
+      townBlit(x, id, p.x, p.y, townT, L);
       if (L >= 4) { const fy = p.y - p.top; r(p.x - 12, fy + 2, 1, 7, '#7a5434'); r(p.x - 11, fy + 2, 4, 3, '#e4b75c'); }
       if (L >= TOWN_MAX) { r(p.x - 18, p.y - 1, 36, 1, '#e4b75c'); }
       x.restore();
@@ -3555,12 +3826,15 @@ function renderTownScene(dt) {
       pdraw(String(L), p.x + 18, p.y - p.top + 2, '#ffd36b', x);
     }
     if (id === 'smithy' && L && Math.random() < dt * 6) TFX.push({ x: p.x + 8, y: p.y - 37, vx: rand(-2, 4), vy: -rand(6, 12), life: 1.6, col: '#9a9aa8' });
+    const chim = { cloister: [11, -46], library: [0, -44], infirmary: [-10, -33], barracks: [-8, -26], market: [0, -30] }[id];
+    if (chim && L && Math.random() < dt * 2.5) TFX.push({ x: p.x + chim[0], y: p.y + chim[1], vx: rand(-1, 3), vy: -rand(5, 9), life: 2, col: '#d8d0e0' });
     if (hot) {
       x.strokeStyle = id === townSel ? '#e4b75c' : '#f3ead899'; x.lineWidth = 1; x.setLineDash([2, 2]);
       x.strokeRect(p.x - 24.5, p.y - p.top - 4.5, 49, p.top + 8); x.setLineDash([]);
     }
   });
   P = prevP;
+  lifeLayer();
   TFX = TFX.filter(f => {
     f.life -= dt; if (f.life <= 0) return false;
     f.x += f.vx * dt; f.y += f.vy * dt;
@@ -3917,7 +4191,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS };
 addEventListener('hashchange', syncDev);
 syncDev();
 

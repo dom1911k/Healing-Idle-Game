@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mendwright</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a war-room split. The arena (boss, party frames, spell bar) on the left; the sanctum ledger (income, training, armory, records) on the right. Stacks on phones. Single dark world by design. */
+:root{
+  --bg:#17151f; --surface:#201d2a; --surface-2:#292535; --line:#3a3448; --ink:#ece4d6; --muted:#a39ab3;
+  --gold:#e4b75c; --gold-dim:#8a6c33; --heal:#86dcb8; --mana:#7ba3ee; --hurt:#e0605a; --shield:#d3dbff; --rot:#a3c45c;
+  --r0:#bdb6c8; --r1:#72d27e; --r2:#5fa9ff; --r3:#c48bfb; --r4:#ffa24a;
+  --display:'Grenze','Palatino Linotype',Georgia,serif;
+  --body:'Alegreya Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.4 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.9em}
+.label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+.app{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px}
+.brand{display:flex;align-items:baseline;gap:12px}
+.brand h1{font-family:var(--display);font-weight:700;font-size:2.1rem;letter-spacing:.02em;margin:0;line-height:1;color:var(--gold)}
+.brand p{margin:0;color:var(--muted);font-size:.92rem}
+.purse{display:flex;gap:22px;align-items:flex-end}
+.purse div{display:flex;flex-direction:column;align-items:flex-end}
+.purse b{font-family:var(--mono);font-weight:500;font-size:1.35rem;color:var(--gold);font-variant-numeric:tabular-nums}
+.purse small{font-family:var(--mono);color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:940px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Arena */
+.arena{position:relative;background:radial-gradient(120% 70% at 50% -10%,#3a2d3e 0%,transparent 60%),var(--surface);
+  border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.arena.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
+.stagebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stagebar .stage{font-family:var(--display);font-size:1.15rem;color:var(--muted)}
+.stagebar .stage b{color:var(--ink)}
+.stagectl{display:flex;align-items:center;gap:8px}
+.iconbtn{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.iconbtn:disabled{opacity:.35;cursor:default}
+.toggle{display:flex;align-items:center;gap:6px;font-size:.88rem;color:var(--muted);cursor:pointer}
+.toggle input{accent-color:var(--gold)}
+
+.boss{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center}
+.sigil{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:2rem;font-weight:700;
+  color:var(--hurt);background:radial-gradient(circle,#3b2129 0%,#1d1720 70%);border:2px solid #5b2f36;box-shadow:0 0 0 4px #24202e,0 0 24px #e0605a33}
+.boss.enraged .sigil{animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px #24202e,0 0 36px #e0605a99}}
+.bossinfo{display:flex;flex-direction:column;gap:6px;min-width:0}
+.bossname{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bossname h2{margin:0;font-family:var(--display);font-size:1.45rem;font-weight:700;line-height:1.1}
+.bossname span{color:var(--muted);font-size:.85rem}
+.tags{display:flex;gap:6px;min-height:20px;flex-wrap:wrap}
+.tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid}
+.tag.enrage{color:var(--hurt);border-color:var(--hurt)}
+.tag.frenzy{color:var(--gold);border-color:var(--gold)}
+.tag.timer{color:var(--muted);border-color:var(--line)}
+
+.bar{position:relative;height:18px;background:#14121a;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.bar .fill{position:absolute;inset:0 auto 0 0;width:100%;transition:width .12s linear}
+.bar .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.74rem;text-shadow:0 1px 2px #000}
+.bar.bosshp{height:22px}.bar.bosshp .fill{background:linear-gradient(#c8564f,#8f2f2c)}
+.bar.bcast{height:14px}.bar.bcast .fill{background:linear-gradient(#e7c27a,#a7792d);transition:none}
+.bar.bcast:not(.on){opacity:.25}
+
+.party{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.party{grid-template-columns:repeat(2,minmax(0,1fr))}.party .frame:last-child{grid-column:1/-1}}
+.frame{position:relative;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px;cursor:pointer;display:flex;flex-direction:column;gap:6px;min-width:0}
+.frame:hover{border-color:#5a5170}
+.frame.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.frame.dead{opacity:.45;filter:grayscale(1)}
+.frame.low .hp .fill{background:linear-gradient(#e08a52,#a64f2a)}
+.fr-top{display:flex;justify-content:space-between;gap:4px;align-items:baseline;min-width:0}
+.fr-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr-role{font-size:.72rem;color:var(--muted);white-space:nowrap}
+.bar.hp{height:22px}
+.bar.hp .fill{background:linear-gradient(#69c49a,#2f8562)}
+.bar.hp .shield{position:absolute;top:0;bottom:0;left:0;width:0;background:repeating-linear-gradient(45deg,#d3dbff88 0 4px,#d3dbff33 4px 8px);border-right:2px solid var(--shield)}
+.fr-fx{display:flex;gap:4px;min-height:16px;flex-wrap:wrap}
+.fx{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:0 5px;border-radius:3px;line-height:16px}
+.fx.renew{background:#86dcb822;color:var(--heal)}
+.fx.rot{background:#a3c45c22;color:var(--rot)}
+.fx.ward{background:#d3dbff22;color:var(--shield)}
+.floats{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.ft{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--mono);font-weight:500;font-size:.85rem;white-space:nowrap;animation:rise 1s ease-out forwards;text-shadow:0 1px 3px #000}
+.ft.heal{color:var(--heal)}.ft.crit{font-size:1.1rem;color:#c9ffe6}.ft.dmg{color:var(--hurt)}.ft.abs{color:var(--shield)}
+@keyframes rise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-34px)}}
+
+.caster{display:flex;flex-direction:column;gap:6px}
+.bar.cast{height:16px}.bar.cast .fill{background:linear-gradient(#f2d48b,#c49434);transition:none}
+.bar.cast:not(.on){opacity:.3}
+.bar.mana{height:20px}.bar.mana .fill{background:linear-gradient(#7ba3ee,#3f61b0)}
+.spells{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:480px){.spells{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.spell{position:relative;overflow:hidden;background:linear-gradient(#2f2a3d,#252130);border:1px solid #4a4260;border-radius:8px;padding:8px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.spell:hover:not(:disabled){border-color:var(--gold)}
+.spell:disabled{cursor:default}
+.spell.nomana .sp-cost{color:var(--hurt)}
+.spell.locked{opacity:.4}
+.spell .key{position:absolute;top:4px;left:6px;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.spell .sp-name{font-weight:700;font-size:.88rem;text-align:center;line-height:1.1}
+.spell .sp-cost{font-family:var(--mono);font-size:.72rem;color:var(--mana)}
+.spell .sp-meta{font-size:.68rem;color:var(--muted)}
+.spell .cd{position:absolute;left:0;right:0;bottom:0;height:0;background:#0009;pointer-events:none}
+.hint{margin:0;font-size:.82rem;color:var(--muted)}
+.hint kbd{font-family:var(--mono);font-size:.75rem;border:1px solid var(--line);border-radius:3px;padding:0 4px}
+
+.overlay{position:absolute;inset:0;display:grid;place-items:center;background:#17151fcc;backdrop-filter:blur(2px);text-align:center;padding:20px;z-index:3}
+.overlay h3{font-family:var(--display);font-size:2rem;margin:0 0 6px;color:var(--gold)}
+.overlay.wipe h3{color:var(--hurt)}
+.overlay p{margin:4px 0;max-width:44ch}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{flex:1;background:none;border:0;border-bottom:2px solid transparent;padding:12px 10px;cursor:pointer;font-family:var(--display);font-size:1.05rem;color:var(--muted);white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--gold);border-bottom-color:var(--gold)}
+.tabpane{padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.section-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.section-h h3{margin:0;font-family:var(--display);font-size:1.2rem;font-weight:500}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{background:none;border:0;padding:3px 10px;cursor:pointer;color:var(--muted);font-size:.82rem}
+.seg button[aria-pressed="true"]{background:var(--surface-2);color:var(--gold)}
+
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer}
+.row:hover:not(.cant){border-color:var(--gold-dim)}
+.row.cant{cursor:default}
+.row.cant .cost{color:var(--muted)}
+.row .nm{font-weight:700}
+.row .ds{grid-column:1;font-size:.82rem;color:var(--muted)}
+.row .owned{font-family:var(--display);font-size:1.6rem;color:var(--muted);grid-row:1/3;grid-column:2;text-align:right;line-height:1}
+.row .cost{font-family:var(--mono);font-size:.82rem;color:var(--gold)}
+.row .meta{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.row.hidden-b{opacity:.55}
+.upgrades{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.upg{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.upg:hover:not(.cant){border-color:var(--gold)}
+.upg.cant{cursor:default;opacity:.6}
+.upg b{font-size:.9rem}
+.upg span{font-size:.76rem;color:var(--muted)}
+.upg .cost{font-family:var(--mono);font-size:.78rem;color:var(--gold)}
+.empty{color:var(--muted);font-size:.88rem;margin:0}
+
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 14px}
+.stat{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dotted var(--line);padding:3px 0;font-size:.86rem}
+.stat span{color:var(--muted)}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.slot,.bagitem{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer;min-width:0;display:flex;flex-direction:column;gap:1px}
+.slot.sel,.bagitem.sel{box-shadow:0 0 0 2px var(--gold)}
+.slot small{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.slot b,.bagitem b{font-size:.84rem;line-height:1.15;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.slot .empty-s{color:var(--muted);font-size:.82rem}
+.bag{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.bagitem .up{font-family:var(--mono);font-size:.7rem}
+.up.better{color:var(--r1)}.up.worse{color:var(--hurt)}
+.rar0{color:var(--r0)}.rar1{color:var(--r1)}.rar2{color:var(--r2)}.rar3{color:var(--r3)}.rar4{color:var(--r4)}
+.bc0{border-left:3px solid var(--r0)}.bc1{border-left:3px solid var(--r1)}.bc2{border-left:3px solid var(--r2)}.bc3{border-left:3px solid var(--r3)}.bc4{border-left:3px solid var(--r4)}
+.detail{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.detail h4{margin:0;font-family:var(--display);font-size:1.2rem;font-weight:500}
+.detail .sub{font-size:.8rem;color:var(--muted)}
+.detail ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.detail li{display:flex;justify-content:space-between;gap:10px;font-size:.88rem}
+.d-plus{color:var(--r1);font-family:var(--mono);font-size:.78rem}.d-minus{color:var(--hurt);font-family:var(--mono);font-size:.78rem}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--surface-2);border:1px solid #4a4260;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:.88rem}
+.btn.primary{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.4;cursor:default}
+
+.log{list-style:none;margin:0;padding:0;font-size:.84rem;display:flex;flex-direction:column;gap:3px;max-height:340px;overflow-y:auto}
+.log li{color:var(--muted)}.log li b{color:var(--ink);font-weight:500}
+.log .g{color:var(--gold)}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#2b2637;border:1px solid var(--gold-dim);color:var(--ink);padding:10px 16px;border-radius:8px;max-width:min(90vw,460px);font-size:.9rem;box-shadow:0 8px 30px #0008;z-index:10}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1>Mendwright</h1><p>Keep the party standing. Build the sanctum. Gear up.</p></div>
+    <div class="purse">
+      <div><span class="label">Gold</span><b id="gold">0</b></div>
+      <div><span class="label">Per second</span><small id="gps">0/s</small></div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="arena" id="arena" aria-label="Battle">
+      <div class="stagebar">
+        <div class="stage">Stage <b id="stageNum">1</b> <span id="stageBest"></span></div>
+        <div class="stagectl">
+          <button class="iconbtn" id="prevStage" aria-label="Previous stage">&#9664;</button>
+          <button class="iconbtn" id="nextStage" aria-label="Next stage">&#9654;</button>
+          <label class="toggle"><input type="checkbox" id="autoAdv"> Advance after victory</label>
+        </div>
+      </div>
+
+      <div class="boss" id="boss">
+        <div class="sigil" id="sigil">R</div>
+        <div class="bossinfo">
+          <div class="bossname"><h2 id="bossName">Boss</h2><span id="bossTitle"></span></div>
+          <div class="bar bosshp"><i class="fill" id="bossFill"></i><span class="txt" id="bossTxt"></span></div>
+          <div class="bar bcast" id="bcast"><i class="fill" id="bcastFill"></i><span class="txt" id="bcastTxt"></span></div>
+          <div class="tags" id="bossTags"></div>
+        </div>
+      </div>
+
+      <div class="party" id="party"></div>
+
+      <div class="caster">
+        <div class="bar cast" id="castBar"><i class="fill" id="castFill"></i><span class="txt" id="castTxt"></span></div>
+        <div class="bar mana"><i class="fill" id="manaFill"></i><span class="txt" id="manaTxt"></span></div>
+      </div>
+      <div class="spells" id="spells"></div>
+      <p class="hint">Click a party member to target them, then tap a spell or press <kbd>1</kbd>–<kbd>5</kbd>. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Healing earns gold.</p>
+
+      <div class="overlay" id="overlay" hidden></div>
+    </section>
+
+    <aside class="panel" aria-label="Sanctum">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="sanctum" aria-selected="true">Sanctum</button>
+        <button class="tab" role="tab" data-tab="barracks" aria-selected="false">Barracks</button>
+        <button class="tab" role="tab" data-tab="armory" aria-selected="false">Armory</button>
+        <button class="tab" role="tab" data-tab="chronicle" aria-selected="false">Chronicle</button>
+      </div>
+      <div class="tabpane" id="pane"></div>
+    </aside>
+  </main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SAVE_KEY = 'mendwright-save-v1';
+const BERSERK = 120;
+const OFFLINE_CAP = 8 * 3600;
+
+function fmt(n) {
+  n = +n || 0;
+  if (Math.abs(n) < 1000) return (Math.abs(n) < 100 && n % 1) ? n.toFixed(1).replace(/\.0$/, '') : String(Math.floor(n));
+  const u = ['K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];
+  let i = -1;
+  while (Math.abs(n) >= 1000 && i < u.length - 1) { n /= 1000; i++; }
+  return n.toFixed(n < 10 ? 2 : n < 100 ? 1 : 0) + u[i];
+}
+function fmtTime(s) {
+  s = Math.floor(s);
+  const hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60;
+  return hh ? `${hh}h ${mm}m` : mm ? `${mm}m ${ss}s` : `${ss}s`;
+}
+function roman(n) { return ['','I','II','III','IV','V','VI','VII','VIII','IX','X'][n] || String(n); }
+
+/* ---------- Data ---------- */
+const PARTY = [
+  { name: 'Bram', role: 'Guardian',   hp: 420, dps: 6,  tank: true },
+  { name: 'Rook', role: 'Warrior',    hp: 260, dps: 16 },
+  { name: 'Vess', role: 'Rogue',      hp: 220, dps: 21 },
+  { name: 'Ilda', role: 'Pyromancer', hp: 190, dps: 25 },
+  { name: 'You',  role: 'Cleric',     hp: 210, dps: 3,  you: true },
+];
+const YOU = 4;
+
+const BOSSES = [
+  { name: 'Gnasher',        title: 'King of the Sewer Rats', sigil: 'G', abil: ['bolt', 'rot'] },
+  { name: 'The Mire Hag',   title: 'Brewer of Bog Fevers',   sigil: 'M', abil: ['rot', 'wave'] },
+  { name: 'Grave Warden',   title: 'Keeper of the Ossuary',  sigil: 'W', abil: ['cleave', 'bolt'] },
+  { name: 'Ashjaw',         title: 'Drake of the Cinder Pit',sigil: 'A', abil: ['wave', 'cleave'] },
+  { name: 'The Cinder Abbot',title: 'Fallen Confessor',      sigil: 'C', abil: ['wave', 'bolt', 'rot'] },
+  { name: 'The Pale Choir', title: 'Seven Voices, One Hymn', sigil: 'P', abil: ['wave', 'wave', 'bolt'] },
+  { name: 'Thornmother',    title: 'Root of the Black Wood', sigil: 'T', abil: ['rot', 'rot', 'cleave'] },
+  { name: 'Iron Penitent',  title: 'Chained Executioner',    sigil: 'I', abil: ['cleave', 'frenzy'] },
+  { name: 'Leviathan',      title: 'Under the Drowned Nave', sigil: 'L', abil: ['wave', 'frenzy', 'bolt'] },
+  { name: 'Eclipse Seraph', title: 'The Light Turned Away',  sigil: 'E', abil: ['bolt', 'wave', 'rot', 'frenzy'] },
+];
+
+const ABIL = {
+  cleave: { name: 'Cleave', cast: 1.0, run(b) {
+    hit(tankOrRandom(), bossDmg(b) * 1.7);
+    const o = randomAlive(i => !PARTY[i].tank); if (o != null) hit(o, bossDmg(b) * 0.9);
+  } },
+  wave: { name: 'Searing Wave', cast: 1.6, run(b) { aliveIdx().forEach(i => hit(i, bossDmg(b) * 0.85)); shake(); } },
+  bolt: { name: 'Shadow Bolt', cast: 1.3, run(b) { const t = randomAlive(i => !PARTY[i].tank); if (t != null) hit(t, bossDmg(b) * 2.6); } },
+  rot: { name: 'Festering Bite', cast: 0.6, run(b) {
+    const t = randomAlive(); if (t == null) return;
+    hit(t, bossDmg(b) * 0.5);
+    C.party[t].dots = [{ rate: b.dmg * 0.35, left: 8, acc: 0 }];
+  } },
+  frenzy: { name: 'Frenzy', cast: 0.8, run(b) { b.frenzy = 5; } },
+};
+
+const SPELLS = [
+  { id: 'mend',   key: '1', name: 'Mend',      cost: 10, cast: 1.8, cd: 0, unlock: 1, meta: 'Slow, efficient',
+    run: t => heal(t, D.heal * 1.6) },
+  { id: 'flash',  key: '2', name: 'Flash Heal',cost: 19, cast: 0.6, cd: 0, unlock: 1, meta: 'Fast, costly',
+    run: t => heal(t, D.heal * 1.15) },
+  { id: 'renew',  key: '3', name: 'Renew',     cost: 14, cast: 0,   cd: 0, unlock: 2, meta: 'Heal over 10s',
+    run: t => { C.party[t].hots = [{ rate: D.heal * 0.24, left: 10, acc: 0 }]; } },
+  { id: 'ward',   key: '4', name: 'Ward',      cost: 22, cast: 0,   cd: 8, unlock: 4, meta: 'Absorb shield',
+    run: t => { const m = C.party[t]; m.shield = Math.max(m.shield, D.heal * 2.2); } },
+  { id: 'prayer', key: '5', name: 'Prayer',    cost: 40, cast: 2.2, cd: 0, unlock: 6, meta: 'Heals everyone', group: true,
+    run: () => aliveIdx().forEach(i => heal(i, D.heal * 0.75)) },
+];
+
+const BUILDINGS = [
+  { id: 'acolyte',   name: 'Acolyte',        plural: 'Acolytes',        base: 15,     gps: 0.2,   desc: 'Lights candles and passes the collection plate.' },
+  { id: 'shrine',    name: 'Wayside Shrine', plural: 'Wayside Shrines', base: 120,    gps: 1.2,   desc: 'Travellers leave coins for safe roads.' },
+  { id: 'garden',    name: 'Herb Garden',    plural: 'Herb Gardens',    base: 1300,   gps: 9,     desc: 'Feverfew and comfrey, sold by the bundle.' },
+  { id: 'chapel',    name: 'Chapel',         plural: 'Chapels',         base: 14000,  gps: 55,    desc: 'Weddings, funerals, and a donation box.' },
+  { id: 'infirmary', name: 'Infirmary',      plural: 'Infirmaries',     base: 160000, gps: 320,   desc: 'Mends the town. The town pays.' },
+  { id: 'monastery', name: 'Monastery',      plural: 'Monasteries',     base: 1.8e6,  gps: 1900,  desc: 'Monks brew ale that sells far and wide.' },
+  { id: 'cathedral', name: 'Cathedral',      plural: 'Cathedrals',      base: 2.2e7,  gps: 11000, desc: 'Pilgrims from three kingdoms.' },
+  { id: 'font',      name: 'Celestial Font', plural: 'Celestial Fonts', base: 3e8,    gps: 70000, desc: 'Water that remembers being starlight.' },
+];
+const TIER_NAMES = ['Consecrated', 'Gilded', 'Hallowed', 'Exalted', 'Transcendent'];
+const TIER_AT = [1, 10, 25, 50, 100];
+const TIER_COST = [10, 60, 600, 6000, 60000];
+
+const UPGRADES = [];
+BUILDINGS.forEach(b => TIER_AT.forEach((n, ti) => UPGRADES.push({
+  id: `${b.id}_${ti}`, name: `${TIER_NAMES[ti]} ${b.plural}`, desc: `${b.plural} earn twice as much gold.`,
+  cost: b.base * TIER_COST[ti], req: () => own(b.id) >= n, bld: b.id,
+})));
+UPGRADES.push(
+  { id: 'tithe1',    name: 'Tithe Box',             desc: 'Healing earns twice as much gold.',            cost: 400,   req: () => S.maxStage >= 3 },
+  { id: 'meditate',  name: 'Deep Meditation',       desc: 'Mana regeneration +50%.',                       cost: 1500,  req: () => S.maxStage >= 5 },
+  { id: 'luck',      name: 'Rabbit-Foot Reliquary', desc: 'Rare, epic and legendary drops are 50% more common.', cost: 3000, req: () => S.maxStage >= 6 },
+  { id: 'bags',      name: 'Deep Satchel',          desc: 'Your bag holds 12 more items.',                 cost: 5000,  req: () => S.maxStage >= 4 },
+  { id: 'sermon',    name: 'Rousing Sermon',        desc: 'Party damage ×1.25.',                           cost: 6000,  req: () => S.maxStage >= 8 },
+  { id: 'scripture', name: 'Illuminated Scripture', desc: 'All healing +20%.',                             cost: 12000, req: () => S.maxStage >= 10 },
+  { id: 'tithe2',    name: 'Golden Censer',         desc: 'Healing earns twice as much gold again.',       cost: 40000, req: () => S.maxStage >= 12 },
+  { id: 'pilgrims',  name: 'Pilgrim Roads',         desc: 'Buildings earn +3% gold per stage cleared.',    cost: 90000, req: () => S.maxStage >= 14 },
+);
+const UPG = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
+
+const TRAIN = [
+  { id: 'dps',   name: 'Weapon Drills',   desc: 'Party damage ×1.15 per rank.',                        base: 40,  growth: 1.42 },
+  { id: 'hp',    name: 'Shield Wall',     desc: 'Party max health ×1.10 per rank.',                    base: 55,  growth: 1.42 },
+  { id: 'regen', name: 'Field Dressings', desc: 'Party regenerates 0.4% of max health per second per rank.', base: 300, growth: 1.9, max: 10 },
+];
+
+const RARITY = [
+  { name: 'Common',    mult: 1.0, stats: 1, weight: 55,  sell: 1 },
+  { name: 'Uncommon',  mult: 1.3, stats: 2, weight: 28,  sell: 2 },
+  { name: 'Rare',      mult: 1.7, stats: 2, weight: 12,  sell: 4 },
+  { name: 'Epic',      mult: 2.2, stats: 3, weight: 4.2, sell: 9 },
+  { name: 'Legendary', mult: 3.0, stats: 4, weight: 0.8, sell: 25 },
+];
+const SLOTS = [
+  { id: 'head',    name: 'Head',    bases: ['Hood', 'Circlet', 'Cowl', 'Mitre'] },
+  { id: 'chest',   name: 'Chest',   bases: ['Robe', 'Vestments', 'Habit', 'Cassock'] },
+  { id: 'hands',   name: 'Hands',   bases: ['Gloves', 'Wraps', 'Bracers'] },
+  { id: 'staff',   name: 'Staff',   bases: ['Staff', 'Sceptre', 'Censer', 'Crook'] },
+  { id: 'ring',    name: 'Ring',    bases: ['Ring', 'Band', 'Signet'] },
+  { id: 'trinket', name: 'Trinket', bases: ['Reliquary', 'Prayer Beads', 'Phial', 'Icon'] },
+];
+const SLOT = Object.fromEntries(SLOTS.map(s => [s.id, s]));
+const g = l => Math.pow(1.13, l - 1);
+const STATS = {
+  power: { name: 'Spell Power', w: 1.2, roll: l => 5 * g(l),          show: v => '+' + fmt(v) },
+  mana:  { name: 'Max Mana',    w: 0.8, roll: l => 18 * g(l),         show: v => '+' + fmt(v) },
+  regen: { name: 'Mana Regen',  w: 1.0, roll: l => 0.5 * g(l),        show: v => '+' + fmt(v) + '/s' },
+  crit:  { name: 'Critical',    w: 1.0, roll: l => 1.5 + 0.2 * l,     show: v => '+' + v.toFixed(1) + '%' },
+  haste: { name: 'Haste',       w: 1.0, roll: l => 1.5 + 0.2 * l,     show: v => '+' + v.toFixed(1) + '%' },
+  greed: { name: 'Gold Find',   w: 0.6, roll: l => 4 + 0.8 * l,       show: v => '+' + v.toFixed(0) + '%' },
+  vigor: { name: 'Party Vigor', w: 0.9, roll: l => 2 + 0.35 * l,      show: v => '+' + v.toFixed(1) + '% HP' },
+};
+const SUFFIX = { power: 'of Radiance', mana: 'of the Deep Well', regen: 'of the Spring', crit: 'of Revelation', haste: 'of Swiftness', greed: 'of Tithes', vigor: 'of the Bulwark' };
+const MATERIALS = ['Frayed', 'Linen', 'Woolen', 'Silken', 'Moonweave', 'Starsilk', 'Seraphic', 'Empyrean'];
+const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last Abbot', 'Brother Quill', 'the Ninth Martyr'];
+
+/* ---------- State ---------- */
+function newState() {
+  return {
+    v: 1, gold: 0, goldTotal: 0, stage: 1, maxStage: 1, autoAdvance: true, buyMode: 1,
+    buildings: {}, upgrades: {}, train: { dps: 0, hp: 0, regen: 0 },
+    equip: { head: null, chest: null, hands: null, staff: { id: 1, slot: 'staff', rarity: 0, ilvl: 1, up: 0, name: 'Worn Oak Staff', stats: { power: 6 } }, ring: null, trinket: null },
+    inv: [], nextId: 2,
+    stats: { healed: 0, overheal: 0, kills: 0, wipes: 0, played: 0, crits: 0 },
+    lastSave: Date.now(),
+  };
+}
+let S = newState();
+const D = {};
+const C = { party: [], boss: null, mana: 100, cast: null, gcd: 0, cds: {}, phase: 'fight', phaseT: 0, target: 0, hover: null, time: 0 };
+const LOG = [];
+let logVer = 0;
+
+const own = id => S.buildings[id] || 0;
+const has = id => !!S.upgrades[id];
+const bagCap = () => 24 + (has('bags') ? 12 : 0);
+const statVal = (it, k) => (it.stats[k] || 0) * (1 + 0.1 * (it.up || 0));
+
+function bldMult(b) {
+  let m = 1;
+  TIER_AT.forEach((_, ti) => { if (has(`${b.id}_${ti}`)) m *= 2; });
+  if (has('pilgrims')) m *= 1 + 0.03 * (S.maxStage - 1);
+  return m;
+}
+
+function recalc() {
+  const s = { power: 0, mana: 0, regen: 0, crit: 0, haste: 0, greed: 0, vigor: 0 };
+  for (const k in S.equip) { const it = S.equip[k]; if (it) for (const st in it.stats) s[st] += statVal(it, st); }
+  D.gear = s;
+  D.heal = (24 + s.power) * (has('scripture') ? 1.2 : 1);
+  D.costMult = Math.max(1, Math.sqrt(D.heal / 30));
+  D.maxMana = 100 + s.mana;
+  D.regen = (2.5 + s.regen) * (has('meditate') ? 1.5 : 1);
+  D.crit = Math.min(60, 5 + s.crit) / 100;
+  D.haste = Math.min(150, s.haste) / 100;
+  D.greed = s.greed / 100;
+  D.vigor = s.vigor / 100;
+  D.partyHp = Math.pow(1.1, S.train.hp) * (1 + D.vigor);
+  D.partyDps = Math.pow(1.15, S.train.dps) * (has('sermon') ? 1.25 : 1);
+  D.partyRegen = 0.004 * S.train.regen;
+  D.healGold = 0.08 * (has('tithe1') ? 2 : 1) * (has('tithe2') ? 2 : 1) * (1 + D.greed);
+  D.gps = BUILDINGS.reduce((t, b) => t + own(b.id) * b.gps * bldMult(b), 0);
+  // keep the fight in sync with new numbers
+  C.party.forEach((m, i) => {
+    const nm = Math.round(PARTY[i].hp * D.partyHp);
+    if (m.alive) m.hp = m.hp * nm / m.max;
+    m.max = nm;
+  });
+  C.mana = Math.min(C.mana, D.maxMana);
+}
+
+function addGold(n) { S.gold += n; S.goldTotal += n; }
+function log(html) { LOG.unshift(html); if (LOG.length > 80) LOG.pop(); logVer++; }
+
+/* ---------- Items ---------- */
+function rollRarity() {
+  const luck = has('luck') ? 1.5 : 1;
+  const w = RARITY.map((r, i) => r.weight * (i >= 2 ? luck : 1));
+  let x = Math.random() * w.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < w.length; i++) { x -= w[i]; if (x <= 0) return i; }
+  return 0;
+}
+function genItem(ilvl) {
+  const slot = pick(SLOTS), rarity = rollRarity(), R = RARITY[rarity];
+  const pool = Object.keys(STATS).filter(k => !(slot.id === 'staff' && k === 'power'));
+  const keys = slot.id === 'staff' ? ['power'] : [];
+  while (keys.length < R.stats) {
+    const k = pick(pool);
+    if (!keys.includes(k)) keys.push(k);
+  }
+  const stats = {};
+  keys.forEach(k => { stats[k] = STATS[k].roll(ilvl) * R.mult * rand(0.85, 1.15); });
+  const base = pick(slot.bases);
+  const mat = MATERIALS[Math.min(MATERIALS.length - 1, Math.floor((ilvl - 1) / 6))];
+  const name = rarity === 4 ? `${base} of ${pick(LEGENDS)}` : `${mat} ${base} ${SUFFIX[keys[0]]}`;
+  return { id: S.nextId++, slot: slot.id, rarity, ilvl, up: 0, name, stats };
+}
+function score(it) {
+  if (!it) return 0;
+  const ref = Math.max(1, S.stage);
+  let t = 0;
+  for (const k in it.stats) t += statVal(it, k) / STATS[k].roll(ref) * STATS[k].w;
+  return t;
+}
+const sellValue = it => Math.round(5 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * (1 + 0.5 * (it.up || 0)));
+const enchantCost = it => Math.round(20 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * Math.pow(1.6, it.up || 0));
+
+function addToBag(it) {
+  if (S.inv.length >= bagCap()) { const v = sellValue(it); addGold(v); return `bag full, sold for ${fmt(v)} gold`; }
+  S.inv.push(it); return null;
+}
+
+/* ---------- Combat ---------- */
+const aliveIdx = () => C.party.map((m, i) => m.alive ? i : -1).filter(i => i >= 0);
+function randomAlive(f) { const a = aliveIdx().filter(i => !f || f(i)); return a.length ? pick(a) : (f ? randomAlive() : null); }
+function tankOrRandom() { return C.party[0].alive ? 0 : randomAlive(); }
+function bossDmg(b) { return b.dmg * (b.hp / b.max < 0.2 ? 1.3 : 1) * (C.time > BERSERK ? 3 : 1) * rand(0.9, 1.1); }
+
+function makeBoss(s) {
+  const def = BOSSES[(s - 1) % BOSSES.length], cyc = Math.floor((s - 1) / BOSSES.length);
+  const hp = Math.round(1700 * Math.pow(1.21, s - 1));
+  return { name: def.name + (cyc ? ' ' + roman(cyc + 1) : ''), title: def.title, sigil: def.sigil, abil: def.abil,
+    max: hp, hp, dmg: 46 * Math.pow(1.14, s - 1), autoT: 2.2, abilT: 5, cast: null, frenzy: 0 };
+}
+
+function startFight() {
+  C.party = PARTY.map(p => ({ max: 1, hp: 1, shield: 0, hots: [], dots: [], alive: true }));
+  recalc();
+  C.party.forEach(m => m.hp = m.max);
+  C.boss = makeBoss(S.stage);
+  C.mana = D.maxMana; C.cast = null; C.gcd = 0; C.cds = {}; C.phase = 'fight'; C.time = 0;
+  $('#overlay').hidden = true;
+  $('#bossName').textContent = C.boss.name;
+  $('#bossTitle').textContent = C.boss.title;
+  $('#sigil').textContent = C.boss.sigil;
+  updateStageBar();
+}
+
+function hit(i, amt) {
+  const m = C.party[i];
+  if (i == null || !m || !m.alive || C.phase !== 'fight') return;
+  const a = Math.min(m.shield, amt);
+  if (a > 0) { m.shield -= a; amt -= a; float(i, 'absorb ' + fmt(a), 'abs'); }
+  if (amt <= 0) return;
+  m.hp -= amt;
+  float(i, '-' + fmt(amt), 'dmg');
+  if (m.hp <= 0) {
+    m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
+    log(`<b>${PARTY[i].name}</b> has fallen.`);
+  }
+}
+function heal(i, amt) {
+  const m = C.party[i];
+  if (!m || !m.alive) return 0;
+  const crit = Math.random() < D.crit;
+  if (crit) { amt *= 1.5; S.stats.crits++; }
+  const eff = Math.min(amt, m.max - m.hp);
+  m.hp += eff;
+  S.stats.healed += eff; S.stats.overheal += amt - eff;
+  if (eff > 0) addGold(eff * D.healGold);
+  float(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal');
+  return eff;
+}
+
+const spellCost = sp => sp.cost * D.costMult;
+function tryCast(si) {
+  const sp = SPELLS[si];
+  if (!sp || C.phase !== 'fight') return;
+  if (S.maxStage < sp.unlock) return toast(`${sp.name} unlocks when you reach stage ${sp.unlock}.`);
+  if (C.cast || C.gcd > 0 || (C.cds[sp.id] || 0) > 0) return;
+  const t = C.hover ?? C.target;
+  if (!sp.group && !C.party[t].alive) return toast(`${PARTY[t].name} is dead. Pick a living target.`);
+  if (C.mana < spellCost(sp)) return toast('Not enough mana.');
+  if (sp.cast > 0) C.cast = { sp, t, el: 0, dur: sp.cast / (1 + D.haste) };
+  else finishCast(sp, t);
+}
+function finishCast(sp, t) {
+  const cost = spellCost(sp);
+  if (C.mana < cost) { toast('Not enough mana.'); return; }
+  if (!sp.group && !C.party[t].alive) return;
+  C.mana -= cost;
+  sp.run(t);
+  if (sp.cast === 0) C.gcd = 1 / (1 + D.haste);
+  if (sp.cd) C.cds[sp.id] = sp.cd;
+}
+
+function tickEffects(m, i, dt) {
+  for (const list of [m.hots, m.dots]) {
+    for (const e of list) {
+      e.acc += dt;
+      while (e.acc >= 1 && e.left > 0 && m.alive) {
+        e.acc -= 1; e.left -= 1;
+        if (list === m.hots) heal(i, e.rate); else hit(i, e.rate);
+      }
+    }
+  }
+  m.hots = m.hots.filter(e => e.left > 0);
+  m.dots = m.dots.filter(e => e.left > 0);
+}
+
+function stepFight(dt) {
+  const b = C.boss;
+  C.time += dt;
+  C.mana = Math.min(D.maxMana, C.mana + D.regen * dt);
+  C.gcd = Math.max(0, C.gcd - dt);
+  for (const k in C.cds) C.cds[k] = Math.max(0, C.cds[k] - dt);
+
+  C.party.forEach((m, i) => {
+    if (!m.alive) return;
+    if (D.partyRegen) m.hp = Math.min(m.max, m.hp + m.max * D.partyRegen * dt);
+    tickEffects(m, i, dt);
+  });
+
+  // party attacks
+  const dps = C.party.reduce((t, m, i) => t + (m.alive ? PARTY[i].dps : 0), 0) * D.partyDps;
+  b.hp -= dps * dt;
+
+  // boss
+  b.frenzy = Math.max(0, b.frenzy - dt);
+  b.autoT -= dt * (b.frenzy > 0 ? 2.2 : 1);
+  if (b.autoT <= 0) { b.autoT += 1.6; hit(tankOrRandom(), bossDmg(b)); }
+  if (b.cast) {
+    b.cast.el += dt;
+    if (b.cast.el >= b.cast.dur) { const a = ABIL[b.cast.id]; b.cast = null; a.run(b); }
+  } else {
+    b.abilT -= dt;
+    if (b.abilT <= 0) { const id = pick(b.abil); b.cast = { id, el: 0, dur: ABIL[id].cast }; b.abilT = rand(5.5, 8); }
+  }
+
+  // healer cast
+  if (C.cast) {
+    C.cast.el += dt;
+    if (C.cast.el >= C.cast.dur) { const { sp, t } = C.cast; C.cast = null; finishCast(sp, t); }
+  }
+
+  if (b.hp <= 0) return victory();
+  const others = C.party.some((m, i) => i !== YOU && m.alive);
+  if (!C.party[YOU].alive || !others) return wipe();
+}
+
+function victory() {
+  const s = S.stage, b = C.boss;
+  b.hp = 0; C.phase = 'victory'; C.phaseT = 3; C.cast = null; b.cast = null;
+  const reward = Math.round(25 * Math.pow(1.2, s - 1) * (1 + D.greed));
+  addGold(reward); S.stats.kills++;
+  let unlocked = '';
+  if (s >= S.maxStage) {
+    S.maxStage = s + 1;
+    const sp = SPELLS.find(x => x.unlock === S.maxStage);
+    if (sp) unlocked = `<p>New spell: <b>${sp.name}</b> (key ${sp.key}).</p>`;
+  }
+  const items = [genItem(s)];
+  if (Math.random() < 0.2) items.push(genItem(s));
+  const lootHtml = items.map(it => {
+    const note = addToBag(it);
+    log(`Looted <b class="rar${it.rarity}">${esc(it.name)}</b>${note ? ' (' + note + ')' : ''}.`);
+    return `<b class="rar${it.rarity}">${esc(it.name)}</b>${note ? ` <small>(${note})</small>` : ''}`;
+  }).join('<br>');
+  log(`Defeated <b>${esc(b.name)}</b> in ${fmtTime(C.time)}. <span class="g">+${fmt(reward)} gold</span>`);
+  showOverlay('', `<div><h3>Victory</h3><p>${esc(b.name)} falls in ${fmtTime(C.time)}.</p><p class="num" style="color:var(--gold)">+${fmt(reward)} gold</p><p>${lootHtml}</p>${unlocked}</div>`);
+  shopDirty = true; save();
+}
+function wipe() {
+  C.phase = 'wipe'; C.phaseT = 3.5; C.cast = null; S.stats.wipes++;
+  log(`The party wiped on <b>${esc(C.boss.name)}</b>.`);
+  const tip = C.time > BERSERK ? 'The boss went berserk. Your party needs more damage: try Weapon Drills in the Barracks.'
+    : 'Train the party in the Barracks, equip better gear in the Armory, or farm an earlier stage.';
+  showOverlay('wipe', `<div><h3>The party has fallen</h3><p>${tip}</p><p class="label">Regrouping…</p></div>`);
+}
+function showOverlay(cls, html) { const o = $('#overlay'); o.className = 'overlay ' + cls; o.innerHTML = html; o.hidden = false; }
+
+function stepPhase(dt) {
+  C.phaseT -= dt;
+  if (C.phaseT > 0) return;
+  if (C.phase === 'victory' && S.autoAdvance && S.stage < S.maxStage) S.stage++;
+  startFight();
+}
+
+/* ---------- Arena rendering ---------- */
+const frameEls = [];
+function buildArena() {
+  const p = $('#party');
+  PARTY.forEach((d, i) => {
+    const f = h('button', 'frame');
+    f.type = 'button';
+    f.innerHTML = `<div class="fr-top"><span class="fr-name">${d.name}</span><span class="fr-role">${d.role}</span></div>
+      <div class="bar hp"><i class="fill"></i><i class="shield"></i><span class="txt"></span></div>
+      <div class="fr-fx"></div><div class="floats"></div>`;
+    f.addEventListener('click', () => { C.target = i; });
+    f.addEventListener('mouseenter', () => { C.hover = i; });
+    f.addEventListener('mouseleave', () => { if (C.hover === i) C.hover = null; });
+    p.appendChild(f);
+    frameEls.push({ f, fill: f.querySelector('.fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'), floats: f.querySelector('.floats'), fxKey: '' });
+  });
+  const sb = $('#spells');
+  SPELLS.forEach((sp, i) => {
+    const b = h('button', 'spell');
+    b.type = 'button';
+    b.innerHTML = `<span class="key">${sp.key}</span><span class="sp-name">${sp.name}</span><span class="sp-cost"></span><span class="sp-meta">${sp.meta}</span><i class="cd"></i>`;
+    b.addEventListener('click', () => tryCast(i));
+    sb.appendChild(b);
+    sp.el = b; sp.costEl = b.querySelector('.sp-cost'); sp.cdEl = b.querySelector('.cd');
+  });
+}
+function float(i, text, cls) {
+  if (document.hidden) return;
+  const fe = frameEls[i]; if (!fe) return;
+  if (fe.floats.childElementCount > 5) fe.floats.firstChild.remove();
+  const s = h('span', 'ft ' + cls); s.textContent = text;
+  s.style.left = (35 + Math.random() * 30) + '%';
+  s.addEventListener('animationend', () => s.remove());
+  fe.floats.appendChild(s);
+}
+function shake() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const a = $('#arena'); a.classList.remove('shake'); void a.offsetWidth; a.classList.add('shake');
+}
+function renderArena() {
+  const b = C.boss; if (!b) return;
+  $('#bossFill').style.width = (100 * Math.max(0, b.hp) / b.max) + '%';
+  $('#bossTxt').textContent = `${fmt(Math.max(0, b.hp))} / ${fmt(b.max)}`;
+  const bc = $('#bcast');
+  if (b.cast) { bc.classList.add('on'); $('#bcastFill').style.width = (100 * b.cast.el / b.cast.dur) + '%'; $('#bcastTxt').textContent = ABIL[b.cast.id].name; }
+  else { bc.classList.remove('on'); $('#bcastFill').style.width = '0%'; $('#bcastTxt').textContent = ''; }
+  const enraged = b.hp / b.max < 0.2 && b.hp > 0;
+  $('#boss').classList.toggle('enraged', enraged || C.time > BERSERK);
+  let tags = '';
+  if (C.time > BERSERK) tags += '<span class="tag enrage">Berserk ×3</span>';
+  else if (enraged) tags += '<span class="tag enrage">Enraged +30%</span>';
+  if (b.frenzy > 0) tags += '<span class="tag frenzy">Frenzy</span>';
+  if (C.phase === 'fight' && C.time <= BERSERK) tags += `<span class="tag timer">Berserk in ${fmtTime(BERSERK - C.time)}</span>`;
+  const bt = $('#bossTags'); if (bt._k !== tags) { bt.innerHTML = tags; bt._k = tags; }
+
+  C.party.forEach((m, i) => {
+    const fe = frameEls[i];
+    fe.fill.style.width = (100 * m.hp / m.max) + '%';
+    fe.shield.style.width = Math.min(100, 100 * m.shield / m.max) + '%';
+    fe.txt.textContent = m.alive ? `${fmt(m.hp)} / ${fmt(m.max)}` : 'Dead';
+    fe.f.classList.toggle('dead', !m.alive);
+    fe.f.classList.toggle('sel', C.target === i);
+    fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
+    const k = (m.hots.length ? 'r' : '') + (m.dots.length ? 'd' : '') + (m.shield > 0 ? 's' : '');
+    if (k !== fe.fxKey) {
+      fe.fxKey = k;
+      fe.fx.innerHTML = (k.includes('r') ? '<span class="fx renew">Renew</span>' : '') + (k.includes('s') ? '<span class="fx ward">Ward</span>' : '') + (k.includes('d') ? '<span class="fx rot">Festering</span>' : '');
+    }
+  });
+
+  const cb = $('#castBar');
+  if (C.cast) { cb.classList.add('on'); $('#castFill').style.width = (100 * C.cast.el / C.cast.dur) + '%'; $('#castTxt').textContent = `${C.cast.sp.name} → ${C.cast.sp.group ? 'party' : PARTY[C.cast.t].name}`; }
+  else { cb.classList.remove('on'); $('#castFill').style.width = '0%'; $('#castTxt').textContent = C.phase === 'fight' ? 'Ready' : ''; }
+  $('#manaFill').style.width = (100 * C.mana / D.maxMana) + '%';
+  $('#manaTxt').textContent = `Mana ${fmt(C.mana)} / ${fmt(D.maxMana)}  ·  +${fmt(D.regen)}/s`;
+
+  SPELLS.forEach(sp => {
+    const locked = S.maxStage < sp.unlock, cost = spellCost(sp);
+    sp.el.classList.toggle('locked', locked);
+    sp.el.classList.toggle('nomana', !locked && C.mana < cost);
+    sp.costEl.textContent = locked ? `Stage ${sp.unlock}` : `${fmt(cost)} mana`;
+    const cd = C.cds[sp.id] || 0, frac = cd > 0 ? cd / sp.cd : (C.gcd > 0 && sp.cast === 0 ? C.gcd : 0);
+    sp.cdEl.style.height = (Math.min(1, frac) * 100) + '%';
+  });
+}
+function updateStageBar() {
+  $('#stageNum').textContent = S.stage;
+  $('#stageBest').textContent = `· best ${S.maxStage - 1} cleared`;
+  $('#prevStage').disabled = S.stage <= 1;
+  $('#nextStage').disabled = S.stage >= S.maxStage;
+  $('#autoAdv').checked = S.autoAdvance;
+}
+
+/* ---------- Panel ---------- */
+let tab = 'sanctum', shopDirty = true, paneKey = '', sel = null, confirmSell = false;
+const pane = $('#pane');
+
+function bulkCost(base, owned, n) { return base * Math.pow(1.15, owned) * (Math.pow(1.15, n) - 1) / 0.15; }
+function maxAfford(base, owned) { const c = base * Math.pow(1.15, owned); return Math.max(0, Math.floor(Math.log(S.gold * 0.15 / c + 1) / Math.log(1.15))); }
+function buyCount(b) { return S.buyMode === 'max' ? Math.max(1, maxAfford(b.base, own(b.id))) : S.buyMode; }
+const trainCost = t => Math.round(t.base * Math.pow(t.growth, S.train[t.id]));
+const visibleBuildings = () => BUILDINGS.filter((b, i) => i === 0 || own(b.id) > 0 || own(BUILDINGS[i - 1].id) > 0 || S.goldTotal >= b.base * 0.6);
+const availableUpgrades = () => UPGRADES.filter(u => !has(u.id) && u.req()).sort((a, b) => a.cost - b.cost);
+
+function renderPane() {
+  const key = tab + '|' + (tab === 'sanctum' ? visibleBuildings().length + ':' + availableUpgrades().map(u => u.id).join(',') + ':' + S.buyMode
+    : tab === 'armory' ? S.inv.map(i => i.id).join(',') + ':' + Object.values(S.equip).map(i => i ? i.id + '.' + i.up : '-').join(',') + ':' + (sel ? sel.where + sel.id : '') + confirmSell + S.stage
+    : tab === 'chronicle' ? logVer : '');
+  if (!shopDirty && key === paneKey) return updatePane();
+  shopDirty = false; paneKey = key;
+  ({ sanctum: renderSanctum, barracks: renderBarracks, armory: renderArmory, chronicle: renderChronicle })[tab]();
+  updatePane();
+}
+
+function renderSanctum() {
+  const bs = visibleBuildings(), ups = availableUpgrades();
+  pane.innerHTML = `
+    <div class="section-h"><h3>Holdings</h3>
+      <div class="seg" role="group" aria-label="Buy amount">${[1, 10, 'max'].map(m => `<button data-buy="${m}" aria-pressed="${S.buyMode === m}">${m === 'max' ? 'Max' : '×' + m}</button>`).join('')}</div></div>
+    <div class="rows">${bs.map(b => `<button class="row" data-bld="${b.id}">
+        <span class="nm">${b.name}</span><span class="owned" data-own></span>
+        <span class="ds">${b.desc}</span>
+        <span class="meta"><span class="cost" data-cost></span><span data-each></span></span></button>`).join('')}</div>
+    <div class="section-h"><h3>Blessings</h3><span class="label">One-time upgrades</span></div>
+    ${ups.length ? `<div class="upgrades">${ups.map(u => `<button class="upg" data-upg="${u.id}"><b>${u.name}</b><span>${u.desc}</span><span class="cost">${fmt(u.cost)} gold</span></button>`).join('')}</div>`
+      : '<p class="empty">New blessings appear as you build and clear stages.</p>'}`;
+}
+function renderBarracks() {
+  pane.innerHTML = `
+    <div class="section-h"><h3>Training</h3><span class="label">Applies immediately</span></div>
+    <div class="rows">${TRAIN.map(t => `<button class="row" data-train="${t.id}"><span class="nm">${t.name}</span><span class="owned" data-own></span>
+      <span class="ds">${t.desc}</span><span class="meta"><span class="cost" data-cost></span></span></button>`).join('')}</div>
+    <div class="section-h"><h3>Roster</h3><span class="label">Current strength</span></div>
+    <div class="statgrid" id="roster"></div>`;
+}
+function itemLines(it, cmp) {
+  const keys = new Set([...Object.keys(it.stats), ...(cmp ? Object.keys(cmp.stats) : [])]);
+  return [...keys].map(k => {
+    const v = it.stats[k] ? statVal(it, k) : 0, c = cmp && cmp.stats[k] ? statVal(cmp, k) : 0;
+    const d = cmp ? v - c : 0;
+    const delta = cmp && Math.abs(d) > 0.05 ? `<span class="${d > 0 ? 'd-plus' : 'd-minus'}">${d > 0 ? '▲' : '▼'} ${STATS[k].show(Math.abs(d)).replace('+', '')}</span>` : '';
+    return `<li><span>${v ? STATS[k].show(v) : '—'} ${STATS[k].name}</span>${delta}</li>`;
+  }).join('');
+}
+function renderArmory() {
+  const eqHtml = SLOTS.map(s => {
+    const it = S.equip[s.id];
+    const isSel = sel && sel.where === 'eq' && sel.id === s.id;
+    return `<button class="slot ${it ? 'bc' + it.rarity : ''} ${isSel ? 'sel' : ''}" data-eq="${s.id}"><small>${s.name}${it && it.up ? ' · +' + it.up : ''}</small>
+      ${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</button>`;
+  }).join('');
+  const bagHtml = S.inv.map(it => {
+    const d = score(it) - score(S.equip[it.slot]);
+    const isSel = sel && sel.where === 'inv' && sel.id === it.id;
+    return `<button class="bagitem bc${it.rarity} ${isSel ? 'sel' : ''}" data-inv="${it.id}"><b class="rar${it.rarity}">${esc(it.name)}</b>
+      <span class="up ${d > 0.01 ? 'better' : 'worse'}">${SLOT[it.slot].name} · ${d > 0.01 ? '▲ upgrade' : '▼'}</span></button>`;
+  }).join('');
+  let detail = '';
+  if (sel) {
+    const it = sel.where === 'eq' ? S.equip[sel.id] : S.inv.find(x => x.id === sel.id);
+    if (it) {
+      const cmp = sel.where === 'inv' ? S.equip[it.slot] : null;
+      const acts = sel.where === 'inv'
+        ? `<button class="btn primary" data-act="equip">Equip</button><button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`
+        : `<button class="btn primary" data-act="enchant" data-cost="${enchantCost(it)}">Enchant to +${(it.up || 0) + 1} · ${fmt(enchantCost(it))} gold</button>`;
+      detail = `<div class="detail"><h4 class="rar${it.rarity}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
+        <span class="sub">${RARITY[it.rarity].name} ${SLOT[it.slot].name} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
+        <ul>${itemLines(it, cmp)}</ul>${cmp ? `<span class="sub">Compared with your ${esc(cmp.name)}</span>` : (sel.where === 'inv' ? '<span class="sub">Slot is empty.</span>' : '<span class="sub">Each enchant adds 10% to every stat.</span>')}
+        <div class="actions">${acts}</div></div>`;
+    } else sel = null;
+  }
+  const weaker = S.inv.filter(it => score(it) <= score(S.equip[it.slot]) + 0.01);
+  pane.innerHTML = `
+    <div class="section-h"><h3>Cleric</h3><span class="label">From gear and blessings</span></div>
+    <div class="statgrid" id="cstats"></div>
+    <div class="section-h"><h3>Equipped</h3></div>
+    <div class="slots">${eqHtml}</div>
+    ${detail}
+    <div class="section-h"><h3>Bag <span class="num" style="color:var(--muted)">${S.inv.length}/${bagCap()}</span></h3>
+      ${confirmSell ? `<span class="confirm">Sell ${weaker.length} items for ${fmt(weaker.reduce((t, i) => t + sellValue(i), 0))} gold? <button class="btn primary" data-act="sellweak-yes">Sell</button><button class="btn" data-act="sellweak-no">Keep</button></span>`
+        : `<button class="btn" data-act="sellweak" ${weaker.length ? '' : 'disabled'}>Sell weaker items (${weaker.length})</button>`}</div>
+    ${S.inv.length ? `<div class="bag">${bagHtml}</div>` : '<p class="empty">Bosses drop gear. Every kill drops at least one item, scaled to the stage.</p>'}`;
+}
+function renderChronicle() {
+  const st = S.stats;
+  const rows = [
+    ['Highest stage cleared', S.maxStage - 1], ['Bosses slain', st.kills], ['Wipes', st.wipes],
+    ['Health restored', fmt(st.healed)], ['Overhealing', fmt(st.overheal)], ['Critical heals', fmt(st.crits)],
+    ['Gold earned', fmt(S.goldTotal)], ['Time played', fmtTime(st.played)],
+  ];
+  pane.innerHTML = `<div class="section-h"><h3>Records</h3></div>
+    <div class="statgrid">${rows.map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
+    <div class="section-h"><h3>Battle log</h3></div>
+    <ul class="log">${LOG.map(l => `<li>${l}</li>`).join('') || '<li>Nothing yet.</li>'}</ul>
+    <div class="section-h"><h3>Save</h3><span class="label">Saved in this browser every 10s</span></div>
+    <div class="actions">${confirmReset ? '<span class="confirm">Erase all progress? <button class="btn primary" data-act="reset-yes">Erase</button><button class="btn" data-act="reset-no">Cancel</button></span>' : '<button class="btn" data-act="reset">Start over</button>'}</div>`;
+}
+let confirmReset = false;
+
+function updatePane() {
+  if (tab === 'sanctum') {
+    pane.querySelectorAll('[data-bld]').forEach(r => {
+      const b = BUILDINGS.find(x => x.id === r.dataset.bld), n = buyCount(b), cost = bulkCost(b.base, own(b.id), n);
+      r.classList.toggle('cant', S.gold < cost);
+      r.querySelector('[data-own]').textContent = own(b.id);
+      r.querySelector('[data-cost]').textContent = `${n > 1 ? '×' + n + ' · ' : ''}${fmt(cost)} gold`;
+      r.querySelector('[data-each]').textContent = `+${fmt(b.gps * bldMult(b))}/s each${own(b.id) ? ` · ${fmt(own(b.id) * b.gps * bldMult(b))}/s total` : ''}`;
+    });
+    pane.querySelectorAll('[data-upg]').forEach(u => u.classList.toggle('cant', S.gold < UPG[u.dataset.upg].cost));
+  } else if (tab === 'barracks') {
+    pane.querySelectorAll('[data-train]').forEach(r => {
+      const t = TRAIN.find(x => x.id === r.dataset.train), maxed = t.max && S.train[t.id] >= t.max;
+      r.classList.toggle('cant', maxed || S.gold < trainCost(t));
+      r.querySelector('[data-own]').textContent = S.train[t.id];
+      r.querySelector('[data-cost]').textContent = maxed ? 'Fully trained' : `${fmt(trainCost(t))} gold`;
+    });
+    const ro = $('#roster');
+    if (ro) ro.innerHTML = PARTY.map((p, i) => `<div class="stat"><span>${p.name} · ${p.role}</span><b class="num">${fmt(C.party[i] ? C.party[i].max : p.hp)} hp · ${fmt(p.dps * D.partyDps)} dps</b></div>`).join('')
+      + `<div class="stat"><span>Party damage</span><b class="num">${fmt(PARTY.reduce((t, p) => t + p.dps, 0) * D.partyDps)}/s</b></div>`;
+  } else if (tab === 'armory') {
+    const cs = $('#cstats');
+    if (cs) cs.innerHTML = [
+      ['Mend heals', fmt(D.heal * 1.6)], ['Spell power', fmt(D.gear.power)], ['Max mana', fmt(D.maxMana)], ['Mana regen', fmt(D.regen) + '/s'],
+      ['Critical', (D.crit * 100).toFixed(1) + '%'], ['Haste', (D.haste * 100).toFixed(1) + '%'], ['Gold find', '+' + (D.greed * 100).toFixed(0) + '%'], ['Party vigor', '+' + (D.vigor * 100).toFixed(1) + '%'],
+    ].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('');
+    const en = pane.querySelector('[data-act="enchant"]');
+    if (en) en.disabled = S.gold < +en.dataset.cost;
+  }
+}
+
+pane.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  const d = t.dataset;
+  if (d.buy) { S.buyMode = d.buy === 'max' ? 'max' : +d.buy; shopDirty = true; }
+  else if (d.bld) {
+    const b = BUILDINGS.find(x => x.id === d.bld), n = buyCount(b), cost = bulkCost(b.base, own(b.id), n);
+    if (S.gold >= cost) { S.gold -= cost; S.buildings[b.id] = own(b.id) + n; recalc(); }
+  } else if (d.upg) {
+    const u = UPG[d.upg];
+    if (S.gold >= u.cost && !has(u.id)) { S.gold -= u.cost; S.upgrades[u.id] = 1; log(`Blessing gained: <b>${u.name}</b>.`); recalc(); shopDirty = true; }
+  } else if (d.train) {
+    const tr = TRAIN.find(x => x.id === d.train), c = trainCost(tr);
+    if ((!tr.max || S.train[tr.id] < tr.max) && S.gold >= c) { S.gold -= c; S.train[tr.id]++; recalc(); }
+  } else if (d.eq) { sel = { where: 'eq', id: d.eq }; confirmSell = false; }
+  else if (d.inv) { sel = { where: 'inv', id: +d.inv }; confirmSell = false; }
+  else if (d.act) act(d.act);
+  renderPane();
+});
+function act(a) {
+  if (a === 'equip' && sel) {
+    const idx = S.inv.findIndex(x => x.id === sel.id); if (idx < 0) return;
+    const it = S.inv[idx], old = S.equip[it.slot];
+    S.equip[it.slot] = it;
+    if (old) S.inv[idx] = old; else S.inv.splice(idx, 1);
+    sel = { where: 'eq', id: it.slot }; recalc();
+  } else if (a === 'sell' && sel) {
+    const idx = S.inv.findIndex(x => x.id === sel.id); if (idx < 0) return;
+    addGold(sellValue(S.inv[idx])); S.inv.splice(idx, 1); sel = null;
+  } else if (a === 'enchant' && sel) {
+    const it = S.equip[sel.id]; if (!it) return;
+    const c = enchantCost(it); if (S.gold < c) return;
+    S.gold -= c; it.up = (it.up || 0) + 1; recalc(); shopDirty = true;
+  } else if (a === 'sellweak') confirmSell = true;
+  else if (a === 'sellweak-no') confirmSell = false;
+  else if (a === 'sellweak-yes') {
+    const keep = [];
+    S.inv.forEach(it => { if (score(it) <= score(S.equip[it.slot]) + 0.01) addGold(sellValue(it)); else keep.push(it); });
+    S.inv = keep; confirmSell = false; sel = null;
+  } else if (a === 'reset') confirmReset = true;
+  else if (a === 'reset-no') confirmReset = false;
+  else if (a === 'reset-yes') {
+    confirmReset = false; S = newState(); LOG.length = 0; try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+    sel = null; recalc(); startFight(); log('A new vow. The party gathers at the sewer gate.');
+  }
+  shopDirty = true;
+}
+
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  tab = t.dataset.tab; confirmSell = false; confirmReset = false;
+  document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
+  shopDirty = true; renderPane();
+}));
+
+$('#prevStage').addEventListener('click', () => { if (S.stage > 1) { S.stage--; startFight(); } });
+$('#nextStage').addEventListener('click', () => { if (S.stage < S.maxStage) { S.stage++; startFight(); } });
+$('#autoAdv').addEventListener('change', e => { S.autoAdvance = e.target.checked; });
+
+document.addEventListener('keydown', e => {
+  if (e.target.closest?.('input, textarea')) return;
+  const i = SPELLS.findIndex(s => s.key === e.key);
+  if (i >= 0) { e.preventDefault(); tryCast(i); }
+  else if (e.key === 'Escape' && C.cast) C.cast = null;
+});
+
+let toastT = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; toastT = 2.6; }
+
+/* ---------- Save / load ---------- */
+function save() { S.lastSave = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+function load(data) {
+  let raw = data && data.S;
+  if (!raw) { try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { raw = null; } }
+  if (!raw || raw.v !== 1) return false;
+  const base = newState();
+  S = Object.assign(base, raw, {
+    stats: Object.assign(base.stats, raw.stats), train: Object.assign(base.train, raw.train), equip: Object.assign(base.equip, raw.equip),
+  });
+  return true;
+}
+
+/* ---------- Loop ---------- */
+let last = performance.now(), saveT = 0, paneT = 0;
+function frame(now) {
+  const real = Math.max(0, (now - last) / 1000); last = now;
+  const dt = Math.min(real, 0.25);
+  S.stats.played += real;
+  addGold(D.gps * real);
+  if (C.phase === 'fight') stepFight(dt); else stepPhase(dt);
+  renderArena();
+  $('#gold').textContent = fmt(Math.floor(S.gold));
+  $('#gps').textContent = `${fmt(D.gps)}/s`;
+  paneT -= real; if (paneT <= 0) { paneT = 0.25; renderPane(); updateStageBar(); }
+  saveT -= real; if (saveT <= 0) { saveT = 10; save(); }
+  if (toastT > 0) { toastT -= real; if (toastT <= 0) $('#toast').hidden = true; }
+  requestAnimationFrame(frame);
+}
+
+function start(data) {
+  const loaded = load(data);
+  recalc();
+  buildArena();
+  startFight();
+  if (loaded && !(data && data.S)) {
+    const away = Math.min(OFFLINE_CAP, (Date.now() - (S.lastSave || Date.now())) / 1000);
+    const earned = away * D.gps;
+    if (earned >= 1) { addGold(earned); toast(`While you were away (${fmtTime(away)}), the sanctum earned ${fmt(earned)} gold.`); }
+  }
+  if (!loaded) log('The party gathers at the sewer gate. Keep them alive.');
+  else log('Welcome back. The party is ready.');
+  renderPane();
+  window.claude?.hot?.snapshot?.(() => ({ S }));
+  addEventListener('pagehide', save);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+  requestAnimationFrame(t => { last = t; frame(t); });
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+</body>
+</html>

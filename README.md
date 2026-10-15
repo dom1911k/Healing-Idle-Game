@@ -10,13 +10,16 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Action bar.** Twelve slots bound to `1`–`6`, `E`, `F`, `R`, `T`, `Q` and `Y`. New spells go to the first free slot (the Mana Potion prefers `Q`). Click **Edit keybinds** to rearrange: drag a spell from your spellbook onto a key, drag between keys to swap, or drag a key back to the spellbook to clear it. Clicking a spell and then a key works too.
 - **Gold.** Every enemy drops gold when it dies. Coins pop out and fly to your Cleric, and a boss bursts into a shower of them. Tougher monsters and deeper dungeons pay more.
 - **Targeting.** A gold ring marks who your next spell will hit. While you cast, a green glow builds on the ally about to receive the heal.
-- **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one.
+- **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one. Trying to cast without enough mana shows a quiet blue *Not enough mana* on the mana bar, and when you're running low, Meditate and the Mana Potion glow blue on the action bar.
 - **Dungeons.** Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
+- **Debuffs.** Poison ramps up with every tick, a hex halves the healing its target receives, and wolves cause short bleeds. Purify removes all of them. A Ward that is still holding makes its target resist new poisons and hexes.
+- **Boss telegraphs.** When a boss starts a big ability, the cast bar names the target, a red marker hovers over that hero and their party frame pulses red. Wave attacks mark the whole party. Later bosses add **Doom**, a slow cast that hits one ally for a huge amount: shield them with Ward or top them up in time.
 - **You lose** if you die or the rest of the party dies. Rewards from stages you cleared are kept. With *Repeat dungeon* on, the run starts again by itself.
 
 ## Why heal actively
 
 - **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold from every kill and the experience and loot from every stage, from ×0.5 when you idle up to ×3. It fades slowly on its own and gains less the higher it gets, so steady, efficient healing holds it around ×1.5–2. Reaching ×3 takes a lot of work.
+- **Ward, Purify and Renew pull their weight.** Damage a Ward soaks counts as effective healing for Devotion. Purify refunds half its mana whenever it removes something and always counts as a useful cast. Renew is cheaper and stronger, and its overhealing jumps to the most injured ally at half strength.
 - **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
 
 ## Spells
@@ -55,13 +58,18 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Rook | Whirlwind (3 spins of 70% to every enemy) · Mortal Strike (300%) | Bladestorm: 5 spins · Decapitate: triple damage below 35% health |
   | Vess | Aimed Shot (300%, always critical) · Venom Volley (80% to every enemy plus 2 poison stacks) | Piercing Shot hits every enemy · Rain of Arrows fires a second wave |
   | Ilda | Flamestrike (150% to every enemy, then a burn) · Frostbolt (200%, slows attacks by 30%) | Wildfire doubles the burn · Deep Freeze freezes and interrupts |
-- **Damage meter.** Under the action bar, the damage meter ranks the party by damage per second over the current run, with each member's share. Use it to spot who is falling behind and push their gear, training or talents.
+- **Damage meter.** Under the action bar, the damage meter ranks the party by damage per second over the current run, with each member's share. Use it to spot who is falling behind and push their gear, promotions or talents.
 - **Gear.** Each companion has three gear slots (weapon, armor, charm), with damage, health, attack speed and critical stats. When you select party gear in the Armory, it shows the change in damage per second or health for each companion.
-- **Training.** Every companion has Weapon Training (+2% damage per rank) and Endurance Training (+2% health per rank). There's no rank limit, and ranks add up, so 10 ranks is +20%. Each rank costs 50% more than the last, which keeps training roughly level with the companion's talents.
+- **Synergies.** Companions leave marks on enemies that the rest of the party exploits, shown as colored pips over each enemy: sunder (red), mark (gold), poison (green), burn (orange), chill (blue) and stun (white). Each spec has a synergy talent in its fourth row: Bram's *Sunder Armor* and *Concussive Force*, Rook's *Shatter* and *Opportunist*, Vess's *Mark for Death* and *Festering Wounds*, Ilda's *Volatile Venom* and *Brittle Ice*. Companion gear can also roll *Damage vs. Slowed or Stunned* and *Damage vs. Poisoned or Burning*.
+- **Promotions.** Each party member climbs seven ranks (Recruit, Veteran, Elite, Champion, Hero, Legend, Paragon). Each rank unlocks at a level (5, 10, 15 and so on) and costs six times the last. Companions gain +12% damage and health per rank and the Cleric +8% healing and max mana. Promoted members show stars on their Party card, and a ▲ marks a promotion you can afford.
 
 ## Other progression
 
 - **Gear.** Enemies drop items for the Cleric's six slots and the companions' three, in five rarities. The header shows your **party item level**, the average across all 18 slots. **Equip best items** fills every slot automatically: armor goes to the tank first, and weapons and charms go to the hardest hitters first. Enchant equipped items with gold for +10% stats per level.
+- **Loot filter.** In the Armory, choose to auto-sell drops below a rarity (upgrades are never sold), and optionally equip upgrades as they drop. When the bag is full, the weakest non-upgrade is sold to make room.
+- **Merchant.** The Armory sells sealed items for the deepest dungeon you've reached: a Supply Crate (any rarity), a Gilded Coffer (rare or better) and a Royal Reliquary (epic or better, 20% legendary).
+- **Elixirs.** The Dungeons tab sells three elixirs (+25% party damage, 15% less damage taken, +40% mana regeneration). Each lasts 10 minutes of fighting and stacks up to an hour. Their price scales with your deepest dungeon.
+- **Chronicle.** Healing by spell for this run or all time, with share, overheal and casts, plus damage taken, party deaths, debuffs cleansed and deaths per dungeon.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
 - **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. The Town tab shows your town as a pixel-art map with seven empty plots. Click a plot to see what it would do, and build it: the building rises out of the ground and stays on the map, gaining a banner at level 4 and gold trim at level 8. Buildings go up to level 8 and cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper unlocks the next tier:
 
@@ -73,7 +81,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Chapel | Starts each run with Devotion; Devotion fades slower |
   | Library | More experience |
   | Smithy | Cheaper, stronger enchanting |
-  | Barracks | Cheaper training |
+  | Barracks | Cheaper promotions |
 
   The Town tab also sells one-time blessings for gold.
 - **Expeditions.** Once you build the Acolyte Cloister, an Acolyte heals the party in the background (weakly at first). While the game is closed or in another tab, the Acolyte leads the party through the dungeon you're in, if you've cleared it, otherwise your deepest clear. They run at 20–55% of your active pace for up to 8 hours and bring back gold, experience, materials and items.

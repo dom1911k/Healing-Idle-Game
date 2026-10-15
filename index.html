@@ -40,6 +40,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .purse div{display:flex;flex-direction:column;align-items:flex-end}
 .purse b{font-family:var(--mono);font-weight:500;font-size:1.35rem;color:var(--gold);font-variant-numeric:tabular-nums}
 .purse b.tp{color:var(--xp)}
+.purse b.il{color:var(--r2)}
 .purse small{font-family:var(--mono);color:var(--muted)}
 
 .grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
@@ -90,6 +91,16 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .frame.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
 .frame.dead{opacity:.45;filter:grayscale(1)}
 .frame.low .hp .fill{background:linear-gradient(#e08a52,#a64f2a)}
+.frame.plea{border-color:var(--gold);animation:plea .6s ease-in-out infinite alternate}
+@keyframes plea{to{box-shadow:0 0 0 2px var(--gold),0 0 18px #e4b75c88}}
+.bar.devo{height:16px}.bar.devo .fill{background:linear-gradient(#f2d48b,#a8792b)}
+.tag.plea{color:#1b1622;background:var(--gold);border-color:var(--gold)}
+.tag.gold{color:var(--gold);border-color:var(--gold)}
+.pgear{display:grid;grid-template-columns:56px repeat(3,minmax(0,1fr));gap:6px;align-items:center}
+.pg-name{font-weight:700;font-size:.86rem}
+@media (max-width:480px){.pgear{grid-template-columns:repeat(3,minmax(0,1fr))}.pg-name{grid-column:1/-1}}
+.slot.static{cursor:default}
+.ilvl{font-family:var(--mono);color:var(--r2)}
 .fr-top{display:flex;justify-content:space-between;gap:4px;align-items:baseline;min-width:0}
 .fr-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fr-role{font-size:.72rem;color:var(--muted);white-space:nowrap}
@@ -295,6 +306,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <div class="purse">
       <div><span class="label">Gold</span><b id="gold">0</b></div>
       <div><span class="label">Talent points</span><b id="tpts" class="tp">0</b></div>
+      <div><span class="label">Item level</span><b id="pilvl" class="il">0</b></div>
       <div><span class="label">Per second</span><small id="gps">0/s</small></div>
     </div>
   </header>
@@ -323,9 +335,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div class="caster">
         <div class="bar cast" id="castBar"><i class="fill" id="castFill"></i><span class="txt" id="castTxt"></span></div>
         <div class="bar mana"><i class="fill" id="manaFill"></i><span class="txt" id="manaTxt"></span></div>
+        <div class="bar devo" title="Effective healing builds Devotion; idling and overhealing drain it. Devotion multiplies gold, experience and loot from every stage."><i class="fill" id="devFill"></i><span class="txt" id="devTxt"></span></div>
       </div>
       <div class="spells" id="spells"></div>
-      <p class="hint">Click a hero in the scene or a party frame to target them, then tap a spell or press its number. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Learn more spells in the Talents tab.</p>
+      <p class="hint">Click a hero in the scene or a party frame to target them, then tap a spell or press its number. Hovering a frame and pressing a key casts on that frame. <kbd>Esc</kbd> cancels a cast. Learn more spells in the Talents tab. Healing that matters builds <b>Devotion</b>, which multiplies stage rewards, and each heal pays a few seconds of your gold income. When an ally glows gold, they're pleading for help: heal them quickly for a random reward.</p>
       <div class="dev" id="dev" hidden>
         <div class="section-h"><span class="label">Playtest tools</span><span class="label">Remove #dev from the address to hide</span></div>
         <div class="actions"><span class="label">Speed</span>
@@ -411,6 +424,9 @@ const ICONS = {
   staff:    ['......yx..','.....yxxy.','......xy..','.....b....','....b.....','...b......','..b.......','.b........','B.........','..........'],
   ring:     ['...xxx....','..xyyyx...','...xxx....','..g...g...','.g.....g..','.g.....g..','.g.....g..','..g...g...','...ggg....','..........'],
   trinket:  ['.g......g.','..g....g..','...g..g...','....gg....','...xxxx...','..xxyyxx..','..xxyyxx..','...xxxx...','..........','..........'],
+  cweapon:  ['........x.','.......xX.','......xX..','.....xX...','....xX....','.g.xX.....','..gX......','..Bg......','.B..g.....','..........'],
+  carmor:   ['..........','.xx....xx.','.xxxxxxxx.','..xXxxXx..','..xxxxxx..','..xXxxXx..','..xxxxxx..','..xxggxx..','..XXXXXX..','..........'],
+  ccharm:   ['..g....g..','...g..g...','....gg....','...xxxx...','..xXxxXx..','..xxxxxx..','...xXXx...','....xx....','..........','..........'],
   s_heal:   ['..........','....cc....','...cwwc...','..ccwwcc..','.cwwwwwwc.','.cwwwwwwc.','..ccwwcc..','...cwwc...','....cc....','..........'],
   s_flash:  ['....y.....','....y.....','...yyy....','.yyywyyy..','yyywwwyyy.','.yyywyyy..','...yyy....','....y.....','....y.....','..........'],
   s_renew:  ['.......nn.','.....nnnN.','....nnnNn.','...nnnNnn.','..nnnNnn..','..nnNnn...','..nNnn....','.N........','N.........','..........'],
@@ -684,6 +700,7 @@ const SKILL_MAX = 5;
 const SLOT_SKILLS = {
   head: ['focus', 'scholar', 'spring', 'flashm'], chest: ['fort', 'wardm', 'mendm', 'spring'], hands: ['celerity', 'flashm', 'valor', 'mendm'],
   staff: ['mendm', 'renewm', 'prayerm', 'focus'], ring: ['plenty', 'valor', 'celerity', 'scholar'], trinket: ['prayerm', 'renewm', 'fort', 'plenty'],
+  cweapon: ['valor', 'scholar', 'plenty'], carmor: ['fort', 'valor', 'scholar'], ccharm: ['plenty', 'scholar', 'fort', 'valor'],
 };
 
 const BUILDINGS = [
@@ -705,13 +722,17 @@ BUILDINGS.forEach(b => TIER_AT.forEach((n, ti) => UPGRADES.push({
   cost: b.base * TIER_COST[ti], req: () => own(b.id) >= n,
 })));
 UPGRADES.push(
-  { id: 'tithe1',    icon: 'coin',    name: 'Tithe Box',             desc: 'Healing earns twice as much gold.',                  cost: 400,    req: () => prog() >= 3 },
+  { id: 'tithe1',    icon: 'coin',    name: 'Tithe Box',             desc: 'Each heal also pays 2 more seconds of your gold income.', cost: 400, req: () => prog() >= 3 },
+  { id: 'plea1',     icon: 'scroll',  name: 'Attentive Ear',         desc: 'Pleas for help come 30% more often.',                cost: 2500,   req: () => prog() >= 5 },
+  { id: 'devo1',     icon: 'scroll',  name: 'Fervent Hearts',        desc: 'Devotion drains half as fast.',                      cost: 8000,   req: () => prog() >= 9 },
+  { id: 'plea2',     icon: 'coin',    name: 'Generous Saints',       desc: 'Plea rewards are twice as strong.',                  cost: 50000,  req: () => prog() >= 16 },
+  { id: 'tithe3',    icon: 'coin',    name: 'Reliquary of Coin',     desc: 'Each heal pays 12 more seconds of income.',           cost: 2e6,    req: () => prog() >= 32 },
   { id: 'bags',      icon: 'chest',   name: 'Deep Satchel',          desc: 'Your bag holds 12 more items.',                       cost: 3000,   req: () => prog() >= 6 },
   { id: 'meditate',  icon: 'scroll',  name: 'Deep Meditation',       desc: 'Mana regeneration +50%.',                             cost: 2500,   req: () => prog() >= 8 },
   { id: 'luck',      icon: 'trinket', name: 'Rabbit-Foot Reliquary', desc: 'Rare, epic and legendary drops are 50% more common.', cost: 8000,   req: () => prog() >= 11 },
   { id: 'sermon',    icon: 'sword',   name: 'Rousing Sermon',        desc: 'Party damage ×1.25.',                                 cost: 20000,  req: () => prog() >= 14 },
   { id: 'scripture', icon: 'scroll',  name: 'Illuminated Scripture', desc: 'All healing +20%.',                                   cost: 60000,  req: () => prog() >= 18 },
-  { id: 'tithe2',    icon: 'coin',    name: 'Golden Censer',         desc: 'Healing earns twice as much gold again.',             cost: 150000, req: () => prog() >= 24 },
+  { id: 'tithe2',    icon: 'coin',    name: 'Golden Censer',         desc: 'Each heal pays 5 more seconds of income.',             cost: 30000,  req: () => prog() >= 13 },
   { id: 'pilgrims',  icon: 'font',    name: 'Pilgrim Roads',         desc: 'Buildings earn +3% gold per stage you have cleared.', cost: 500000, req: () => prog() >= 30 },
 );
 const UPG = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
@@ -747,6 +768,24 @@ const STATS = {
 };
 const SUFFIX = { power: 'of Radiance', mana: 'of the Deep Well', regen: 'of the Spring', crit: 'of Revelation', haste: 'of Swiftness', greed: 'of Tithes', vigor: 'of the Bulwark' };
 const MATERIALS = ['Frayed', 'Linen', 'Woolen', 'Silken', 'Moonweave', 'Starsilk', 'Seraphic', 'Empyrean'];
+const CSLOTS = [
+  { id: 'cweapon', name: 'Weapon', bases: ['Blade', 'Axe', 'Warhammer', 'Spear', 'Daggers', 'Wand'], primary: 'atk' },
+  { id: 'carmor',  name: 'Armor',  bases: ['Mail', 'Brigandine', 'Plate', 'Jerkin'], primary: 'hpp' },
+  { id: 'ccharm',  name: 'Charm',  bases: ['Charm', 'Talisman', 'Totem', 'Amulet'] },
+];
+const CSLOT = Object.fromEntries(CSLOTS.map(s => [s.id, s]));
+const CSTATS = {
+  atk:   { name: 'Damage',          w: 1.2, roll: l => 20 * g(l),     show: v => '+' + fmt(v) + '%' },
+  hpp:   { name: 'Health',          w: 0.8, roll: l => 12 * g(l),     show: v => '+' + fmt(v) + '%' },
+  spd:   { name: 'Attack Speed',    w: 1.0, roll: l => 3 + 0.3 * l,   show: v => '+' + v.toFixed(1) + '%' },
+  crit:  { name: 'Critical Chance', w: 1.0, roll: l => 2 + 0.2 * l,   show: v => '+' + v.toFixed(1) + '%' },
+  critd: { name: 'Critical Damage', w: 0.6, roll: l => 10 + 1.5 * l,  show: v => '+' + v.toFixed(0) + '%' },
+};
+const CSUFFIX = { atk: 'of Slaughter', hpp: 'of the Bear', spd: 'of Haste', crit: 'of Precision', critd: 'of Ruin' };
+const CMATERIALS = ['Rusty', 'Iron', 'Steel', 'Tempered', 'Mithril', 'Runed', 'Starforged', 'Godforged'];
+const isComp = it => !!CSLOT[it.slot];
+const statDef = (it, k) => (isComp(it) ? CSTATS : STATS)[k];
+const slotName = it => (isComp(it) ? CSLOT : SLOT)[it.slot].name;
 const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last Abbot', 'Brother Quill', 'the Ninth Martyr'];
 
 /* =========================================================
@@ -760,6 +799,7 @@ function newState() {
     inv: [], nextId: 2,
     heroes: PARTY.map(() => ({ lv: 1, xp: 0 })),
     tree: {}, skills: {}, ctree: PARTY.map(() => ({})), kit: PARTY.map(() => ({ w: 0, a: 0 })),
+    cequip: [0, 1, 2, 3].map(() => ({ cweapon: null, carmor: null, ccharm: null })),
     dun: { unlocked: 0, current: 0, clears: [], best: [] },
     stats: { healed: 0, overheal: 0, kills: 0, wipes: 0, played: 0, crits: 0, runs: 0 },
     lastSave: Date.now(),
@@ -770,7 +810,9 @@ let S = newState();
 const D = { sp: {} };
 const C = { party: [], foes: [], mana: 100, cast: null, gcd: 0, cds: {}, phase: 'fight', phaseT: 0, target: 0, hover: null, time: 0,
   stage: 1, run: null, buff: { sanct: 0, bless: 0 }, medi: null, silenced: null, heatT: 4, scroll: 0,
-  atkT: [], hits: [], hitN: [], ramp: [] };
+  atkT: [], hits: [], hitN: [], ramp: [],
+  dev: 0, devQuiet: 0, pleaT: 30, plea: null, goldFrenzy: 0, inspire: 0, inCast: false, castEff: 0 };
+const devMult = () => 0.5 + 2.5 * C.dev / 100;
 const LOG = [];
 let logVer = 0;
 
@@ -811,6 +853,23 @@ function sumFx(o) {
   for (const id in rk) { const n = TNODE[o + '|' + id]; if (n) for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * rk[id]; }
   return t;
 }
+function compGear(i, over) {
+  const ge = { atk: 0, hpp: 0, spd: 0, crit: 0, critd: 0 };
+  if (i === YOU) return ge;
+  for (const cs of CSLOTS) { const it = over && over.slot === cs.id ? over.item : S.cequip[i][cs.id]; if (it) for (const k in it.stats) ge[k] += statVal(it, k); }
+  return ge;
+}
+function makeCs(i, over) {
+  const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
+  return { ...c, dmg: p.dmg * lvMult(i) * Math.pow(1.12, S.kit[i].w) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
+    spd: gf('spd') + ge.spd / 100, crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
+    dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow') };
+}
+const csDps = (i, cs) => cs.dmg * (1 + Math.min(1, cs.crit) * (cs.critDmg - 1)) * (1 + cs.spd) / PARTY[i].spd;
+function partyIlvl() {
+  const all = [...SLOTS.map(sl => S.equip[sl.id]), ...S.cequip.flatMap(e => CSLOTS.map(cs => e[cs.id]))];
+  return all.reduce((t, it) => t + (it ? it.ilvl + (it.up || 0) : 0), 0) / all.length;
+}
 function treeStats() { const t = sumFx('cleric'); return k => t[k] || 0; }
 function recalc() {
   const s = { power: 0, mana: 0, regen: 0, crit: 0, haste: 0, greed: 0, vigor: 0 };
@@ -832,13 +891,10 @@ function recalc() {
   D.xpMult = 1 + 0.05 * K('scholar') + t('xp');
   D.partyHp = (1 + D.vigor) * (1 + t('partyHp') + 0.03 * K('fort'));
   D.partyDps = (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
-  D.cs = PARTY.map((p, i) => {
-    const c = i === YOU ? {} : sumFx(i), g = k => c[k] || 0;
-    return { ...c, dmg: p.dmg * lvMult(i) * Math.pow(1.12, S.kit[i].w) * Math.max(0.1, 1 + g('dmg')) * D.partyDps,
-      spd: g('spd'), crit: 0.05 + g('crit'), critDmg: 1.5 + g('critDmg'), dr: g('dr'), hpMul: 1 + g('hp'), poisonPow: g('poisonPow') };
-  });
+  D.cs = PARTY.map((p, i) => makeCs(i));
   D.partyRegen = 0.004 * S.train.regen;
-  D.healGold = 0.08 * (has('tithe1') ? 2 : 1) * (has('tithe2') ? 2 : 1) * (1 + D.greed);
+  D.healGold = 0.08 * (1 + D.greed);
+  D.healSecs = 1 + (has('tithe1') ? 2 : 0) + (has('tithe2') ? 5 : 0) + (has('tithe3') ? 12 : 0);
   D.gps = BUILDINGS.reduce((tot, b) => tot + own(b.id) * b.gps * bldMult(b), 0);
   D.sp = {
     heal:      { amt: 2.0 * (1 + t('heal_pow')) * (1 + 0.05 * K('mendm')), cast: 1.8 - t('heal_cast'), cost: 1 - t('heal_cost'), echo: t('heal_echo') },
@@ -859,8 +915,8 @@ function recalc() {
   C.mana = Math.min(C.mana, D.maxMana);
 }
 
-function addGold(n) { S.gold += n; S.goldTotal += n; if (C.run) C.run.gold += n; }
-function addGoldIdle(n) { S.gold += n; S.goldTotal += n; }
+function addGold(n) { if (C.goldFrenzy > 0) n *= 5; S.gold += n; S.goldTotal += n; if (C.run) C.run.gold += n; }
+function addGoldIdle(n) { if (C.goldFrenzy > 0) n *= 5; S.gold += n; S.goldTotal += n; }
 function log(html) { LOG.unshift(html); if (LOG.length > 80) LOG.pop(); logVer++; }
 
 /* =========================================================
@@ -873,16 +929,18 @@ function rollRarity() {
   for (let i = 0; i < w.length; i++) { x -= w[i]; if (x <= 0) return i; }
   return 0;
 }
-function genItem(ilvl) {
-  const slot = pick(SLOTS), rarity = rollRarity(), R = RARITY[rarity];
-  const pool = Object.keys(STATS).filter(k => !(slot.id === 'staff' && k === 'power'));
-  const keys = slot.id === 'staff' ? ['power'] : [];
+function genItem(ilvl, minRarity = 0) {
+  const comp = Math.random() < 0.4, slot = comp ? pick(CSLOTS) : pick(SLOTS);
+  const rarity = Math.max(minRarity, rollRarity()), R = RARITY[rarity], TBL = comp ? CSTATS : STATS;
+  const prim = comp ? slot.primary : slot.id === 'staff' ? 'power' : null;
+  const pool = Object.keys(TBL).filter(k => k !== prim);
+  const keys = prim ? [prim] : [];
   while (keys.length < R.stats) { const k = pick(pool); if (!keys.includes(k)) keys.push(k); }
   const stats = {};
-  keys.forEach(k => { stats[k] = STATS[k].roll(ilvl) * R.mult * rand(0.85, 1.15); });
-  const base = pick(slot.bases);
-  const mat = MATERIALS[Math.min(MATERIALS.length - 1, Math.floor((ilvl - 1) / 7))];
-  const name = rarity === 4 ? `${base} of ${pick(LEGENDS)}` : `${mat} ${base} ${SUFFIX[keys[0]]}`;
+  keys.forEach(k => { stats[k] = TBL[k].roll(ilvl) * R.mult * rand(0.85, 1.15); });
+  const base = pick(slot.bases), mats = comp ? CMATERIALS : MATERIALS;
+  const mat = mats[Math.min(mats.length - 1, Math.floor((ilvl - 1) / 7))];
+  const name = rarity === 4 ? `${base} of ${pick(LEGENDS)}` : `${mat} ${base} ${(comp ? CSUFFIX : SUFFIX)[keys[0]]}`;
   return ensureItem({ id: S.nextId++, slot: slot.id, rarity, ilvl, up: 0, name, stats });
 }
 function ensureItem(it) {
@@ -896,8 +954,31 @@ function score(it) {
   if (!it) return 0;
   const ref = Math.max(1, ilvlFor(S.dun.current, 1));
   let t = 0;
-  for (const k in it.stats) t += statVal(it, k) / STATS[k].roll(ref) * STATS[k].w;
+  for (const k in it.stats) t += statVal(it, k) / statDef(it, k).roll(ref) * statDef(it, k).w;
   return t;
+}
+function isUpgrade(it) {
+  if (!isComp(it)) return score(it) > score(S.equip[it.slot]) + 0.01;
+  return S.cequip.some(e => !e[it.slot] || score(it) > score(e[it.slot]) + 0.01);
+}
+function autoEquip() {
+  let n = 0;
+  for (const sl of SLOTS) {
+    const cur = S.equip[sl.id], best = S.inv.filter(it => it.slot === sl.id).sort((a, b) => score(b) - score(a))[0];
+    if (best && score(best) > score(cur) + 0.01) { S.inv.splice(S.inv.indexOf(best), 1); if (cur) S.inv.push(cur); S.equip[sl.id] = best; n++; }
+  }
+  for (const cs of CSLOTS) {
+    const worn = S.cequip.map(e => e[cs.id]);
+    const pool = [...worn.filter(Boolean), ...S.inv.filter(it => it.slot === cs.id)].sort((a, b) => score(b) - score(a));
+    // armor goes to the tank first; weapons and charms to the hardest hitters first
+    const order = cs.id === 'carmor' ? [0, 1, 2, 3] : [3, 2, 1, 0];
+    const chosen = new Set();
+    order.forEach((ci, k) => { const it = pool[k] || null; if (it !== S.cequip[ci][cs.id]) n++; S.cequip[ci][cs.id] = it; if (it) chosen.add(it); });
+    S.inv = S.inv.filter(it => !chosen.has(it));
+    worn.forEach(it => { if (it && !chosen.has(it)) S.inv.push(it); });
+  }
+  recalc();
+  return n;
 }
 const sellValue = it => Math.round(5 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * (1 + 0.5 * (it.up || 0)));
 const enchantCost = it => Math.round(20 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * Math.pow(1.6, it.up || 0));
@@ -1003,7 +1084,12 @@ function heal(i, amt, critBonus = 0) {
   const eff = Math.min(amt, m.max - m.hp);
   m.hp += eff;
   S.stats.healed += eff; S.stats.overheal += amt - eff;
-  if (eff > 0) addGold(eff * D.healGold);
+  if (eff > 0) {
+    addGold(eff * D.healGold * devMult());
+    C.devQuiet = 0;
+    if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 1);
+  }
+  if (C.inCast) C.castAmt += amt;
   floatTxt(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal');
   pnumFx(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? '#e9fff4' : '#86dcb8');
   fxHeal(i, crit);
@@ -1053,7 +1139,16 @@ function finishCast(sp, t) {
   if (!sp.group && !sp.self && !C.party[t].alive) return;
   if (cost > 0 && Math.random() < D.clarity) { cost = 0; floatTxt(YOU, 'Clarity', 'free'); }
   C.mana -= cost;
+  C.inCast = true; C.castEff = 0; C.castAmt = 0;
   RUN_SPELL[sp.id](t);
+  C.inCast = false;
+  if (C.castEff > 0) {
+    C.dev = Math.min(100, C.dev + (C.castEff >= C.castAmt * 0.5 ? 8 : 4));
+    // each heal that matters pays a few seconds of income, like a click in Cookie Clicker
+    const g = D.healSecs * D.gps * devMult();
+    if (g >= 1) { addGold(g); goldFx(g); }
+  } else if (['heal', 'flash', 'prayer', 'purify'].includes(sp.id)) C.dev = Math.max(0, C.dev - 3);
+  if (C.plea && C.party[C.plea.i].alive && ((!sp.group && !sp.self && t === C.plea.i) || sp.id === 'prayer')) claimPlea();
   heroAnim[YOU].cast = 0.35;
   if (castTime(sp) === 0) C.gcd = 1 / (1 + D.haste);
   if (spellCd(sp)) C.cds[sp.id] = spellCd(sp);
@@ -1113,6 +1208,10 @@ function stepFight(dt) {
   for (const k in C.cds) C.cds[k] = Math.max(0, C.cds[k] - dt);
   C.buff.sanct = Math.max(0, C.buff.sanct - dt);
   C.buff.bless = Math.max(0, C.buff.bless - dt);
+  C.devQuiet += dt;
+  // Devotion only drains while someone needs healing and you aren't providing it
+  if (C.devQuiet > 4 && C.party.some(m => m.alive && m.hp / m.max < 0.85)) C.dev = Math.max(0, C.dev - 4 * dt * (has('devo1') ? 0.5 : 1));
+  stepPlea(dt);
 
   C.party.forEach((m, i) => {
     if (!m.alive) return;
@@ -1173,7 +1272,7 @@ function tickPoison(e, dt) {
 function landHit(h) {
   const f = h.foe.alive ? h.foe : front(); if (!f) return;
   const cs = D.cs[h.i], n = ++C.hitN[h.i];
-  let dmg = cs.dmg * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1) * rand(0.92, 1.08);
+  let dmg = cs.dmg * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1) * (C.inspire > 0 ? 2 : 1) * rand(0.92, 1.08);
   if (f.boss && cs.bossDmg) dmg *= 1 + cs.bossDmg;
   if (cs.execute && f.hp / f.max < 0.25) dmg *= 2;
   const big = (cs.bash || cs.pyro) && n % 4 === 0;
@@ -1195,6 +1294,35 @@ function landHit(h) {
   if (cs.rampage) C.ramp[h.i] = Math.min(10, C.ramp[h.i] + 1);
 }
 
+function stepPlea(dt) {
+  if (C.plea) {
+    C.plea.t -= dt;
+    if (C.plea.t <= 0 || !C.party[C.plea.i].alive) { log(`${PARTY[C.plea.i].name}'s plea went unanswered.`); C.plea = null; }
+    return;
+  }
+  C.pleaT -= dt;
+  if (C.pleaT <= 0) {
+    C.pleaT = rand(45, 90) / (has('plea1') ? 1.3 : 1);
+    const i = randomAlive(k => k !== YOU); if (i != null && i !== YOU) C.plea = { i, t: 6, max: 6 };
+  }
+}
+function claimPlea() {
+  const i = C.plea.i, str = has('plea2') ? 2 : 1, d = S.dun.current, s = C.stage;
+  C.plea = null;
+  const r = Math.random();
+  let msg;
+  if (r < 0.4) { const g = Math.max(D.gps * 60, 7 * rewardScale(d, s) * (1 + D.greed) * 8) * str; addGold(g); goldFx(g); msg = `Windfall: +${fmt(g)} gold`; }
+  else if (r < 0.6) { C.goldFrenzy = 20 * str; msg = `Gold Frenzy: all gold ×5 for ${20 * str}s`; }
+  else if (r < 0.75) { C.inspire = 15 * str; msg = `Inspiration: party damage ×2 for ${15 * str}s`; }
+  else if (r < 0.9) { const xp = 36 * rewardScale(d, s) * str; gainXp(xp); msg = `Wisdom: +${fmt(xp * D.xpMult)} experience`; }
+  else if (r < 0.99) { const it = genItem(ilvlFor(d, s) + 2, 2), note = addToBag(it); msg = `Relic: ${it.name}${note ? ' (' + note + ')' : ''}`; }
+  else { S.bonusPts++; msg = 'Epiphany: +1 Cleric talent point'; }
+  toast(`${PARTY[i].name}'s plea answered! ${msg}.`);
+  log(`<span class="g">${PARTY[i].name}'s plea answered.</span> ${esc(msg)}.`);
+  burst(HERO_POS[i].x, HERO_POS[i].y - 14, '#ffd36b', 24, 20);
+  shopDirty = true;
+}
+
 function gainXp(amount) {
   const ups = [];
   S.heroes.forEach((h, i) => {
@@ -1207,8 +1335,7 @@ function gainXp(amount) {
 }
 function gainMastery() {
   const learned = [];
-  for (const k in S.equip) {
-    const it = S.equip[k];
+  for (const it of [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))]) {
     if (!it || it.mp >= it.mneed) continue;
     it.mp++;
     if (it.mp >= it.mneed) {
@@ -1225,13 +1352,15 @@ function gainMastery() {
 function stageCleared() {
   const d = S.dun.current, s = C.stage, dg = DUNGEONS[d], isBoss = s === dg.stages;
   const sc = rewardScale(d, s);
-  addGold(Math.round((isBoss ? 45 : 7) * sc * (1 + D.greed)));
-  const xp = (isBoss ? 34 : 9) * sc;
+  const dm = devMult();
+  addGold(Math.round((isBoss ? 45 : 7) * sc * (1 + D.greed) * dm));
+  const xp = (isBoss ? 34 : 9) * sc * dm;
   C.run.xp += xp * D.xpMult; C.run.stages++;
   C.run.ups.push(...gainXp(xp));
   C.run.mastered.push(...gainMastery());
   S.dun.best[d] = Math.max(S.dun.best[d] || 0, s);
-  const drops = isBoss ? 1 + (Math.random() < 0.25 ? 1 : 0) : (Math.random() < 0.25 ? 1 : 0);
+  const dropP = Math.min(0.8, 0.25 * dm);
+  const drops = isBoss ? 1 + (Math.random() < dropP ? 1 : 0) : (Math.random() < dropP ? 1 : 0);
   for (let k = 0; k < drops; k++) {
     const it = genItem(ilvlFor(d, s)); const note = addToBag(it);
     C.run.items.push(`<b class="rar${it.rarity}">${esc(it.name)}</b>${note ? ` <small>(${note})</small>` : ''}`);
@@ -1707,6 +1836,7 @@ function fxHeroProj(i, f) {
   const p = HERO_POS[i];
   FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : '#fff2a8', s: i === 3 ? 3 : 2 });
 }
+function goldFx(g) { if (document.hidden) return; const p = HERO_POS[YOU]; FX.push({ t: 'num', x: p.x, y: p.y - 44, str: '+' + fmt(g), col: '#e4b75c', life: 1.1, max: 1.1 }); }
 function foeNum(f, str, col) { if (document.hidden) return; FX.push({ t: 'num', x: f.x + rand(-8, 8), y: f.y - f.h - 12, str, col, life: 0.8, max: 0.8 }); }
 function resetScene() { FX = FX.filter(f => f.t === 'num'); heroAnim.forEach(a => { a.atk = -1; a.flash = 0; a.cast = 0; }); }
 
@@ -1823,7 +1953,13 @@ function renderScene(dt) {
     const dx = a.atk >= 0 ? Math.sin(Math.PI * a.atk / 0.32) * 12 : 0;
     const casting = i === YOU && (C.cast || a.cast > 0);
     if (C.buff.bless > 0 && Math.random() < dt * 4) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(4, 20), vx: 0, vy: -8, g: 0, life: 0.6, max: 0.6, col: '#ffd36b', s: 1 });
+    if (C.plea && C.plea.i === i) {
+      cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = 0.25 + 0.15 * Math.sin(sceneT * 10); cx.fillStyle = '#e4b75c';
+      cx.fillRect(p.x - 5, 0, 11, p.y); cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
+      if (Math.random() < dt * 14) FX.push({ t: 'p', x: p.x + rand(-7, 7), y: p.y - rand(0, 22), vx: 0, vy: -14, g: 0, life: 0.6, max: 0.6, col: '#ffd36b', s: 1 });
+    }
     blit((X, Y) => drawHero(i, X, Y, sceneT, casting), p.x + dx, p.y + walk, { flash: a.flash });
+    if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
     miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
     if (m.shield > 0) {
       cx.globalAlpha = 0.55 + 0.15 * Math.sin(sceneT * 5); cx.strokeStyle = '#d3dbff'; cx.lineWidth = 1;
@@ -1990,6 +2126,9 @@ function renderArena() {
   if (C.buff.sanct > 0) tags += `<span class="tag buff">Sanctuary ${Math.ceil(C.buff.sanct)}s</span>`;
   if (C.buff.bless > 0) tags += `<span class="tag buff">Blessing ${Math.ceil(C.buff.bless)}s</span>`;
   if (C.silenced) tags += `<span class="tag frenzy">${SP[C.silenced].name} silenced</span>`;
+  if (C.plea) tags += `<span class="tag plea">${PARTY[C.plea.i].name} pleads for help · ${Math.ceil(C.plea.t)}s</span>`;
+  if (C.goldFrenzy > 0) tags += `<span class="tag gold">Gold ×5 · ${Math.ceil(C.goldFrenzy)}s</span>`;
+  if (C.inspire > 0) tags += `<span class="tag buff">Damage ×2 · ${Math.ceil(C.inspire)}s</span>`;
   if (C.phase === 'fight' && C.time <= B) tags += `<span class="tag timer">Berserk in ${fmtTime(B - C.time)}</span>`;
   const bt = $('#tags'); if (bt._k !== tags) { bt.innerHTML = tags; bt._k = tags; }
 
@@ -2003,6 +2142,7 @@ function renderArena() {
     fe.f.classList.toggle('dead', !m.alive);
     fe.f.classList.toggle('sel', C.target === i);
     fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
+    fe.f.classList.toggle('plea', !!C.plea && C.plea.i === i);
     const k = (m.hots.length ? 'r' : '') + (m.dots.length ? 'd' : '') + (m.shield > 0 ? 's' : '');
     if (k !== fe.fxKey) {
       fe.fxKey = k;
@@ -2015,6 +2155,8 @@ function renderArena() {
   else { cb.classList.remove('on'); $('#castFill').style.width = '0%'; $('#castTxt').textContent = C.phase === 'fight' ? 'Ready' : C.phase === 'rest' ? 'Resting…' : ''; }
   $('#manaFill').style.width = (100 * C.mana / D.maxMana) + '%';
   $('#manaTxt').textContent = `Mana ${fmt(C.mana)} / ${fmt(D.maxMana)}  ·  +${fmt(D.regen)}/s`;
+  $('#devFill').style.width = C.dev + '%';
+  $('#devTxt').textContent = `Devotion ${Math.round(C.dev)}%  ·  rewards ×${devMult().toFixed(1)}`;
 
   barSpells().forEach(sp => {
     if (!sp.el) return;
@@ -2042,12 +2184,12 @@ const visibleBuildings = () => BUILDINGS.filter((b, i) => i === 0 || own(b.id) >
 const availableUpgrades = () => UPGRADES.filter(u => !has(u.id) && u.req()).sort((a, b) => a.cost - b.cost);
 const findItem = id => S.inv.find(x => x.id === id);
 function renderPane() {
-  const itemsKey = S.inv.map(i => i.id).join(',') + ':' + Object.values(S.equip).map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
+  const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
   const key = tab + '|' + (tab === 'sanctum' ? visibleBuildings().length + ':' + availableUpgrades().map(u => u.id).join(',') + ':' + S.buyMode
-    : tab === 'armory' ? itemsKey + (sel ? sel.where + sel.id : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
+    : tab === 'armory' ? itemsKey + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree
     : tab === 'dungeons' ? JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest')
-    : tab === 'party' ? JSON.stringify(S.ctree) + JSON.stringify(S.kit) + partySel + S.heroes.map(h => h.lv).join(',')
+    : tab === 'party' ? JSON.stringify(S.ctree) + JSON.stringify(S.kit) + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
     : tab === 'chronicle' ? logVer + '' + confirmReset : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
@@ -2158,10 +2300,12 @@ function renderParty() {
     <div class="section-h"><h3>${p.name} · ${p.role}</h3><span class="label">Level ${S.heroes[i].lv}</span></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
     <div class="statgrid" id="pstats"></div>
-    <div class="section-h"><h3>Gear upgrades</h3><span class="label">Each rank costs 60% more</span></div>
+    ${comp ? `<div class="section-h"><h3>Equipment</h3><span class="label">Change it in the Armory</span></div>
+    <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(cs.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
+    <div class="section-h"><h3>Training</h3><span class="label">Each rank costs 60% more</span></div>
     <div class="rows">
-      ${comp ? kitRow('w', 'Weapon', 'sword', `+12% damage per rank for ${p.name}.`) : ''}
-      ${kitRow('a', comp ? 'Armor' : 'Vestments', 'chest', `+10% health per rank for ${p.name}.`)}
+      ${comp ? kitRow('w', 'Weapon Training', 'sword', `+12% damage per rank for ${p.name}.`) : ''}
+      ${kitRow('a', 'Endurance Training', 'chest', `+10% health per rank for ${p.name}.`)}
       <button class="row" data-train="regen">${img('bandage')}<span class="nm">Field Dressings</span><span class="owned" data-own></span>
         <span class="ds">The whole party regenerates 0.4% of max health per second per rank.</span><span class="meta"><span class="cost" data-cost></span></span></button>
     </div>
@@ -2190,8 +2334,9 @@ function itemLines(it, cmp) {
   return [...keys].map(k => {
     const v = it.stats[k] ? statVal(it, k) : 0, c = cmp && cmp.stats[k] ? statVal(cmp, k) : 0;
     const d = cmp ? v - c : 0;
-    const delta = cmp && Math.abs(d) > 0.05 ? `<span class="${d > 0 ? 'd-plus' : 'd-minus'}">${d > 0 ? '▲' : '▼'} ${STATS[k].show(Math.abs(d)).replace('+', '')}</span>` : '';
-    return `<li><span>${v ? STATS[k].show(v) : '—'} ${STATS[k].name}</span>${delta}</li>`;
+    const def = statDef(it, k);
+    const delta = cmp && Math.abs(d) > 0.05 ? `<span class="${d > 0 ? 'd-plus' : 'd-minus'}">${d > 0 ? '▲' : '▼'} ${def.show(Math.abs(d)).replace('+', '')}</span>` : '';
+    return `<li><span>${v ? def.show(v) : '—'} ${def.name}</span>${delta}</li>`;
   }).join('');
 }
 function masteryHtml(it) {
@@ -2200,47 +2345,63 @@ function masteryHtml(it) {
     ${done ? '' : `<div class="full bar mast"><i class="fill" style="width:${100 * it.mp / it.mneed}%"></i></div>`}`;
 }
 function renderArmory() {
-  const eqHtml = SLOTS.map(s => {
-    const it = S.equip[s.id];
-    const isSel = sel && sel.where === 'eq' && sel.id === s.id;
-    return `<button class="slot ${isSel ? 'sel' : ''}" data-eq="${s.id}">${img(s.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${s.name}${it && it.up ? ' · +' + it.up : ''}</small>
+  const slotBtn = (it, name, attrs, isSel) => `<button class="slot ${isSel ? 'sel' : ''}" ${attrs}>${img(it ? it.slot : name.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${name.name}${it && it.up ? ' · +' + it.up : ''}${it ? ' · ' + it.ilvl : ''}</small>
       ${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</button>`;
-  }).join('');
+  const eqHtml = SLOTS.map(sl => slotBtn(S.equip[sl.id], sl, `data-eq="${sl.id}"`, sel && sel.where === 'eq' && sel.id === sl.id)).join('');
+  const partyGear = [0, 1, 2, 3].map(ci => `<div class="pgear"><span class="pg-name">${PARTY[ci].name}</span>${CSLOTS.map(cs =>
+    slotBtn(S.cequip[ci][cs.id], cs, `data-ceq="${ci}:${cs.id}"`, sel && sel.where === 'ceq' && sel.ci === ci && sel.slot === cs.id)).join('')}</div>`).join('');
   const bagHtml = S.inv.map(it => {
-    const d = score(it) - score(S.equip[it.slot]);
-    const isSel = sel && sel.where === 'inv' && sel.id === it.id;
+    const up = isUpgrade(it), isSel = sel && sel.where === 'inv' && sel.id === it.id;
     return `<button class="bagitem ${isSel ? 'sel' : ''}" data-inv="${it.id}">${img(it.slot, it.rarity)}<b class="rar${it.rarity}">${esc(it.name)}</b>
-      <span class="up ${d > 0.01 ? 'better' : 'worse'}">${d > 0.01 ? '▲ upgrade' : SLOT[it.slot].name} · ilvl ${it.ilvl}${it.mp >= it.mneed ? ' · mastered' : ''}</span></button>`;
+      <span class="up ${up ? 'better' : 'worse'}">${up ? '▲ upgrade' : slotName(it)}${isComp(it) ? ' · party' : ''} · ilvl ${it.ilvl}${it.mp >= it.mneed ? ' · mastered' : ''}</span></button>`;
   }).join('');
   let detail = '';
   if (sel) {
-    const it = sel.where === 'eq' ? S.equip[sel.id] : findItem(sel.id);
+    const it = sel.where === 'eq' ? S.equip[sel.id] : sel.where === 'ceq' ? S.cequip[sel.ci][sel.slot] : findItem(sel.id);
     if (it) {
-      const cmp = sel.where === 'inv' ? S.equip[it.slot] : null;
-      const acts = sel.where === 'inv'
-        ? `<button class="btn primary" data-act="equip">Equip</button><button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`
-        : `<button class="btn primary" data-act="enchant" data-cost="${enchantCost(it)}">Enchant to +${(it.up || 0) + 1} · ${fmt(enchantCost(it))} gold</button>`;
+      const comp = isComp(it), inBag = sel.where === 'inv';
+      const cmp = inBag && !comp ? S.equip[it.slot] : null;
+      let acts, note;
+      if (inBag && comp) {
+        acts = [0, 1, 2, 3].map(ci => {
+          const nw = makeCs(ci, { slot: it.slot, item: it }), od = D.cs[ci];
+          const dd = csDps(ci, nw) - csDps(ci, od), dh = (nw.hpMul / od.hpMul - 1) * 100;
+          const txt = it.slot === 'carmor' ? `${dh >= 0 ? '+' : ''}${dh.toFixed(0)}% health` : `${dd >= 0 ? '+' : ''}${fmt(dd)} dps`;
+          const good = it.slot === 'carmor' ? dh > 0.5 : dd > 0.05;
+          return `<button class="btn ${good ? 'primary' : ''}" data-act="cequip:${ci}">${PARTY[ci].name} · ${txt}</button>`;
+        }).join('') + `<button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`;
+        note = 'Party gear. Each button shows what changes if that companion wears it.';
+      } else if (inBag) {
+        acts = `<button class="btn primary" data-act="equip">Equip</button><button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`;
+        note = cmp ? `Compared with your ${esc(cmp.name)}.` : 'Slot is empty.';
+      } else {
+        acts = `<button class="btn primary" data-act="enchant" data-cost="${enchantCost(it)}">Enchant to +${(it.up || 0) + 1} · ${fmt(enchantCost(it))} gold</button>` + (sel.where === 'ceq' ? '<button class="btn" data-act="unequip">Unequip</button>' : '');
+        note = sel.where === 'ceq' ? `Worn by ${PARTY[sel.ci].name}. Each enchant adds 10% to every stat.` : 'Each enchant adds 10% to every stat.';
+      }
       detail = `<div class="detail">${img(it.slot, it.rarity)}<h4 class="rar${it.rarity}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
-        <span class="sub">${RARITY[it.rarity].name} ${SLOT[it.slot].name} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
+        <span class="sub">${RARITY[it.rarity].name} ${comp ? 'party ' : ''}${slotName(it)} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
         <ul class="full">${itemLines(it, cmp)}</ul>
         ${masteryHtml(it)}
-        <span class="full sub">${cmp ? `Compared with your ${esc(cmp.name)}.` : sel.where === 'inv' ? 'Slot is empty.' : 'Each enchant adds 10% to every stat.'}</span>
+        <span class="full sub">${note}</span>
         <div class="full actions">${acts}</div></div>`;
     } else sel = null;
   }
-  const weaker = S.inv.filter(it => score(it) <= score(S.equip[it.slot]) + 0.01);
+  const weaker = S.inv.filter(it => !isUpgrade(it));
   const learned = Object.entries(S.skills).filter(([, v]) => v > 0);
   pane.innerHTML = `
+    <div class="section-h"><h3>Party item level <span class="ilvl">${partyIlvl().toFixed(1)}</span></h3><button class="btn primary" data-act="autoequip">Equip best items</button></div>
+    <p class="intro">The average item level across all 18 slots, counting enchants. Empty slots count as 0.</p>
     <div class="section-h"><h3>Cleric</h3><span class="label">From gear, levels and skills</span></div>
     <div class="statgrid" id="cstats"></div>
-    <div class="section-h"><h3>Equipped</h3><span class="label">Clear stages to master gear</span></div>
     <div class="slots">${eqHtml}</div>
+    <div class="section-h"><h3>Party gear</h3><span class="label">Weapon, armor and charm for each companion</span></div>
+    <div class="rows">${partyGear}</div>
     ${detail}
-    <div class="section-h"><h3>Mastered skills</h3></div>
+    <div class="section-h"><h3>Mastered skills</h3><span class="label">Clear stages with gear equipped to master it</span></div>
     ${learned.length ? `<div class="skills">${learned.map(([k, v]) => `<span class="chip" title="${SKILLS[k].per} per rank">${SKILLS[k].name} ${roman(v)}</span>`).join('')}</div>` : '<p class="empty">Master an item to learn its skill for good. Skills stay after you unequip or sell the item.</p>'}
     <div class="section-h"><h3>Bag <span class="num" style="color:var(--muted)">${S.inv.length}/${bagCap()}</span></h3>
       ${confirmSell ? `<span class="confirm">Sell ${weaker.length} items for ${fmt(weaker.reduce((t, i) => t + sellValue(i), 0))} gold? <button class="btn primary" data-act="sellweak-yes">Sell</button><button class="btn" data-act="sellweak-no">Keep</button></span>`
-        : `<button class="btn" data-act="sellweak" ${weaker.length ? '' : 'disabled'}>Sell weaker items (${weaker.length})</button>`}</div>
+        : `<button class="btn" data-act="sellweak" ${weaker.length ? '' : 'disabled'}>Sell items that aren't upgrades (${weaker.length})</button>`}</div>
     ${S.inv.length ? `<div class="bag">${bagHtml}</div>` : '<p class="empty">Enemies drop gear. Bosses always drop at least one item.</p>'}`;
 }
 function renderChronicle() {
@@ -2329,6 +2490,7 @@ pane.addEventListener('click', e => {
     tSel = null; recalc();
   } else if (d.enter != null) { enterDungeon(+d.enter); }
   else if (d.eq) { sel = { where: 'eq', id: d.eq }; confirmSell = false; }
+  else if (d.ceq) { const [ci, sl] = d.ceq.split(':'); sel = { where: 'ceq', ci: +ci, slot: sl }; confirmSell = false; }
   else if (d.inv) { sel = { where: 'inv', id: +d.inv }; confirmSell = false; }
   else if (d.act) act(d.act);
   shopDirty = true;
@@ -2344,15 +2506,27 @@ function act(a) {
   } else if (a === 'sell' && sel) {
     const idx = S.inv.findIndex(x => x.id === sel.id); if (idx < 0) return;
     addGold(sellValue(S.inv[idx])); S.inv.splice(idx, 1); sel = null;
+  } else if (a.startsWith('cequip:') && sel) {
+    const ci = +a.split(':')[1], idx = S.inv.findIndex(x => x.id === sel.id); if (idx < 0) return;
+    const it = S.inv[idx], old = S.cequip[ci][it.slot];
+    S.cequip[ci][it.slot] = it;
+    if (old) S.inv[idx] = old; else S.inv.splice(idx, 1);
+    sel = { where: 'ceq', ci, slot: it.slot }; recalc();
+  } else if (a === 'unequip' && sel && sel.where === 'ceq') {
+    if (S.inv.length >= bagCap()) { toast('Your bag is full.'); return; }
+    S.inv.push(S.cequip[sel.ci][sel.slot]); S.cequip[sel.ci][sel.slot] = null; sel = null; recalc();
+  } else if (a === 'autoequip') {
+    const n = autoEquip(); sel = null;
+    toast(n ? `Equipped the best items. Party item level ${partyIlvl().toFixed(1)}.` : 'Everyone already wears their best items.');
   } else if (a === 'enchant' && sel) {
-    const it = S.equip[sel.id]; if (!it) return;
+    const it = sel.where === 'eq' ? S.equip[sel.id] : sel.where === 'ceq' ? S.cequip[sel.ci][sel.slot] : null; if (!it) return;
     const c = enchantCost(it); if (S.gold < c) return;
     S.gold -= c; it.up = (it.up || 0) + 1; recalc();
   } else if (a === 'sellweak') confirmSell = true;
   else if (a === 'sellweak-no') confirmSell = false;
   else if (a === 'sellweak-yes') {
     const keep = [];
-    S.inv.forEach(it => { if (score(it) <= score(S.equip[it.slot]) + 0.01) addGold(sellValue(it)); else keep.push(it); });
+    S.inv.forEach(it => { if (!isUpgrade(it)) addGoldIdle(sellValue(it)); else keep.push(it); });
     S.inv = keep; confirmSell = false; sel = null;
   } else if (a === 'reset') confirmReset = true;
   else if (a === 'reset-no') confirmReset = false;
@@ -2423,6 +2597,7 @@ function load(data) {
     tree: raw.v === 5 ? raw.tree || {} : {},
     ctree: raw.v === 5 && raw.ctree ? raw.ctree : base.ctree,
     kit: raw.v === 5 && raw.kit ? raw.kit : base.kit,
+    cequip: raw.cequip || base.cequip,
     dun: Object.assign(base.dun, raw.dun),
   });
   if (raw.v < 5) {
@@ -2436,6 +2611,7 @@ function load(data) {
   for (const id in S.tree) if (!TNODE['cleric|' + id]) delete S.tree[id];
   S.ctree.forEach((t, i) => { for (const id in t) if (!TNODE[i + '|' + id]) delete t[id]; });
   Object.values(S.equip).forEach(it => it && ensureItem(it));
+  S.cequip.forEach(e => Object.values(e).forEach(it => it && ensureItem(it)));
   S.inv.forEach(ensureItem);
   return true;
 }
@@ -2451,12 +2627,14 @@ function frame(now) {
   addGoldIdle(D.gps * real * DEV.speed);
   for (let k = 0; k < DEV.speed; k++) {
     if (DEV.mana) C.mana = D.maxMana;
+    C.goldFrenzy = Math.max(0, C.goldFrenzy - dt); C.inspire = Math.max(0, C.inspire - dt);
     if (C.phase === 'fight') stepFight(dt); else stepPhase(dt);
   }
   renderScene(dt * DEV.speed);
   renderArena();
   $('#gold').textContent = fmt(Math.floor(S.gold));
   $('#tpts').textContent = skillPoints();
+  $('#pilvl').textContent = partyIlvl().toFixed(1);
   $('#gps').textContent = `${fmt(D.gps)}/s`;
   paneT -= real; if (paneT <= 0) { paneT = 0.25; renderPane(); }
   saveT -= real; if (saveT <= 0) { saveT = 10; save(); }

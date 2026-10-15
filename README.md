@@ -10,6 +10,12 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Dungeons.** Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **You lose** if you die or the rest of the party dies. Rewards from stages you cleared are kept. With *Repeat dungeon* on, the run starts again by itself.
 
+## Why heal actively
+
+- **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold, experience and loot from every stage, from ×0.5 when you idle up to ×3.
+- **Heals pay income.** Every heal that actually restores health pays a few seconds of your buildings' gold per second, so healing keeps pace as your income grows. Tithe upgrades raise it from 1 second to 20.
+- **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
+
 ## Cleric talents
 
 - You start with only **Heal**. The other eight spells are learned in the talent trees.
@@ -31,11 +37,12 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Ilda (Pyromancer) | Inferno or Ember Storm |
 
   Examples include Shield Bash, Execute, Cleave, poison stacks, Pyroblast and splash damage.
-- **Gold upgrades:** every companion has a Weapon (+12% damage per rank) and Armor (+10% health per rank) with no rank limit. Each rank costs 60% more than the last, so gold always has a use.
+- **Gear.** Each companion has three gear slots (weapon, armor, charm), with damage, health, attack speed and critical stats. When you select party gear in the Armory, it shows the change in damage per second or health for each companion.
+- **Training.** Every companion has Weapon Training (+12% damage per rank) and Endurance Training (+10% health per rank) with no rank limit. Each rank costs 60% more than the last, so gold always has a use.
 
 ## Other progression
 
-- **Gear.** Enemies drop items for six slots in five rarities. Enchant equipped items with gold for +10% stats per level.
+- **Gear.** Enemies drop items for the Cleric's six slots and the companions' three, in five rarities. The header shows your **party item level**, the average across all 18 slots. **Equip best items** fills every slot automatically: armor goes to the tank first, and weapons and charms go to the hardest hitters first. Enchant equipped items with gold for +10% stats per level.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
 - **The sanctum.** Healing earns gold. Buildings earn gold every second, and blessings are one-time upgrades. Buildings keep earning for up to 8 hours while you're away.
 

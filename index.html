@@ -116,6 +116,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 @media (max-width:520px){.coffers{grid-template-columns:minmax(0,1fr)}}
 .coffer{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px;color:var(--ink);font:inherit;cursor:pointer}
 .coffer:hover{border-color:var(--gold)}.coffer span{font-size:.78rem;color:var(--muted)}.coffer .cost{color:var(--gold);font-family:var(--mono)}
+.stances{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}.stances .sub{text-transform:none;letter-spacing:0}
+.coffer.locked{opacity:.45;cursor:default;border-style:dashed}.coffer.locked .cost{color:var(--muted);font-family:var(--body)}
 .coffer.cant{opacity:.5;cursor:default}.coffer.elixir.active{border-color:#7ba3ee;box-shadow:0 0 0 1px #7ba3ee55 inset}.coffer.elixir .cost{color:#9fbaf0}
 .tag.elixir{background:#26325a;color:#c8d8ff}
 .htable{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
@@ -128,7 +130,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #townCv{width:100%;aspect-ratio:320/176;image-rendering:pixelated;border:1px solid var(--line);border-radius:8px;background:#4c7a3c;display:block}
 .tdetail{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.9rem;display:flex;flex-direction:column;gap:6px}
 .tdetail p{margin:0}.tdetail .sub{color:var(--muted)}
-.tdh{display:flex;align-items:center;gap:8px}.tdh .label{margin-left:auto}
+.tdh{display:flex;align-items:center;gap:8px}
+.perks{list-style:none;margin:2px 0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.84rem}
+.perks li{display:flex;gap:8px;align-items:baseline;color:var(--muted);padding:3px 6px;border-radius:6px}
+.perks li b{color:var(--ink);white-space:nowrap}.perks li .plv{font-family:var(--mono);font-size:.72rem;min-width:2.6em;color:var(--muted)}
+.perks li.on{background:#86dcb814}.perks li.on .plv{color:var(--heal)}.perks li.next{border:1px dashed var(--gold-dim)}.perks li.next .plv{color:var(--gold)}.tdh .label{margin-left:auto}
 .tdetail .actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.tdetail .short{color:var(--hurt)}
 .matchip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.84rem;background:var(--surface-2)}
 .matchip i{width:9px;height:9px;border-radius:50%;background:var(--mc)}
@@ -240,6 +246,30 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .empty{color:var(--muted);font-size:.88rem;margin:0}
 
 .dungeons{display:flex;flex-direction:column;gap:8px}
+.dmap{display:flex;flex-direction:column;gap:18px;position:relative}
+.dcard{position:relative;border-radius:10px;overflow:visible;background:var(--surface-2);border:1px solid var(--line)}
+.dcard+.dcard::before{content:'';position:absolute;left:34px;top:-19px;height:18px;border-left:2px dashed #5a5070}
+.dcard.cleared+.dcard::before{border-color:var(--acc)}
+.dcard.cur{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc),0 0 22px color-mix(in srgb,var(--acc) 30%,transparent)}
+.dban{position:relative;height:92px;border-radius:10px 10px 0 0;overflow:hidden}
+.dban img{width:100%;height:100%;object-fit:cover;object-position:right center;image-rendering:pixelated;display:block}
+.dcard.locked .dban img{filter:grayscale(1) brightness(.35)}
+.dnum{position:absolute;left:12px;top:10px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:1.25rem;color:var(--acc);background:#0b0910cc;border:2px solid var(--acc)}
+.dcard.locked .dnum{color:#777;border-color:#555}
+.dtitle{position:absolute;left:66px;top:12px;right:110px}
+.dtitle h4{margin:0;font-family:var(--display);font-size:1.3rem;font-weight:500;color:#fff;text-shadow:0 2px 4px #000}
+.dtitle span{font-size:.78rem;color:#d8d0e4;text-shadow:0 1px 3px #000}
+.dhere{position:absolute;right:10px;top:10px;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;background:var(--acc);color:#120f18;padding:2px 8px;border-radius:999px;font-weight:700}
+.dlock{position:absolute;right:16px;top:30px;font-size:1.6rem;filter:grayscale(1)}
+.dfoot{padding:8px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.dmod{font-size:.8rem;color:var(--muted)}.dmod b{color:var(--acc);margin-right:4px}
+.drow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.dpips{display:flex;gap:3px}.dpips i{width:9px;height:9px;border-radius:2px;background:#ffffff14;border:1px solid #ffffff22}
+.dpips i.on{background:var(--acc);border-color:var(--acc)}.dpips i.boss{width:13px;border-radius:3px}
+.dstat{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.ddiff{font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px}.ddiff.easy{background:#25402c;color:#8fdc9a}.ddiff.fair{background:#3a3520;color:#e8d07a}.ddiff.hard{background:#4a2c1c;color:#f0a060}.ddiff.deadly{background:#4a1c22;color:#ff7a80}
+.dfirst{font-size:.72rem;color:var(--gold)}
+.drow .act{margin-left:auto}
 .dun{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .dun.cur{border-color:var(--gold)}
 .dun.locked{opacity:.5}
@@ -302,6 +332,21 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .chipbtn small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
 .chipbtn[aria-pressed="true"]{border-color:var(--sc,var(--gold));box-shadow:0 0 0 1px var(--sc,var(--gold)) inset}
 .tgrid{display:grid;gap:10px 8px;align-items:stretch}
+.crests{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.crestcard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px 8px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 14%,#1d1a26),#1d1a26 70%);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+.crestcard:hover{border-color:color-mix(in srgb,var(--sc) 60%,transparent)}
+.crestcard[aria-pressed="true"]{border-color:var(--sc);box-shadow:0 0 0 1px var(--sc) inset,0 0 18px color-mix(in srgb,var(--sc) 30%,transparent)}
+.crestcard .crest{width:48px;height:48px;image-rendering:pixelated;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--sc) 60%,transparent))}
+.crestcard b{font-family:var(--display);font-weight:500;font-size:1.05rem;color:var(--sc)}
+.crestcard small{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.cspells{display:flex;gap:2px}.cspells span{opacity:.3;filter:grayscale(1)}.cspells span.k{opacity:1;filter:none}
+.cbar{width:80%;height:4px;border-radius:2px;background:#ffffff12;overflow:hidden}.cbar i{display:block;height:100%;background:var(--sc)}
+.tbanner{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;border-radius:10px 10px 0 0;background:linear-gradient(90deg,color-mix(in srgb,var(--sc) 22%,transparent),transparent);border:1px solid color-mix(in srgb,var(--sc) 40%,transparent);border-bottom:0}
+.tbanner .crest{width:40px;height:40px;image-rendering:pixelated}
+.tbanner h3{margin:0;color:var(--sc);font-family:var(--display);font-weight:500}.tbanner h3 small{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-left:6px}
+.tbanner p{margin:2px 0 0;font-size:.82rem;color:var(--muted)}
+.tbanner.sm{margin-top:0}.tbanner.sm .ico{width:28px;height:28px}
+.tframe{padding:12px 10px 10px;border:1px solid color-mix(in srgb,var(--sc) 40%,transparent);border-top:0;border-radius:0 0 10px 10px;background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--sc) 9%,transparent),transparent 70%),#15121c;margin-bottom:10px}
 .gate{grid-column:1;align-self:center;text-align:center;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
 .tcell{position:relative;background:#1d1a26;border:1px solid var(--line);border-radius:8px;padding:6px 4px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
 .tcell b{font-size:.74rem;line-height:1.1;font-weight:500;overflow-wrap:anywhere}
@@ -517,6 +562,21 @@ const ICONS = {
   trinket:  ['.g......g.','..g....g..','...g..g...','....gg....','...xxxx...','..xxyyxx..','..xxyyxx..','...xxxx...','..........','..........'],
   cweapon:  ['........x.','.......xX.','......xX..','.....xX...','....xX....','.g.xX.....','..gX......','..Bg......','.B..g.....','..........'],
   carmor:   ['..........','.xx....xx.','.xxxxxxxx.','..xXxxXx..','..xxxxxx..','..xXxxXx..','..xxxxxx..','..xxggxx..','..XXXXXX..','..........'],
+  bow:      ['...bb.....','..b..w....','.b....w..s','.b....w.ss','gxxxxxxxss','.b....w.ss','.b....w..s','..b..w....','...bb.....','..........'],
+  xbow:     ['..........','.sssssss..','.s..x..s..','....x.....','...bxb....','...bxb....','....b.....','....b.....','...BBB....','..........'],
+  axe:      ['.....xx...','....xxXx..','...xxXXb..','....xxbx..','.....b.x..','....b.....','...b......','..b.......','.B........','..........'],
+  mace:     ['......s.s.','.....xxxx.','....sxXXxs','.....xXXx.','....bsxxs.','...b......','..b.......','.b........','B.........','..........'],
+  hammer:   ['..xxxxxx..','..xXXXXx..','..xxxbxx..','.....b....','.....b....','.....b....','.....b....','.....B....','.....B....','..........'],
+  wand:     ['.......o..','......oyo.','.......o..','......x...','.....b....','....b.....','...x......','..b.......','.b........','..........'],
+  book:     ['..........','.xxxxxxx..','.xXyyyXxw.','.xXyXyXxw.','.xXyyyXxw.','.xXXXXXxw.','.xxxxxxxw.','..wwwwwww.','..........','..........'],
+  plate:    ['..........','.ss....ss.','.sxxxxxxs.','..sxXXxs..','..sxxxxs..','..sxXXxs..','..sxxxxs..','..sSggSs..','..SSSSSS..','..........'],
+  leather:  ['..........','.bb....bb.','.bxxxxxxb.','..bxxxxb..','..bxBBxb..','..bxxxxb..','..bxxxxb..','..bBxxBb..','..BBBBBB..','..........'],
+  robe:     ['....ww....','...xxxx...','..xxwwxx..','..xxxxxx..','.xxxgxxxx.','.xxxgxxxx.','xxxxgxxxxx','xxxxgxxxxx','XXXXXXXXXX','..........'],
+  sigil:    ['....gg....','...gxxg...','..gxyyxg..','.gxyXXyxg.','.gxyXXyxg.','..gxyyxg..','...gxxg...','....gg....','..........','..........'],
+  horn:     ['..........','.x........','.xx.......','..xx......','..wxx.....','...wxxx...','....wxxxg.','.....xxxgg','.......Xg.','..........'],
+  quiver:   ['...w.w.w..','...s.s.s..','..bbbbbbb.','..bxxxxxb.','..bxXXxxb.','..bxxxxxb.','..bxxXxxb.','..bxxxxxb.','..bbbbbbb.','..........'],
+  fang:     ['..g....g..','...g..g...','....gg....','....ww....','....wx....','....wx....','....wX....','.....w....','..........','..........'],
+  orb:      ['..........','...xxxx...','..xyxxxx..','.xyyxxxXx.','.xxxxxxXx.','.xxxxxXXx.','..xXXXXx..','...bbbb...','..bBBBBb..','..........'],
   ccharm:   ['..g....g..','...g..g...','....gg....','...xxxx...','..xXxxXx..','..xxxxxx..','...xXXx...','....xx....','..........','..........'],
   potion:   ['....kk....','....ss....','...uuuu...','..uuwuuu..','..uwuuuu..','..uuuuuu..','..uuuuuu..','...uuuu...','..........','..........'],
   s_heal:   ['..........','....cc....','...cwwc...','..ccwwcc..','.cwwwwwwc.','.cwwwwwwc.','..ccwwcc..','...cwwc...','....cc....','..........'],
@@ -839,22 +899,35 @@ const TOWN_MAX = 8;
 const MATS = ['Rat Tails', 'Bog Moss', 'Grave Dust', 'Cinder Shards', 'Heartwood', 'Iron Links', 'Drowned Pearls', 'Starlight'];
 const TOWN = [
   { id: 'cloister', name: 'Acolyte Cloister', icon: 'acolyte', gold: 40,
+    perks: [[3, 'Cleansing Hands', 'the Acolyte removes a debuff from an ally every 8 seconds'], [5, 'Guardian Prayer', 'the Acolyte shields Bram every 15 seconds']],
     intro: 'Hire an Acolyte who heals the party in the background and leads expeditions while you are away.',
     fx: L => `the Acolyte heals for ${30 + 10 * (L - 1)}% of your Heal every ${(3.2 - 0.15 * (L - 1)).toFixed(2)}s; expeditions run at ${20 + 5 * (L - 1)}% of your active pace` },
   { id: 'infirmary', name: 'Infirmary', icon: 'infirmary', gold: 60,
+    perks: [[3, 'Triage', 'allies below 25% health take 15% less damage'], [6, 'Second Wind', 'once per stage, the first ally to fall gets back up with 30% health after 3 seconds']],
     intro: 'Better care between stages.', fx: L => `resting restores ${4 * L}% more health; fallen allies return with ${20 + 5 * L}% health` },
   { id: 'garden', name: 'Herb Garden', icon: 'garden', gold: 80,
+    perks: [[1, 'Mana Potions', 'drink one mid-fight for 30% of your mana'], [2, 'Elixir of Might', 'sold in the Dungeons tab'], [3, 'Healing Draught', 'a new action-bar item: heals the whole party for 25%, once per run'], [4, 'Ironbark Tonic', 'sold in the Dungeons tab'], [6, 'Draught of Clarity', 'sold in the Dungeons tab'], [7, 'Second Draught', 'two Healing Draughts per run']],
     intro: 'Brews mana potions you can drink mid-fight (press Q).', fx: L => `${L} mana potion${L > 1 ? 's' : ''} per run, each restoring 30% of your mana` },
   { id: 'chapel', name: 'Chapel', icon: 'chapel', gold: 100,
+    perks: [[3, 'Chapel Bell', 'a new action-bar button: +35 Devotion, once per run'], [6, 'Sanctified', 'Devotion never falls below 20%']],
     intro: 'Prayer before every run.', fx: L => `start each run with ${8 * L}% Devotion; Devotion fades ${6 * L}% slower` },
   { id: 'library', name: 'Library', icon: 'scroll', gold: 90,
+    perks: [[3, 'Study', '+1 Cleric talent point'], [5, 'Wider Reading', 'first clears offer four spells instead of three'], [7, 'Deep Study', '+1 more Cleric talent point']],
     intro: 'Study between runs.', fx: L => `+${6 * L}% experience for the whole party` },
   { id: 'smithy', name: 'Smithy', icon: 'sword', gold: 120,
+    perks: [[3, 'Reforge', 'reroll the stats of any item in the Armory'], [5, 'Tempering', 'every new item drops one item level higher']],
     intro: 'A forge for enchanting.', fx: L => `enchanting costs ${8 * L}% less and each enchant adds ${10 + L}% instead of 10%` },
   { id: 'barracks', name: 'Barracks', icon: 'shield', gold: 70,
+    perks: [[2, 'Battle Stances', 'choose Aggressive, Balanced or Defensive in the Party tab'], [4, 'Drill Yard', '+20% party experience']],
     intro: 'A drill yard where the party earns its promotions.', fx: L => `promotions cost ${6 * L}% less` },
+  { id: 'market', name: 'Market', icon: 'coin', gold: 150,
+    perks: [[1, 'Supply Crates', 'buy sealed items of any rarity in the Armory'], [3, 'Gilded Coffers', 'rare or better sealed items'], [5, 'Royal Reliquaries', 'epic or better, sometimes legendary']],
+    intro: 'Traders who sell sealed items for the deepest dungeon you have reached.', fx: L => `sealed items cost ${5 * L}% less` },
 ];
 const TOWNB = Object.fromEntries(TOWN.map(b => [b.id, b]));
+const perk = (id, L) => lvl(id) >= L;
+const STANCES = { agg: { name: 'Aggressive', desc: '+15% party damage, +10% damage taken' }, bal: { name: 'Balanced', desc: 'No changes' }, def: { name: 'Defensive', desc: '15% less damage taken, -10% party damage' } };
+const stance = () => perk('barracks', 2) ? S.stance || 'bal' : 'bal';
 const townCost = (b, L) => ({ gold: Math.round(b.gold * Math.pow(3.4, L - 1)), d: L - 1, n: 6 + 4 * (L - 1) });
 
 // Blessings: one-time gold upgrades
@@ -879,17 +952,17 @@ const promoMul = i => Math.pow(i === YOU ? 1.08 : 1.12, promoRank(i));
 const canPromote = i => promoRank(i) < PROMO_MAX && S.heroes[i].lv >= PROMO_LV[promoRank(i)];
 // Merchant coffers: buy a sealed item for the deepest dungeon you've reached, with better odds the more you pay
 const COFFERS = [
-  { id: 'crate',  name: 'Supply Crate',     icon: 'chest',   base: 50,   min: 0, desc: 'One item of any rarity.' },
-  { id: 'gilded', name: 'Gilded Coffer',    icon: 'chest',   base: 400,  min: 2, desc: 'Rare or better.' },
-  { id: 'royal',  name: 'Royal Reliquary',  icon: 'trinket', base: 3000, min: 3, desc: 'Epic or better, with a 20% chance of Legendary.' },
+  { id: 'crate',  name: 'Supply Crate',     icon: 'chest',   base: 50,   min: 0, need: 1, desc: 'One item of any rarity.' },
+  { id: 'gilded', name: 'Gilded Coffer',    icon: 'chest',   base: 400,  min: 2, need: 3, desc: 'Rare or better.' },
+  { id: 'royal',  name: 'Royal Reliquary',  icon: 'trinket', base: 3000, min: 3, need: 5, desc: 'Epic or better, with a 20% chance of Legendary.' },
 ];
 const cofferDun = () => S.dun.unlocked;
-const cofferCost = c => Math.round(c.base * rewardScale(cofferDun(), 1));
+const cofferCost = c => Math.round(c.base * rewardScale(cofferDun(), 1) * (1 - 0.05 * lvl('market')));
 // Elixirs: strong buffs for 10 minutes of fighting; buy more to extend (up to an hour)
 const ELIXIRS = [
-  { id: 'might',  name: 'Elixir of Might',  short: 'Might', icon: 'sword',   desc: 'Party damage +25%' },
-  { id: 'bark',   name: 'Ironbark Tonic',   short: 'Ironbark', icon: 'shield',  desc: 'The party takes 15% less damage' },
-  { id: 'clear',  name: 'Draught of Clarity', short: 'Clarity', icon: 's_meditate', desc: 'Mana regeneration +40%' },
+  { id: 'might',  need: 2, name: 'Elixir of Might',  short: 'Might', icon: 'sword',   desc: 'Party damage +25%' },
+  { id: 'bark',   need: 4, name: 'Ironbark Tonic',   short: 'Ironbark', icon: 'shield',  desc: 'The party takes 15% less damage' },
+  { id: 'clear',  need: 6, name: 'Draught of Clarity', short: 'Clarity', icon: 's_meditate', desc: 'Mana regeneration +40%' },
 ];
 const ELIXIR_TIME = 600, ELIXIR_CAP = 3600;
 const elixirCost = () => Math.round(60 * rewardScale(cofferDun(), 1));
@@ -921,8 +994,6 @@ const STATS = {
   greed: { name: 'Gold Find',   w: 0.6, roll: l => 4 + 0.8 * l,   show: v => '+' + v.toFixed(0) + '%' },
   vigor: { name: 'Party Vigor', w: 0.9, roll: l => 2 + 0.35 * l,  show: v => '+' + v.toFixed(1) + '% HP' },
 };
-const SUFFIX = { power: 'of Radiance', mana: 'of the Deep Well', regen: 'of the Spring', crit: 'of Revelation', haste: 'of Swiftness', greed: 'of Tithes', vigor: 'of the Bulwark' };
-const MATERIALS = ['Frayed', 'Linen', 'Woolen', 'Silken', 'Moonweave', 'Starsilk', 'Seraphic', 'Empyrean'];
 const CSLOTS = [
   { id: 'cweapon', name: 'Weapon', bases: ['Blade', 'Axe', 'Warhammer', 'Spear', 'Longbow', 'Wand'], primary: 'atk' },
   { id: 'carmor',  name: 'Armor',  bases: ['Mail', 'Brigandine', 'Plate', 'Jerkin'], primary: 'hpp' },
@@ -938,8 +1009,47 @@ const CSTATS = {
   vscc:  { name: 'Damage vs. Slowed or Stunned', w: 0.7, roll: l => 8 + 0.8 * l, show: v => '+' + v.toFixed(0) + '%' },
   vsdot: { name: 'Damage vs. Poisoned or Burning', w: 0.7, roll: l => 8 + 0.8 * l, show: v => '+' + v.toFixed(0) + '%' },
 };
-const CSUFFIX = { atk: 'of Slaughter', hpp: 'of the Bear', spd: 'of Haste', crit: 'of Precision', critd: 'of Ruin', vscc: 'of the Opportunist', vsdot: 'of the Plague' };
-const CMATERIALS = ['Rusty', 'Iron', 'Steel', 'Tempered', 'Mithril', 'Runed', 'Starforged', 'Godforged'];
+// Each companion has their own gear: base name, material family and icon
+const CBASES = [
+  { cweapon: [['Longsword', 'metal', 'sword'], ['Mace', 'metal', 'mace'], ['Warhammer', 'metal', 'hammer']],
+    carmor:  [['Plate Armor', 'metal', 'plate'], ['Chainmail', 'metal', 'plate'], ['Cuirass', 'metal', 'plate']],
+    ccharm:  [['Oath Sigil', 'jewel', 'sigil'], ['Crest', 'jewel', 'sigil']] },
+  { cweapon: [['Greataxe', 'metal', 'axe'], ['Claymore', 'metal', 'sword'], ['Halberd', 'metal', 'axe']],
+    carmor:  [['Brigandine', 'leather', 'plate'], ['Scale Mail', 'metal', 'plate']],
+    ccharm:  [['Warhorn', 'bone', 'horn'], ['Trophy Fang', 'bone', 'fang']] },
+  { cweapon: [['Longbow', 'wood', 'bow'], ['Recurve Bow', 'wood', 'bow'], ['Crossbow', 'wood', 'xbow']],
+    carmor:  [['Leathers', 'leather', 'leather'], ['Jerkin', 'leather', 'leather'], ['Ranger Cloak', 'cloth', 'leather']],
+    ccharm:  [['Quiver', 'leather', 'quiver'], ['Hunting Fetish', 'bone', 'fang']] },
+  { cweapon: [['Spellstaff', 'wood', 'wand'], ['Wand', 'wood', 'wand'], ['Grimoire', 'cloth', 'book']],
+    carmor:  [['Robe', 'cloth', 'robe'], ['Mantle', 'cloth', 'robe']],
+    ccharm:  [['Orb', 'jewel', 'orb'], ['Focus Crystal', 'jewel', 'orb']] },
+];
+const CLERIC_FAM = { Hood: 'cloth', Circlet: 'jewel', Cowl: 'cloth', Mitre: 'cloth', Robe: 'cloth', Vestments: 'cloth', Habit: 'cloth', Cassock: 'cloth',
+  Gloves: 'leather', Wraps: 'cloth', Bracers: 'leather', Staff: 'wood', Sceptre: 'metal', Censer: 'metal', Crook: 'wood',
+  Ring: 'jewel', Band: 'jewel', Signet: 'jewel', Reliquary: 'metal', 'Prayer Beads': 'wood', Phial: 'jewel', Icon: 'jewel' };
+const FAMILY = {
+  metal:   ['Rusted', 'Iron', 'Steel', 'Tempered', 'Mithril', 'Runed', 'Starforged', 'Godforged'],
+  wood:    ['Splintered', 'Ashwood', 'Yew', 'Ironbark', 'Elderwood', 'Wyrmwood', 'Starwood', 'Worldtree'],
+  cloth:   ['Frayed', 'Linen', 'Woolen', 'Silken', 'Moonweave', 'Runeweave', 'Starsilk', 'Seraphic'],
+  leather: ['Cracked', 'Tanned', 'Hardened', 'Studded', 'Drakehide', 'Shadowhide', 'Starhide', 'Godhide'],
+  jewel:   ['Chipped', 'Polished', 'Gilded', 'Jeweled', 'Moonstone', 'Runed', 'Starlit', 'Divine'],
+  bone:    ['Gnawed', 'Boar-Tusk', 'Wolf-Fang', 'Bear-Claw', 'Wyvern', 'Drake', 'Starbeast', 'Primeval'],
+};
+const SUFFIXES = {
+  atk: ['of Slaughter', 'of Carnage', 'of Might', 'of the Butcher'], hpp: ['of the Bear', 'of Endurance', 'of the Mountain', 'of Vitality'],
+  spd: ['of Haste', 'of the Wind', 'of Fury'], crit: ['of Precision', 'of the Hawk', 'of Keen Edges'], critd: ['of Ruin', 'of Devastation', 'of Shattering'],
+  vscc: ['of the Opportunist', 'of the Jailer'], vsdot: ['of the Plague', 'of Festering'],
+  power: ['of Radiance', 'of the Dawn', 'of Grace'], mana: ['of the Deep Well', 'of Wisdom', 'of the Sage'], regen: ['of the Spring', 'of Renewal', 'of Still Waters'],
+  haste: ['of Swiftness', 'of Fervor'], greed: ['of Tithes', 'of Plenty'], vigor: ['of the Bulwark', 'of Shelter'],
+};
+const LEGEND_BY = [['the Unbroken', 'the Iron Vow', 'Saint Odile'], ['the Red Harvest', 'the Berserk King', 'a Thousand Cuts'],
+  ['the Silent Hunt', 'the Grey Fox', 'the Last Arrow'], ['the Ember Queen', 'the First Flame', 'the Frozen Star']];
+function itemName(base, fam, ilvl, rarity, key, who) {
+  if (rarity === 4) return `${base} of ${pick(who != null ? LEGEND_BY[who] : LEGENDS)}`;
+  const mat = FAMILY[fam][Math.min(7, Math.floor((ilvl - 1) / 7))];
+  return `${mat} ${base} ${pick(SUFFIXES[key] || ['of Note'])}`;
+}
+const itemIcon = it => it.icon || it.slot;
 const isComp = it => !!CSLOT[it.slot];
 const statDef = (it, k) => (isComp(it) ? CSTATS : STATS)[k];
 const slotName = it => (isComp(it) ? CSLOT : SLOT)[it.slot].name;
@@ -980,9 +1090,9 @@ const rankOf = (o, id) => ranksOf(o)[id] || 0;
 const rankCost = (n, r) => n.owner === 'cleric' ? clericRankCost(n, r) : compRankCost(n, r);
 const totalCost = (n, r) => { let c = 0; for (let k = 1; k <= r; k++) c += rankCost(n, k); return c; };
 const spentIn = (o, treeId) => OWNERS[o].filter(t => !treeId || t.id === treeId).reduce((a, t) => a + t.nodes.reduce((b, n) => b + totalCost(n, rankOf(o, n.id)), 0), 0);
-const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
+const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts + (perk('library', 3) ? 1 : 0) + (perk('library', 7) ? 1 : 0) - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
 const known = id => id === 'heal' || S.spells.includes(id);
-const spellOffer = () => SPELL_ORDER.filter(id => !known(id)).slice(0, 3);
+const spellOffer = () => SPELL_ORDER.filter(id => !known(id)).slice(0, perk('library', 5) ? 4 : 3);
 const picksLeft = () => spellOffer().length ? Math.max(0, S.dun.clears.filter(c => c > 0).length - S.spells.length) : 0;
 function pickHtml() {
   const offer = spellOffer();
@@ -1064,9 +1174,9 @@ function recalc() {
   D.tankDR = t('tankDR');
   D.greed = (s.greed + 5 * K('plenty')) / 100 + t('gold');
   D.vigor = s.vigor / 100;
-  D.xpMult = 1 + 0.05 * K('scholar') + t('xp') + 0.06 * lvl('library');
+  D.xpMult = 1 + 0.05 * K('scholar') + t('xp') + 0.06 * lvl('library') + (perk('barracks', 4) ? 0.2 : 0);
   D.partyHp = (1 + D.vigor) * (1 + t('partyHp') + 0.03 * K('fort'));
-  D.partyDps = (elixirOn('might') ? 1.25 : 1) * (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
+  D.partyDps = ({ agg: 1.15, bal: 1, def: 0.9 })[stance()] * (elixirOn('might') ? 1.25 : 1) * (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
   D.cs = PARTY.map((p, i) => makeCs(i));
   // party-wide vulnerabilities come from whichever companion has the talent
   for (const k of ['vulnStun', 'vulnChill', 'vulnPoison']) D[k] = D.cs.reduce((a, c) => a + (c[k] || 0), 0);
@@ -1104,6 +1214,7 @@ function rollRarity() {
   return 0;
 }
 function genItem(ilvl, minRarity = 0) {
+  if (perk('smithy', 5)) ilvl += 1;
   const comp = Math.random() < 0.4, slot = comp ? pick(CSLOTS) : pick(SLOTS);
   const rarity = Math.max(minRarity, rollRarity()), R = RARITY[rarity], TBL = comp ? CSTATS : STATS;
   const prim = comp ? slot.primary : slot.id === 'staff' ? 'power' : null;
@@ -1112,10 +1223,29 @@ function genItem(ilvl, minRarity = 0) {
   while (keys.length < R.stats) { const k = pick(pool); if (!keys.includes(k)) keys.push(k); }
   const stats = {};
   keys.forEach(k => { stats[k] = TBL[k].roll(ilvl) * R.mult * rand(0.85, 1.15); });
-  const base = pick(slot.bases), mats = comp ? CMATERIALS : MATERIALS;
-  const mat = mats[Math.min(mats.length - 1, Math.floor((ilvl - 1) / 7))];
-  const name = rarity === 4 ? `${base} of ${pick(LEGENDS)}` : `${mat} ${base} ${(comp ? CSUFFIX : SUFFIX)[keys[0]]}`;
-  return ensureItem({ id: S.nextId++, slot: slot.id, rarity, ilvl, up: 0, name, stats });
+  if (comp) {
+    const who = Math.floor(Math.random() * 4), [base, fam, icon] = pick(CBASES[who][slot.id]);
+    return ensureItem({ id: S.nextId++, slot: slot.id, who, base, icon, rarity, ilvl, up: 0, name: itemName(base, fam, ilvl, rarity, keys[0], who), stats });
+  }
+  const base = pick(slot.bases);
+  return ensureItem({ id: S.nextId++, slot: slot.id, base, rarity, ilvl, up: 0, name: itemName(base, CLERIC_FAM[base] || 'cloth', ilvl, rarity, keys[0]), stats });
+}
+const LEGACY_WHO = { Blade: 0, Warhammer: 0, Plate: 0, Mail: 0, Axe: 1, Spear: 1, Brigandine: 1, Longbow: 2, Daggers: 2, Jerkin: 2, Wand: 3 };
+function adoptItem(it, who) {
+  if (!isComp(it) || it.who != null) return;
+  if (who == null) { const w = Object.keys(LEGACY_WHO).find(b => it.name.includes(b)); who = w ? LEGACY_WHO[w] : Math.floor(Math.random() * 4); }
+  const [base, fam, icon] = pick(CBASES[who][it.slot]);
+  Object.assign(it, { who, base, icon, name: itemName(base, fam, it.ilvl, it.rarity, Object.keys(it.stats)[0], who) });
+}
+const reforgeCost = it => enchantCost({ ...it, up: 0 }) * 2;
+// Smithy: reroll an item's secondary stats, keeping rarity, item level and enchants
+function reforge(it) {
+  const comp = isComp(it), TBL = comp ? CSTATS : STATS, R = RARITY[it.rarity];
+  const prim = comp ? CSLOT[it.slot].primary : it.slot === 'staff' ? 'power' : null;
+  const pool = Object.keys(TBL).filter(k => k !== prim), keys = prim ? [prim] : [];
+  while (keys.length < R.stats) { const k = pick(pool); if (!keys.includes(k)) keys.push(k); }
+  it.stats = {}; keys.forEach(k => { it.stats[k] = TBL[k].roll(it.ilvl) * R.mult * rand(0.85, 1.15); });
+  if (it.rarity < 4) it.name = it.name.replace(/ of .*$/, ' ' + pick(SUFFIXES[keys[0]]));
 }
 function ensureItem(it) {
   if (!it.skill) it.skill = pick(SLOT_SKILLS[it.slot]);
@@ -1133,7 +1263,8 @@ function score(it) {
 }
 function isUpgrade(it) {
   if (!isComp(it)) return score(it) > score(S.equip[it.slot]) + 0.01;
-  return S.cequip.some(e => !e[it.slot] || score(it) > score(e[it.slot]) + 0.01);
+  const cur = S.cequip[it.who] && S.cequip[it.who][it.slot];
+  return !cur || score(it) > score(cur) + 0.01;
 }
 function autoEquip() {
   let n = 0;
@@ -1141,15 +1272,10 @@ function autoEquip() {
     const cur = S.equip[sl.id], best = S.inv.filter(it => it.slot === sl.id).sort((a, b) => score(b) - score(a))[0];
     if (best && score(best) > score(cur) + 0.01) { S.inv.splice(S.inv.indexOf(best), 1); if (cur) S.inv.push(cur); S.equip[sl.id] = best; n++; }
   }
-  for (const cs of CSLOTS) {
-    const worn = S.cequip.map(e => e[cs.id]);
-    const pool = [...worn.filter(Boolean), ...S.inv.filter(it => it.slot === cs.id)].sort((a, b) => score(b) - score(a));
-    // armor goes to the tank first; weapons and charms to the hardest hitters first
-    const order = cs.id === 'carmor' ? [0, 1, 2, 3] : [3, 2, 1, 0];
-    const chosen = new Set();
-    order.forEach((ci, k) => { const it = pool[k] || null; if (it !== S.cequip[ci][cs.id]) n++; S.cequip[ci][cs.id] = it; if (it) chosen.add(it); });
-    S.inv = S.inv.filter(it => !chosen.has(it));
-    worn.forEach(it => { if (it && !chosen.has(it)) S.inv.push(it); });
+  // companion gear only fits its owner
+  for (let ci = 0; ci < 4; ci++) for (const cs of CSLOTS) {
+    const cur = S.cequip[ci][cs.id], best = S.inv.filter(it => it.slot === cs.id && it.who === ci).sort((a, b) => score(b) - score(a))[0];
+    if (best && score(best) > score(cur) + 0.01) { S.inv.splice(S.inv.indexOf(best), 1); if (cur) S.inv.push(cur); S.cequip[ci][cs.id] = best; n++; }
   }
   recalc();
   return n;
@@ -1218,7 +1344,8 @@ function enterDungeon(d) {
   C.cds = {}; C.medi = null; C.abT = {}; C.slamT = 0;
   C.meter = { d: PARTY.map(() => 0), t: 0 };
   C.rstats = { spell: {}, taken: 0, deaths: 0, cleansed: 0, d };
-  C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden'); C.acoT = 1.5;
+  C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden'); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
+  C.draughts = perk('garden', 7) ? 2 : perk('garden', 3) ? 1 : 0; C.bell = perk('chapel', 3);
   S.stats.runs++;
   startStage();
   shopDirty = true;
@@ -1226,7 +1353,7 @@ function enterDungeon(d) {
 function startStage() {
   C.foes = makeFoes(S.dun.current, C.stage);
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4;
-  C.buff = { sanct: 0, bless: 0 }; C.ritesUsed = false;
+  C.buff = { sanct: 0, bless: 0 }; C.ritesUsed = false; C.windUsed = false; C.party.forEach(m => { m.windT = 0; });
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach((m, i) => { if (m.alive) afflict(i, 'poison', m.max * 0.008, 12, { ramp: 0.1 }); });
   C.foes.forEach(f => { f.hitBy = {}; f.poison = null; });
@@ -1245,6 +1372,8 @@ function hit(i, amt) {
   if (C.buff.sanct > 0) amt *= 1 - D.sp.sanctuary.amt;
   if (i === 0) amt *= (1 - D.tankDR) * (C.slamT > 0 ? 0.8 : 1);
   if (elixirOn('bark')) amt *= 0.85;
+  amt *= ({ agg: 1.1, bal: 1, def: 0.85 })[stance()];
+  if (perk('infirmary', 3) && m.hp / m.max < 0.25) amt *= 0.85;
   const cs = D.cs[i];
   amt *= 1 - Math.min(0.6, cs.dr);
   if (cs.laststand && m.hp / m.max < 0.3) amt *= 0.75;
@@ -1264,6 +1393,7 @@ function hit(i, amt) {
   if (m.hp <= 0 && D.lastRites && !C.ritesUsed) { m.hp = 1; C.ritesUsed = true; floatTxt(i, 'Last Rites', 'heal'); fxRingAt(i, '#fff2a8'); log(`Last Rites kept <b>${PARTY[i].name}</b> standing.`); }
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0;
+    if (perk('infirmary', 6) && !C.windUsed) { C.windUsed = true; m.windT = 3; }
     log(`<b>${PARTY[i].name}</b> has fallen.`);
     trackStat('deaths'); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
     burst(HERO_POS[i].x, HERO_POS[i].y - 10, '#9a93a8', 12);
@@ -1326,6 +1456,17 @@ const spellCd = sp => (D.sp[sp.id] && D.sp[sp.id].cd != null ? D.sp[sp.id].cd : 
 const spellCost = sp => sp.cost * D.costMult * (D.sp[sp.id] && D.sp[sp.id].cost != null ? D.sp[sp.id].cost : 1);
 const barSpells = () => SPELLS.filter(s => known(s.id));
 
+function drinkDraught() {
+  if (C.phase !== 'fight' || !(C.draughts > 0) || (C.cds.draught || 0) > 0) return;
+  C.draughts--; C.cds.draught = 20; C.healSrc = 'draught';
+  aliveIdx().forEach(i => { heal(i, C.party[i].max * 0.25); fxLeaves(i); });
+  C.healSrc = null;
+}
+function ringBell() {
+  if (C.phase !== 'fight' || !C.bell) return;
+  C.bell = false; C.dev = Math.min(100, C.dev + 35);
+  fxRing(); FX.push({ t: 'label', x: HERO_POS[YOU].x, y: HERO_POS[YOU].y - 40, str: 'The bell tolls', col: '#ffd36b', life: 1.4, max: 1.4 });
+}
 function drinkPotion() {
   if (C.phase !== 'fight' || !(C.potions > 0) || (C.cds.potion || 0) > 0) return;
   C.potions--; C.cds.potion = 20;
@@ -1452,6 +1593,7 @@ function stepFight(dt) {
   const devSlow = D.devFade;
   C.dev = Math.max(0, C.dev - C.dev * 0.02 * dt * devSlow);
   if (C.devQuiet > 4 && C.party.some(m => m.alive && m.hp / m.max < 0.85)) C.dev = Math.max(0, C.dev - 3 * dt * devSlow);
+  if (perk('chapel', 6)) C.dev = Math.max(20, C.dev);
   stepPlea(dt);
   if (D.aco) {
     C.acoT -= dt;
@@ -1461,9 +1603,18 @@ function stepFight(dt) {
       C.party.forEach((m, i) => { if (m.alive && m.hp / m.max < low) { low = m.hp / m.max; t = i; } });
       if (t != null) { heal(t, D.heal * D.aco.pow, 0, true); fxAco(t); }
     }
+    if (perk('cloister', 3) && (C.acoCleanT = (C.acoCleanT ?? 8) - dt) <= 0) {
+      const t = aliveIdx().find(i => C.party[i].dots.length);
+      if (t != null) { C.party[t].dots.shift(); C.acoCleanT = 8; fxAco(t); floatTxt(t, 'cleansed', 'free'); } else C.acoCleanT = 0.5;
+    }
+    if (perk('cloister', 5) && (C.acoWardT = (C.acoWardT ?? 15) - dt) <= 0) {
+      C.acoWardT = 15; const m = C.party[0];
+      if (m && m.alive) { m.shield = Math.max(m.shield, D.heal * 1.2); fxRingAt(0, '#d3dbff'); }
+    }
   }
 
   C.party.forEach((m, i) => {
+    if (!m.alive && m.windT > 0) { m.windT -= dt; if (m.windT <= 0) { m.alive = true; m.hp = m.max * 0.3; floatTxt(i, 'Second Wind', 'heal'); fxRingAt(i, '#86dcb8'); log(`${PARTY[i].name} gets back up.`); } }
     if (!m.alive) return;
     tickEffects(m, i, dt);
   });
@@ -2556,15 +2707,21 @@ function buildArena() {
 /* ---------- Action bar: 12 bindable slots; drag spells onto keys ---------- */
 const BIND_KEYS = ['1', '2', '3', '4', '5', '6', 'e', 'f', 'r', 't', 'q', 'y'];
 let editBinds = false, picked = null, barKey = '';
-const usable = id => id === 'potion' ? lvl('garden') > 0 : known(id);
-const allActions = () => [...barSpells().map(s => s.id), ...(lvl('garden') ? ['potion'] : [])];
+const ACTS = {
+  potion:  { name: 'Mana Potion',     icon: 'potion',  cd: 20, has: () => lvl('garden') > 0, left: () => C.potions || 0, use: () => drinkPotion() },
+  draught: { name: 'Healing Draught', icon: 'bandage', cd: 20, has: () => perk('garden', 3), left: () => C.draughts || 0, use: () => drinkDraught() },
+  bell:    { name: 'Chapel Bell',     icon: 'chapel',  cd: 0,  has: () => perk('chapel', 3), left: () => C.bell ? 1 : 0, use: () => ringBell() },
+};
+const usable = id => ACTS[id] ? ACTS[id].has() : known(id);
+const allActions = () => [...barSpells().map(s => s.id), ...Object.keys(ACTS).filter(k => ACTS[k].has())];
 function autoBind(id) {
   if (!S.binds) S.binds = {};
   if (!S.bindSeen) S.bindSeen = [];
   if (S.bindSeen.includes(id)) return; // bind each new spell once; after that the player decides
   S.bindSeen.push(id);
   if (Object.values(S.binds).includes(id)) return;
-  const order = id === 'potion' ? ['q', ...BIND_KEYS] : BIND_KEYS.filter(k => k !== 'q').concat('q');
+  const pref = { potion: 'q', draught: 'f', bell: 'r' }[id];
+  const order = pref ? [pref, ...BIND_KEYS.filter(k => !['q', 'f', 'r'].includes(k))] : BIND_KEYS.filter(k => !['q', 'f', 'r'].includes(k)).concat('f', 'r', 'q');
   const k = order.find(k => !S.binds[k] || !usable(S.binds[k]));
   if (k) S.binds[k] = id;
 }
@@ -2575,8 +2732,8 @@ function bindTo(k, id, fromKey) {
   if (fromKey && old && old !== id) S.binds[fromKey] = old;
   barKey = '';
 }
-const actName = id => id === 'potion' ? 'Mana Potion' : SP[id].name;
-const actIcon = id => id === 'potion' ? 'potion' : 's_' + id;
+const actName = id => ACTS[id] ? ACTS[id].name : SP[id].name;
+const actIcon = id => ACTS[id] ? ACTS[id].icon : 's_' + id;
 function buildSpellBar() {
   allActions().forEach(autoBind);
   const key = JSON.stringify(S.binds) + allActions().join(',') + editBinds + picked;
@@ -2596,7 +2753,7 @@ function buildSpellBar() {
     <div class="sbook">${allActions().map(id => `<button class="sbk ${picked === id ? 'picked' : ''}" type="button" draggable="true" data-sb="${id}">${img(actIcon(id), 0, 'sm')}${actName(id)}</button>`).join('')}</div>
     ${locked ? `<span class="label">${locked} more spell${locked === 1 ? '' : 's'} to learn from first dungeon clears</span>` : ''}`;
 }
-function useAction(id) { if (id === 'potion') drinkPotion(); else if (known(id)) tryCast(SP[id]); }
+function useAction(id) { if (ACTS[id]) ACTS[id].use(); else if (known(id)) tryCast(SP[id]); }
 function wireActionBar() {
   const bar = $('#spells'), book = $('#spellbook');
   bar.addEventListener('click', e => {
@@ -2648,11 +2805,12 @@ function updateMeter(dt) {
 function updateActionBar() {
   $('#spells').querySelectorAll('[data-act]').forEach(el => {
     const id = el.dataset.act, costEl = el.querySelector('.sp-cost'), cdEl = el.querySelector('.cd'), cdtEl = el.querySelector('.cdt');
-    if (id === 'potion') {
-      const cd = C.cds.potion || 0;
-      el.classList.toggle('suggest', lowMana() && C.potions > 0 && cd <= 0);
-      costEl.textContent = `${C.potions || 0} left`; cdEl.style.height = (Math.min(1, cd / 20) * 100) + '%'; cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
-      el.classList.toggle('nomana', !(C.potions > 0));
+    if (ACTS[id]) {
+      const A = ACTS[id], cd = C.cds[id] || 0, left = A.left();
+      el.classList.toggle('suggest', id === 'potion' && lowMana() && left > 0 && cd <= 0);
+      costEl.textContent = id === 'bell' ? (left ? 'Ready' : 'Rung') : `${left} left`;
+      cdEl.style.height = (A.cd ? Math.min(1, cd / A.cd) * 100 : 0) + '%'; cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
+      el.classList.toggle('nomana', !(left > 0));
       return;
     }
     const sp = SP[id], cost = spellCost(sp);
@@ -2767,10 +2925,10 @@ const findItem = id => S.inv.find(x => x.id === id);
 function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
   const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
-    : tab === 'armory' ? itemsKey + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
+    : tab === 'armory' ? itemsKey + lvl('market') + lvl('smithy') + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
-    : tab === 'dungeons' ? JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost()
-    : tab === 'party' ? JSON.stringify(S.ctree) + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
+    : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv()
+    : tab === 'party' ? JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
     : tab === 'chronicle' ? logVer + '' + confirmReset + chronScope + Math.floor(S.stats.played / 2) : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
@@ -2780,23 +2938,75 @@ function renderPane() {
   updatePane();
 }
 
+// 16x16 crests for the three Cleric trees
+const CRESTS = {
+  holy: ['.......gg.......','..g....gg....g..','...g..wyyw..g...','......wyyw......','..wwwwwyywwwww..','gg.yyyyyyyyyy.gg','..wwwwwyywwwww..','......wyyw......','...g..wyyw..g...','..g...wyyw...g..','......wyyw......','......wyyw......','......wyyw......','.......gg.......','................','................'],
+  disc: ['..ssssssssssss..','.suuuuuuuuuuuus.','.suuuuuwwuuuuus.','.suuuuuwwuuuuus.','.suuwwwwwwwwuus.','.suuwwwwwwwwuus.','.suuuuuwwuuuuus.','.suuuuuwwuuuuus.','.sUuuuuwwuuuuUs.','..sUuuuwwuuuUs..','..sUUuuuuuuUUs..','...sUUuuuuUUs...','....sUUuuUUs....','.....sUUUUs.....','......ssss......','................'],
+  devo: ['.......y........','......yoy.......','......ooo.......','.....oyyyo......','.....oyyyo......','......oyo.......','.......k........','.....wwwww......','.....wpppw......','.....wpppw......','.....wpppw......','.....wPppw......','.....wPppw......','...gggggggggg...','....GGGGGGGG....','................'],
+};
+const crestCache = {};
+function crest(id) {
+  if (crestCache[id]) return crestCache[id];
+  const m = CRESTS[id], a = document.createElement('canvas'); a.width = 18; a.height = 18;
+  const x = a.getContext('2d');
+  m.forEach((row, y) => [...row].forEach((ch, i) => { if (ch !== '.') { x.fillStyle = PAL[ch]; x.fillRect(i + 1, y + 1, 1, 1); } }));
+  const o = document.createElement('canvas'); o.width = 18; o.height = 18; const ox = o.getContext('2d');
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) ox.drawImage(a, dx, dy);
+  ox.globalCompositeOperation = 'source-in'; ox.fillStyle = '#0b0910'; ox.fillRect(0, 0, 18, 18);
+  ox.globalCompositeOperation = 'source-over'; ox.drawImage(a, 0, 0);
+  return (crestCache[id] = o.toDataURL());
+}
+const treeSpells = tr => [...new Set(tr.nodes.filter(n => n.needs).map(n => n.needs))];
+const treeMax = (o, tr) => tr.nodes.reduce((a, n) => a + totalCost(n, n.max), 0);
+const avgLv = () => Math.round(S.heroes.reduce((a, h) => a + h.lv, 0) / S.heroes.length);
+// A painted banner for each dungeon: its battle background with the boss and two of its monsters
+const bannerCache = {};
+function dunBanner(d) {
+  if (bannerCache[d]) return bannerCache[d];
+  const W = 320, H = 92, top = 58, dg = DUNGEONS[d], b = BOSSES[d];
+  const a = document.createElement('canvas'); a.width = W; a.height = H;
+  const x = a.getContext('2d');
+  x.drawImage(buildBg(d), 0, -top);
+  const sp = document.createElement('canvas'); sp.width = W; sp.height = H;
+  const prev = P; P = sp.getContext('2d');
+  drawMob(dg.mobs[0], dg.mobC[0], 196, 146 - top, 0, 1); drawMob(dg.mobs[1], dg.mobC[1], 224, 138 - top, 0, 3);
+  drawBoss(b.kind, b.c, 272, 146 - top, 0);
+  P = prev;
+  const o = document.createElement('canvas'); o.width = W; o.height = H; const ox = o.getContext('2d');
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) ox.drawImage(sp, dx, dy);
+  ox.globalCompositeOperation = 'source-in'; ox.fillStyle = '#0b0910'; ox.fillRect(0, 0, W, H);
+  ox.globalCompositeOperation = 'source-over'; ox.drawImage(sp, 0, 0);
+  x.drawImage(o, 0, 0);
+  const gr = x.createLinearGradient(0, 0, W, 0); gr.addColorStop(0, '#0b0910ee'); gr.addColorStop(0.5, '#0b091066'); gr.addColorStop(1, '#0b091000');
+  x.fillStyle = gr; x.fillRect(0, 0, W, H);
+  return (bannerCache[d] = a.toDataURL());
+}
 function renderDungeons() {
   pane.innerHTML = `
     <div class="section-h"><h3>Dungeons</h3><span class="label">Choose when to push deeper</span></div>
     <div class="section-h"><h3>Elixirs</h3><span class="label">${fmt(elixirCost())} gold each · 10 minutes of fighting, stacks up to an hour</span></div>
-    <div class="coffers">${ELIXIRS.map(e => `<button class="coffer elixir" data-elixir="${e.id}">${img(e.icon)}<b>${e.name}</b><span>${e.desc}</span><span class="cost" data-eleft></span></button>`).join('')}</div>
-    <p class="intro">Each dungeon is a run of stages that ends with a boss. Health and mana carry over between stages, with a short rest in between. Every new dungeon is far harder than the last, so expect to farm. First clears give a Cleric talent point.</p>
-    <div class="dungeons">${DUNGEONS.map((dg, i) => {
+    <div class="coffers">${ELIXIRS.map(e => perk('garden', e.need) ? `<button class="coffer elixir" data-elixir="${e.id}">${img(e.icon)}<b>${e.name}</b><span>${e.desc}</span><span class="cost" data-eleft></span></button>`
+      : `<div class="coffer locked">${img(e.icon)}<b>${e.name}</b><span>${e.desc}</span><span class="cost">Herb Garden level ${e.need}</span></div>`).join('')}</div>
+    <div class="section-h"><h3>The descent</h3><span class="label">Party level ${avgLv()} · each dungeon is far harder than the last</span></div>
+    <div class="dmap">${DUNGEONS.map((dg, i) => {
       const locked = i > S.dun.unlocked, cur = i === S.dun.current, clears = S.dun.clears[i] || 0, best = S.dun.best[i] || 0;
-      const status = locked ? `Clear ${DUNGEONS[i - 1].name} to unlock` : clears ? `Cleared ${clears}×` : best ? `Best: stage ${best} of ${dg.stages}` : 'Not attempted';
       const running = cur && (C.phase === 'fight' || C.phase === 'rest');
-      const btn = locked ? '' : `<button class="btn primary act" data-enter="${i}">${running ? 'Restart' : 'Enter'}</button>`;
-      return `<div class="dun ${cur ? 'cur' : ''} ${locked ? 'locked' : ''}">
-        <span class="emb" style="background:${dg.bg[0]};color:${dg.bg[5]}">${roman(i + 1)}</span>
-        <h4>${dg.name}${cur ? ' <span class="label">· you are here</span>' : ''}</h4>
-        <span class="meta"><span>${dg.stages} stages</span><span class="threat">threat ×${fmt(Math.pow(HP_STEP, i))}</span><span>suggested level ${suggestedLv(i)}</span><span>boss: ${BOSSES[i].name}</span></span>
-        <span class="modt"><b>${MODS[dg.mod].name}.</b> ${MODS[dg.mod].desc} <span class="label">· ${status}</span></span>
-        ${btn}</div>`;
+      const gap = avgLv() - suggestedLv(i), diff = locked ? '' : gap >= 4 ? ['easy', 'Comfortable'] : gap >= 0 ? ['fair', 'Even match'] : gap >= -4 ? ['hard', 'Hard'] : ['deadly', 'Deadly'];
+      const pips = Array.from({ length: dg.stages }, (_, k) => `<i class="${k + 1 <= (clears ? dg.stages : best) ? 'on' : ''} ${k + 1 === dg.stages ? 'boss' : ''}"></i>`).join('');
+      return `<div class="dcard ${cur ? 'cur' : ''} ${locked ? 'locked' : ''} ${clears ? 'cleared' : ''}" style="--acc:${dg.bg[5]}">
+        <div class="dban"><img src="${dunBanner(i)}" alt="">
+          <span class="dnum">${roman(i + 1)}</span>
+          <div class="dtitle"><h4>${dg.name}</h4><span>${locked ? `Clear ${DUNGEONS[i - 1].name} to open the way` : `${BOSSES[i].name}, ${BOSSES[i].title}`}</span></div>
+          ${cur ? '<span class="dhere">You are here</span>' : ''}${locked ? '<span class="dlock">🔒</span>' : ''}
+        </div>
+        <div class="dfoot">
+          <span class="dmod" title="${MODS[dg.mod].desc}"><b>${MODS[dg.mod].name}</b> ${MODS[dg.mod].desc}</span>
+          <div class="drow"><span class="dpips" title="${clears ? 'Cleared' : best ? 'Best: stage ' + best : 'Not attempted'}">${pips}</span>
+            <span class="dstat">${clears ? `Cleared ×${clears}` : best ? `Best ${best}/${dg.stages}` : locked ? 'Sealed' : 'Unexplored'}</span>
+            <span class="dstat">Lv ${suggestedLv(i)}</span>${diff ? `<span class="ddiff ${diff[0]}">${diff[1]}</span>` : ''}
+            ${!locked && !clears ? `<span class="dfirst" title="First clear reward">★ New spell + talent point</span>` : ''}
+            ${locked ? '' : `<button class="btn ${cur ? '' : 'primary'} act" data-enter="${i}">${running ? 'Restart' : cur ? 'Enter again' : 'Enter'}</button>`}</div>
+        </div></div>`;
     }).join('')}</div>`;
 }
 /* ---------- Talent grids (Cleric in Talents, companions in Party) ---------- */
@@ -2868,9 +3078,13 @@ function renderTalents() {
     <div class="section-h"><h3>Cleric talents</h3><span class="label">Talent points <b style="color:var(--xp);font-family:var(--mono)">${pts}</b></span></div>
     ${picksLeft() ? pickHtml() : nextSpellHtml()}
     <p class="intro">You earn a talent point every 2 Cleric levels and one on each first dungeon clear. New spells don't cost points: each first dungeon clear lets you choose one of three. Talents marked with a spell icon improve that spell and open once you know it. Most take many ranks of small bonuses; major talents cost more. Deeper rows need points spent in that tree first (the number on the left).</p>
-    <div class="ttabs" role="group" aria-label="Talent trees">${CLERIC_TREES.map(t => `<button class="chipbtn" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">${t.name} <small>${spentIn('cleric', t.id)}</small></button>`).join('')}</div>
-    <p class="intro">${tr.desc}.</p>
-    ${gridHtml(tr, 3)}
+    <div class="crests" role="group" aria-label="Talent trees">${CLERIC_TREES.map(t => { const sp = spentIn('cleric', t.id), mx = treeMax('cleric', t);
+      return `<button class="crestcard" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">
+        <img class="crest" src="${crest(t.id)}" alt=""><b>${t.name}</b>
+        <span class="cspells">${['heal'].filter(() => t.id === 'holy').concat(treeSpells(t)).map(id => `<span class="${known(id) ? 'k' : ''}" title="${SP[id].name}${known(id) ? '' : ' (not learned yet)'}">${img('s_' + id, 0, 'xs')}</span>`).join('')}</span>
+        <span class="cbar"><i style="width:${100 * sp / mx}%"></i></span><small>${sp} points</small></button>`; }).join('')}</div>
+    <div class="tbanner" style="--sc:${tr.col}"><img class="crest" src="${crest(tr.id)}" alt=""><div><h3>${tr.name}</h3><p>${tr.desc}.</p></div></div>
+    <div class="tframe" style="--sc:${tr.col}">${gridHtml(tr, 3)}</div>
     <div class="tdetail" id="tdetail">${talDetailHtml()}</div>
     <div class="actions"><button class="btn" data-treset="cleric" ${spentIn('cleric') ? '' : 'disabled'}>Reset all Cleric talents</button><span class="label">Free</span></div>`;
 }
@@ -2896,18 +3110,20 @@ function renderParty() {
   const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}"><b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
   pane.innerHTML = `
     <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${q.role} · Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
+    ${perk('barracks', 2) ? `<div class="stances"><span class="label">Battle stance</span>${Object.entries(STANCES).map(([k, v]) => `<button class="chipbtn" data-stance="${k}" aria-pressed="${stance() === k}" title="${v.desc}">${v.name}</button>`).join('')}<span class="label sub">${STANCES[stance()].desc}</span></div>` : ''}
     <div class="phead" style="--rc:${ROLE_COL[i]}">${portraitImg(i, 'lg')}<div><h3>${p.name} <small class="ptitle">${PROMO_TITLE[promoRank(i)]}</small></h3><span class="label">${p.role} · Level ${S.heroes[i].lv}${comp ? ` · ${fmt(memberDps(i))} damage per second` : ''}</span></div></div>
     <div class="bar xp"><i class="fill" id="pxp"></i></div>
     <div class="statgrid" id="pstats"></div>
     ${comp ? `<div class="section-h"><h3>Equipment</h3><span class="label">Change it in the Armory</span></div>
-    <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(cs.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
+    <div class="slots">${CSLOTS.map(cs => { const it = S.cequip[i][cs.id]; return `<div class="slot static">${img(it ? itemIcon(it) : CBASES[i][cs.id][0][2], it ? it.rarity : 0, it ? '' : 'sm')}<small>${cs.name}${it ? ' · ilvl ' + it.ilvl : ''}</small>${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</div>`; }).join('')}</div>` : ''}
     <div class="section-h"><h3>Promotion</h3><span class="label">${PROMO_TITLE[pr]} · each rank ${per}</span></div>
     <div class="promo" style="--rc:${ROLE_COL[i]}"><div class="ladder">${ladder}</div>
       ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div>
       <p class="sub">Now ×${promoMul(i).toFixed(2)}. ${PROMO_TITLE[pr + 1]} makes it ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}.</p>`}</div>
     ${comp ? `
     <div class="section-h"><h3>${p.name}'s talents</h3><span class="label">Points <b style="color:var(--xp);font-family:var(--mono)">${pointsOf(i)}</b> · one every 2 levels</span></div>
-    <div class="ctrees">${COMP_TREES[i].map(tr => `<div class="ctree"><h4 style="color:${tr.col}">${tr.name} <small>${spentIn(i, tr.id)} spent</small></h4><p class="intro">${tr.desc}.</p>${gridHtml(tr, 3)}</div>`).join('')}</div>
+    <div class="ctrees">${COMP_TREES[i].map(tr => { const ab = Object.keys(CABIL).find(id => CABIL[id].tree === tr.id);
+      return `<div class="ctree"><div class="tbanner sm" style="--sc:${tr.col}">${img(CABIL[ab].icon)}<div><h3>${tr.name} <small>${spentIn(i, tr.id)} spent</small></h3><p>${tr.desc}. Attack: ${CABIL[ab].name}.</p></div></div><div class="tframe" style="--sc:${tr.col}">${gridHtml(tr, 3)}</div></div>`; }).join('')}</div>
     <div class="tdetail" id="tdetail">${talDetailHtml()}</div>
     <div class="actions"><button class="btn" data-treset="${i}" ${spentIn(i) ? '' : 'disabled'}>Reset ${p.name}'s talents</button><span class="label">Free</span></div>`
     : '<p class="intro">Your own talents are in the Talents tab.</p>'}`;
@@ -2922,7 +3138,7 @@ function promote(i) {
 let lastCoffer = null;
 function openCoffer(id) {
   const c = COFFERS.find(x => x.id === id), cost = cofferCost(c);
-  if (S.gold < cost) return;
+  if (S.gold < cost || !perk('market', c.need)) return;
   if (S.inv.length >= bagCap()) return toast('Your bag is full. Sell something first.');
   S.gold -= cost;
   const d = cofferDun(), min = c.id === 'royal' && Math.random() < 0.2 ? 4 : c.min;
@@ -2933,7 +3149,7 @@ function openCoffer(id) {
 }
 function buyElixir(id) {
   const c = elixirCost(), ex = ELIXIRS.find(x => x.id === id);
-  if (S.gold < c || (S.elixir[id] || 0) > ELIXIR_CAP - ELIXIR_TIME) return;
+  if (!perk('garden', ex.need) || S.gold < c || (S.elixir[id] || 0) > ELIXIR_CAP - ELIXIR_TIME) return;
   S.gold -= c; const was = elixirOn(id); S.elixir[id] = (S.elixir[id] || 0) + ELIXIR_TIME; if (!was) recalc();
   log(`Drank ${ex.name}.`); shopDirty = true;
 }
@@ -2975,6 +3191,7 @@ const PLOTS = {
   garden:    { x: 120, y: 146, top: 28 },
   smithy:    { x: 202, y: 146, top: 36 },
   barracks:  { x: 274, y: 130, top: 34 },
+  market:    { x: 292, y: 80,  top: 34 },
 };
 const TOWN_ANIM = {};
 let townSel = 'cloister', townHover = null, townT = 0, townBg = null, TFX = [];
@@ -2992,7 +3209,7 @@ function buildTownBg() {
   for (const id in PLOTS) { const p = PLOTS[id]; if (p.y < 92) x.fillRect(p.x - 3, p.y, 6, 92 - p.y); else x.fillRect(p.x - 3, 104, 6, p.y - 104); }
   x.fillStyle = '#8f7a56'; for (let k = 0; k < 160; k++) x.fillRect(Math.floor(hash(k * 5.3) * TW), 93 + Math.floor(hash(k * 2.9) * 10), 2, 1);
   // trees around the edges
-  for (const [tx, ty] of [[12, 70], [26, 90], [300, 64], [312, 96], [10, 160], [150, 172], [306, 168], [128, 84], [196, 84], [100, 112], [222, 116]]) {
+  for (const [tx, ty] of [[12, 70], [26, 90], [10, 160], [150, 172], [306, 168], [128, 84], [196, 84], [100, 112], [222, 116], [314, 120]]) {
     x.fillStyle = '#00000033'; x.fillRect(tx - 6, ty - 1, 12, 2);
     x.fillStyle = '#5a3d28'; x.fillRect(tx - 1, ty - 6, 2, 6);
     x.fillStyle = '#2f5d34'; x.fillRect(tx - 6, ty - 15, 12, 9); x.fillRect(tx - 4, ty - 18, 8, 3);
@@ -3040,6 +3257,15 @@ function drawBuilding(id, X, Y, t) {
       r(X - 13, Y - 15, 11, 11, '#2a1d17'); r(X - 12, Y - 12, 9, 8, (t * 6 | 0) % 2 ? '#ff9f43' : '#e07a3a');
       r(X + 14, Y - 5, 8, 2, '#5d6372'); r(X + 16, Y - 3, 4, 3, '#5d6372');
       break;
+    case 'market': {
+      r(X - 18, Y - 14, 36, 14, '#8a6a44'); r(X - 18, Y - 14, 36, 1, '#a8865c');
+      r(X - 20, Y - 26, 2, 26, '#5e3c1c'); r(X + 18, Y - 26, 2, 26, '#5e3c1c');
+      for (let k = 0; k < 6; k++) r(X - 21 + k * 7, Y - 30, 7, 6, k % 2 ? '#f3ead8' : '#c9504a');
+      for (let k = 0; k < 6; k++) r(X - 21 + k * 7, Y - 24, 7, 2, k % 2 ? '#d8cfbf' : '#a8433d');
+      r(X - 14, Y - 18, 4, 4, '#e4b75c'); r(X - 8, Y - 18, 5, 4, '#6fbf73'); r(X - 1, Y - 18, 4, 4, '#c48bfb'); r(X + 6, Y - 18, 5, 4, '#ff9f43');
+      const sw = (t * 2 | 0) % 2; r(X + 12, Y - 20 + sw, 3, 3, '#e4b75c');
+      break;
+    }
     case 'barracks': {
       r(X - 20, Y - 20, 36, 20, '#8a6a44'); for (let k = 0; k < 4; k++) r(X - 20, Y - 16 + k * 4, 36, 1, '#7a5a38');
       r(X - 22, Y - 26, 40, 6, '#5e3c1c'); r(X - 6, Y - 10, 7, 10, '#4a3220');
@@ -3117,6 +3343,7 @@ function townDetailHtml() {
   return `<div class="tdh">${img(b.icon)}<b>${b.name}</b><span class="label">level ${L}/${TOWN_MAX}</span></div>
     <p>${L ? 'Now: ' + b.fx(L) + '.' : b.intro}</p>
     ${cost ? `<p class="sub">Next level: ${b.fx(L + 1)}.</p>` : ''}
+    ${b.perks ? `<ul class="perks">${b.perks.map(([pl, n, dsc]) => `<li class="${L >= pl ? 'on' : pl === L + 1 ? 'next' : ''}"><span class="plv">${L >= pl ? '✓' : 'Lv ' + pl}</span><b>${n}</b> ${dsc}</li>`).join('')}</ul>` : ''}
     <div class="actions">${cost ? `<button class="btn primary" data-town="${b.id}">${L ? 'Upgrade' : 'Build'}</button><span class="cost" data-tcost></span>` : '<span class="label">Fully built</span>'}</div>`;
 }
 function wireTown() {
@@ -3162,15 +3389,15 @@ function masteryHtml(it) {
     ${done ? '' : `<div class="full bar mast"><i class="fill" style="width:${100 * it.mp / it.mneed}%"></i></div>`}`;
 }
 function renderArmory() {
-  const slotBtn = (it, name, attrs, isSel) => `<button class="slot ${isSel ? 'sel' : ''}" ${attrs}>${img(it ? it.slot : name.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${name.name}${it && it.up ? ' · +' + it.up : ''}${it ? ' · ' + it.ilvl : ''}</small>
+  const slotBtn = (it, name, attrs, isSel) => `<button class="slot ${isSel ? 'sel' : ''}" ${attrs}>${img(it ? itemIcon(it) : name.icon || name.id, it ? it.rarity : 0, it ? '' : 'sm')}<small>${name.name}${it && it.up ? ' · +' + it.up : ''}${it ? ' · ' + it.ilvl : ''}</small>
       ${it ? `<b class="rar${it.rarity}">${esc(it.name)}</b>` : '<span class="empty-s">Empty</span>'}</button>`;
   const eqHtml = SLOTS.map(sl => slotBtn(S.equip[sl.id], sl, `data-eq="${sl.id}"`, sel && sel.where === 'eq' && sel.id === sl.id)).join('');
   const partyGear = [0, 1, 2, 3].map(ci => `<div class="pgear"><span class="pg-name">${PARTY[ci].name}</span>${CSLOTS.map(cs =>
-    slotBtn(S.cequip[ci][cs.id], cs, `data-ceq="${ci}:${cs.id}"`, sel && sel.where === 'ceq' && sel.ci === ci && sel.slot === cs.id)).join('')}</div>`).join('');
+    slotBtn(S.cequip[ci][cs.id], { ...cs, icon: CBASES[ci][cs.id][0][2] }, `data-ceq="${ci}:${cs.id}"`, sel && sel.where === 'ceq' && sel.ci === ci && sel.slot === cs.id)).join('')}</div>`).join('');
   const bagHtml = S.inv.map(it => {
     const up = isUpgrade(it), isSel = sel && sel.where === 'inv' && sel.id === it.id;
-    return `<button class="bagitem ${isSel ? 'sel' : ''}" data-inv="${it.id}">${img(it.slot, it.rarity)}<b class="rar${it.rarity}">${esc(it.name)}</b>
-      <span class="up ${up ? 'better' : 'worse'}">${up ? '▲ upgrade' : slotName(it)}${isComp(it) ? ' · party' : ''} · ilvl ${it.ilvl}${it.mp >= it.mneed ? ' · mastered' : ''}</span></button>`;
+    return `<button class="bagitem ${isSel ? 'sel' : ''}" data-inv="${it.id}">${img(itemIcon(it), it.rarity)}<b class="rar${it.rarity}">${esc(it.name)}</b>
+      <span class="up ${up ? 'better' : 'worse'}">${up ? '▲ upgrade' : slotName(it)}${isComp(it) ? ' · ' + PARTY[it.who].name : ''} · ilvl ${it.ilvl}${it.mp >= it.mneed ? ' · mastered' : ''}</span></button>`;
   }).join('');
   let detail = '';
   if (sel) {
@@ -3180,14 +3407,14 @@ function renderArmory() {
       const cmp = inBag && !comp ? S.equip[it.slot] : null;
       let acts, note;
       if (inBag && comp) {
-        acts = [0, 1, 2, 3].map(ci => {
+        acts = [it.who].map(ci => {
           const nw = makeCs(ci, { slot: it.slot, item: it }), od = D.cs[ci];
           const dd = csDps(ci, nw) - csDps(ci, od), dh = (nw.hpMul / od.hpMul - 1) * 100;
           const txt = it.slot === 'carmor' ? `${dh >= 0 ? '+' : ''}${dh.toFixed(0)}% health` : `${dd >= 0 ? '+' : ''}${fmt(dd)} dps`;
           const good = it.slot === 'carmor' ? dh > 0.5 : dd > 0.05;
-          return `<button class="btn ${good ? 'primary' : ''}" data-act="cequip:${ci}">${PARTY[ci].name} · ${txt}</button>`;
+          return `<button class="btn ${good ? 'primary' : ''}" data-act="cequip:${ci}">Equip on ${PARTY[ci].name} · ${txt}</button>`;
         }).join('') + `<button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`;
-        note = 'Party gear. Each button shows what changes if that companion wears it.';
+        note = `Only ${PARTY[it.who].name} can use this. The button shows what changes if ${PARTY[it.who].name} wears it.`;
       } else if (inBag) {
         acts = `<button class="btn primary" data-act="equip">Equip</button><button class="btn" data-act="sell">Sell · ${fmt(sellValue(it))} gold</button>`;
         note = cmp ? `Compared with your ${esc(cmp.name)}.` : 'Slot is empty.';
@@ -3195,8 +3422,9 @@ function renderArmory() {
         acts = `<button class="btn primary" data-act="enchant" data-cost="${enchantCost(it)}">Enchant to +${(it.up || 0) + 1} · ${fmt(enchantCost(it))} gold</button>` + (sel.where === 'ceq' ? '<button class="btn" data-act="unequip">Unequip</button>' : '');
         note = sel.where === 'ceq' ? `Worn by ${PARTY[sel.ci].name}. Each enchant adds 10% to every stat.` : 'Each enchant adds 10% to every stat.';
       }
-      detail = `<div class="detail">${img(it.slot, it.rarity)}<h4 class="rar${it.rarity}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
-        <span class="sub">${RARITY[it.rarity].name} ${comp ? 'party ' : ''}${slotName(it)} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
+      if (perk('smithy', 3)) acts += `<button class="btn" data-act="reforge" data-cost="${reforgeCost(it)}">Reforge · ${fmt(reforgeCost(it))} gold</button>`;
+      detail = `<div class="detail">${img(itemIcon(it), it.rarity)}<h4 class="rar${it.rarity}">${esc(it.name)}${it.up ? ' +' + it.up : ''}</h4>
+        <span class="sub">${RARITY[it.rarity].name} ${comp ? PARTY[it.who].name + "'s " + it.base.toLowerCase() : slotName(it)} · item level ${it.ilvl}${it.up ? ` · enchanted +${it.up * 10}%` : ''}</span>
         <ul class="full">${itemLines(it, cmp)}</ul>
         ${masteryHtml(it)}
         <span class="full sub">${note}</span>
@@ -3217,7 +3445,8 @@ function renderArmory() {
     <div class="section-h"><h3>Mastered skills</h3><span class="label">Clear stages with gear equipped to master it</span></div>
     ${learned.length ? `<div class="skills">${learned.map(([k, v]) => `<span class="chip" title="${SKILLS[k].per} per rank">${SKILLS[k].name} ${roman(v)}</span>`).join('')}</div>` : '<p class="empty">Master an item to learn its skill for good. Skills stay after you unequip or sell the item.</p>'}
     <div class="section-h"><h3>Merchant</h3><span class="label">Sealed items for ${DUNGEONS[cofferDun()].name} (item level ${ilvlFor(cofferDun(), DUNGEONS[cofferDun()].stages)}+)</span></div>
-    <div class="coffers">${COFFERS.map(c => `<button class="coffer" data-coffer="${c.id}" data-ccost="${cofferCost(c)}">${img(c.icon, c.min)}<b>${c.name}</b><span>${c.desc}</span><span class="cost">${fmt(cofferCost(c))} gold</span></button>`).join('')}</div>
+    <div class="coffers">${COFFERS.map(c => perk('market', c.need) ? `<button class="coffer" data-coffer="${c.id}" data-ccost="${cofferCost(c)}">${img(c.icon, c.min)}<b>${c.name}</b><span>${c.desc}</span><span class="cost">${fmt(cofferCost(c))} gold</span></button>`
+      : `<div class="coffer locked">${img(c.icon, c.min)}<b>${c.name}</b><span>${c.desc}</span><span class="cost">Market level ${c.need}</span></div>`).join('')}</div>
     <div class="section-h"><h3>Bag <span class="num" style="color:var(--muted)">${S.inv.length}/${bagCap()}</span></h3>
       ${confirmSell ? `<span class="confirm">Sell ${weaker.length} items for ${fmt(weaker.reduce((t, i) => t + sellValue(i), 0))} gold? <button class="btn primary" data-act="sellweak-yes">Sell</button><button class="btn" data-act="sellweak-no">Keep</button></span>`
         : `<button class="btn" data-act="sellweak" ${weaker.length ? '' : 'disabled'}>Sell items that aren't upgrades (${weaker.length})</button>`}</div>
@@ -3228,7 +3457,7 @@ function renderArmory() {
     ${S.inv.length ? `<div class="bag">${bagHtml}</div>` : '<p class="empty">Enemies drop gear. Bosses always drop at least one item.</p>'}`;
 }
 let chronScope = 'run';
-const SRC_NAME = id => id === 'acolyte' ? 'Acolyte' : id === 'ward' ? 'Ward (absorbed)' : id === 'renew' ? 'Renew' : SP_NAMES[id] || (id === 'heal' ? 'Heal' : 'Other');
+const SRC_NAME = id => id === 'draught' ? 'Healing Draught' : id === 'acolyte' ? 'Acolyte' : id === 'ward' ? 'Ward (absorbed)' : id === 'renew' ? 'Renew' : SP_NAMES[id] || (id === 'heal' ? 'Heal' : 'Other');
 const SRC_ICON = id => id === 'acolyte' ? 'acolyte' : SP[id] ? 's_' + id : 'scroll';
 function healingTable(b) {
   const rows = Object.entries(b.spell || {}).filter(([, r]) => r.h + r.o > 0).sort((x, y) => y[1].h - x[1].h);
@@ -3306,6 +3535,7 @@ function updatePane() {
     ].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('');
     const en = pane.querySelector('[data-act="enchant"]');
     if (en) en.disabled = S.gold < +en.dataset.cost;
+    const rf = pane.querySelector('[data-act="reforge"]'); if (rf) rf.disabled = S.gold < +rf.dataset.cost;
   }
   const dotFor = (sel, label, on) => { const tt = document.querySelector(sel); if (!!tt.querySelector('.dot') !== on) tt.innerHTML = label + (on ? '<span class="dot" aria-label="talents you can learn"></span>' : ''); };
   dotFor('[data-tab="talents"]', 'Talents', picksLeft() > 0 || CLERIC_TREES.some(t => t.nodes.some(n => canLearn(n) === true)));
@@ -3318,6 +3548,7 @@ pane.addEventListener('click', e => {
   if (d.pick) { learnSpell(d.pick); return; }
   if (d.loot != null) { S.lootFilter = +d.loot; shopDirty = true; return; }
   if (d.chron) { chronScope = d.chron; shopDirty = true; return; }
+  if (d.stance) { S.stance = d.stance; recalc(); shopDirty = true; return; }
   if (d.town) {
     const b = TOWNB[d.town], L = lvl(b.id);
     if (L < TOWN_MAX) {
@@ -3326,7 +3557,8 @@ pane.addEventListener('click', e => {
         S.gold -= c.gold; S.mats[c.d] -= c.n; S.town[b.id] = L + 1; recalc();
         if (L === 0) TOWN_ANIM[b.id] = 0;
         if (b.id === 'garden') { C.potions = (C.potions || 0) + 1; autoBind('potion'); }
-        log(`Built <b>${b.name}</b> level ${L + 1}.`); toast(`${b.name} is now level ${L + 1}.`);
+        const nw = (b.perks || []).find(([pl]) => pl === L + 1);
+        log(`Built <b>${b.name}</b> level ${L + 1}.${nw ? ` Unlocked <b>${nw[1]}</b>.` : ''}`); toast(nw ? `${b.name} ${L + 1}: ${nw[1]} unlocked!` : `${b.name} is now level ${L + 1}.`);
       }
     }
   } else if (d.upg) {
@@ -3363,10 +3595,14 @@ function act(a) {
     addGold(sellValue(S.inv[idx])); S.inv.splice(idx, 1); sel = null;
   } else if (a.startsWith('cequip:') && sel) {
     const ci = +a.split(':')[1], idx = S.inv.findIndex(x => x.id === sel.id); if (idx < 0) return;
-    const it = S.inv[idx], old = S.cequip[ci][it.slot];
+    const it = S.inv[idx]; if (it.who !== ci) return;
+    const old = S.cequip[ci][it.slot];
     S.cequip[ci][it.slot] = it;
     if (old) S.inv[idx] = old; else S.inv.splice(idx, 1);
     sel = { where: 'ceq', ci, slot: it.slot }; recalc();
+  } else if (a === 'reforge' && sel) {
+    const it = sel.where === 'eq' ? S.equip[sel.id] : sel.where === 'ceq' ? S.cequip[sel.ci][sel.slot] : findItem(sel.id);
+    if (it && perk('smithy', 3) && S.gold >= reforgeCost(it)) { S.gold -= reforgeCost(it); reforge(it); recalc(); log(`Reforged <b class="rar${it.rarity}">${esc(it.name)}</b>.`); }
   } else if (a === 'unequip' && sel && sel.where === 'ceq') {
     if (S.inv.length >= bagCap()) { toast('Your bag is full.'); return; }
     S.inv.push(S.cequip[sel.ci][sel.slot]); S.cequip[sel.ci][sel.slot] = null; sel = null; recalc();
@@ -3490,7 +3726,8 @@ function load(data) {
   for (const id in S.tree) if (!TNODE['cleric|' + id]) delete S.tree[id];
   S.ctree.forEach((t, i) => { for (const id in t) if (!TNODE[i + '|' + id]) delete t[id]; });
   Object.values(S.equip).forEach(it => it && ensureItem(it));
-  S.cequip.forEach(e => Object.values(e).forEach(it => it && ensureItem(it)));
+  S.cequip.forEach((e, ci) => Object.values(e).forEach(it => { if (it) { adoptItem(it, ci); ensureItem(it); } }));
+  S.inv.forEach(it => adoptItem(it));
   S.inv.forEach(ensureItem);
   return true;
 }

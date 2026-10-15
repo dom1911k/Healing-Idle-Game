@@ -167,10 +167,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .fr-fx{display:flex;gap:4px;min-height:16px;flex-wrap:wrap}
 .fx{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:0 5px;border-radius:3px;line-height:16px}
 .fx.renew{background:#86dcb822;color:var(--heal)}
+.fx.rejuv{background:#8fdc6a26;color:#a8f07a}.fx.regrowth{background:#6fbf7326;color:#9be0a0}.fx.wild{background:#c9e06a22;color:#d6ff9a}
+.fx.hymn{background:#fff2a822;color:#fff2a8}.fx.leech{background:#c43a5a2a;color:#ff8a9a}.fx.bark{background:#a8763a33;color:#e8c08a}.fx.bone{background:#e8e2d422;color:#e8e2d4}
+.fx b{font-family:var(--mono);font-weight:700}
 .fx.rot{background:#a3c45c22;color:var(--rot)}
 .fx.ward{background:#d3dbff22;color:var(--shield)}
 .floats{position:absolute;inset:0;pointer-events:none;overflow:visible}
-.ft{position:absolute;left:50%;top:30%;transform:translateX(-50%);font-family:var(--mono);font-weight:500;font-size:.85rem;white-space:nowrap;animation:rise 1s ease-out forwards;text-shadow:0 1px 3px #000}
+.ft{position:absolute;left:50%;top:34%;transform:translateX(-50%);font-family:var(--mono);font-weight:700;font-size:.85rem;white-space:nowrap;animation:rise 1s ease-out forwards;text-shadow:-1px 0 #000,1px 0 #000,0 -1px #000,0 1px #000,0 2px 4px #000;letter-spacing:.02em}
 .ft.heal{color:var(--heal)}.ft.crit{font-size:1.1rem;color:#c9ffe6}.ft.dmg{color:var(--hurt)}.ft.abs{color:var(--shield)}.ft.free{color:var(--mana)}
 @keyframes rise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-34px)}}
 
@@ -374,6 +377,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .classcard{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;border-radius:10px;border:1px solid var(--line);background:#1d1a26;color:var(--ink);font:inherit;cursor:pointer;text-align:center}
 .classcard .crest{width:40px;height:40px;image-rendering:pixelated}.classcard b{font-family:var(--display);font-weight:500;color:var(--sc);font-size:1.05rem}.classcard span{font-size:.74rem;color:var(--muted)}
 .classcard[aria-pressed="true"]{border-color:var(--sc);box-shadow:0 0 0 1px var(--sc) inset,0 0 16px color-mix(in srgb,var(--sc) 30%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 14%,#1d1a26),#1d1a26)}
+.clsspells{margin:6px 0 4px;font-size:.84rem}.clsspells summary{cursor:pointer;color:var(--sc);font-weight:600}
+.cslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-top:6px}
+.cslist div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 8px;align-items:center;background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.cslist img{grid-row:span 2}.cslist b{color:var(--ink)}.cslist span{color:var(--muted);font-size:.78rem}.cslist .unk{opacity:.55}
 .passive{margin:8px 0 2px;padding:8px 10px;border-radius:8px;border-left:3px solid var(--sc);background:#1a1722;font-size:.86rem;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}.passive b{color:var(--sc)}
 .crests{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .crestcard{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px 8px;border-radius:10px;border:1px solid var(--line);background:linear-gradient(180deg,color-mix(in srgb,var(--sc) 14%,#1d1a26),#1d1a26 70%);color:var(--ink);font:inherit;cursor:pointer;min-width:0}
@@ -637,20 +644,26 @@ const ICONS = {
   s_core:   ['....p.....','...ppp....','..pPpPp...','.ppppppp..','..pPpPp...','...ppp....','....p.....','..........','..........','..........'],
 };
 const iconCache = {};
+const CLASS_ICON_PAL = {
+  druid: { c: '#8fdc6a', C: '#4f8a3a', y: '#d6ff9a', w: '#e8f5d0', u: '#7ad6c8', U: '#3f8a7a', p: '#9be06a', P: '#5a8a3a', g: '#c9a64a' },
+  occultist: { c: '#e0605a', C: '#8a2a3a', y: '#ff9a8a', w: '#f0d0d8', u: '#b07ae0', U: '#5a2a7a', p: '#c43a5a', P: '#6a1a2a', g: '#a8433d' },
+};
 function icon(name, rar = 0) {
+  // spell icons take their class's colors (name@druid)
+  const [base, tint] = name.split('@'), pal = tint ? { ...PAL, ...CLASS_ICON_PAL[tint] } : PAL;
   const key = name + rar;
   if (iconCache[key]) return iconCache[key];
-  const m = ICONS[name] || ICONS.scroll;
+  const m = ICONS[base] || ICONS.scroll;
   const c = document.createElement('canvas'); c.width = 10; c.height = 10;
   const x = c.getContext('2d');
   m.forEach((row, y) => [...row].forEach((ch, i) => {
     if (ch === '.') return;
-    x.fillStyle = ch === 'x' ? RCOL[rar][0] : ch === 'X' ? RCOL[rar][1] : PAL[ch] || '#f0f';
+    x.fillStyle = ch === 'x' ? RCOL[rar][0] : ch === 'X' ? RCOL[rar][1] : pal[ch] || '#f0f';
     x.fillRect(i, y, 1, 1);
   }));
   return (iconCache[key] = c.toDataURL());
 }
-const img = (name, rar, cls = '') => `<img class="ico ${cls}" src="${icon(name, rar)}" alt="">`;
+const img = (name, rar, cls = '') => `<img class="ico ${cls}" src="${icon(name.startsWith('s_') && typeof S !== 'undefined' && S.cls && S.cls !== 'priest' ? name + '@' + S.cls : name, rar)}" alt="">`;
 
 /* =========================================================
    Data: party, dungeons, enemies
@@ -1730,7 +1743,7 @@ function hit(i, amt) {
   if (cs.laststand && m.hp / m.max < 0.3) amt *= 0.75;
   const a = Math.min(m.shield, amt);
   if (a > 0) {
-    m.shield -= a; amt -= a; floatTxt(i, 'absorb ' + fmt(a), 'abs');
+    m.shield -= a; amt -= a; floatTxt(i, 'absorb ' + fmt(Math.round(a)), 'abs');
     // damage a Ward soaks counts as healing that mattered
     trackHeal('ward', a, 0); C.devQuiet = 0; C.dev = Math.min(100, C.dev + 1.5 * (1 - C.dev / 110));
     if (m.shield <= 0.5 && m.wardSize) { const ws = m.wardSize; m.wardSize = 0; m.shield = 0; if (D.sp.ward.mend) { C.healSrc = 'ward'; heal(i, ws * D.sp.ward.mend); C.healSrc = null; } }
@@ -1739,8 +1752,8 @@ function hit(i, amt) {
   trackStat('taken', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
   m.hp -= amt; heroAnim[i].kb = 0.14;
   if (m.hp > 0 && D.gspirit && !C.gsUsed && m.hp / m.max < 0.15) { C.gsUsed = true; heal(i, m.max * 0.4, 0, true); fxLabel(i, 'Guardian Spirit', '#86dcb8'); }
-  floatTxt(i, '-' + fmt(amt), 'dmg');
-  pnumFx(i, '-' + fmt(amt), '#ff8a7a');
+  floatTxt(i, '-' + fmt(amt), 'dmg', amt);
+  pnumFx(i, '-', amt, '#ff8a7a');
   heroAnim[i].flash = 0.12;
   if (m.hp <= 0 && i === 0 && pk(0, 4) && !C.bramSave) { C.bramSave = true; m.hp = 1; m.shield = Math.max(m.shield, m.max * 0.25); floatTxt(0, 'Unyielding', 'abs'); fxLabel(0, 'Unyielding!', '#7ba3ee'); }
   if (m.hp <= 0 && pk(YOU, 3) && !C.angelUsed) { C.angelUsed = true; m.hp = m.max; fxBeam(i, '#fff2a8'); fxLabel(i, 'Guardian Angel', '#fff2a8'); log(`Guardian Angel saved <b>${PARTY[i].name}</b>.`); }
@@ -1777,8 +1790,8 @@ function heal(i, amt, critBonus = 0, npc = false) {
   }
   if (C.inCast && !npc) C.castAmt += amt;
   if (!npc && eff > 0) sfx(crit ? 'crit' : 'heal');
-  floatTxt(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal');
-  pnumFx(i, '+' + fmt(amt) + (crit ? '!' : ''), crit ? '#e9fff4' : '#86dcb8');
+  floatTxt(i, '+' + fmt(Math.round(amt)) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal', crit ? 0 : amt);
+  if (crit) pnumFx(i, '+' + fmt(Math.round(amt)) + '!', 0, '#e9fff4'); else pnumFx(i, '+', amt, CLASS_FX[clsId()][0]);
   fxHeal(i, crit);
   return eff;
 }
@@ -1796,7 +1809,7 @@ const RUN_SPELL = {
   flash: t => { heal(t, D.heal * D.sp.flash.amt, D.sp.flash.crit); fxStar(t); if (C.lastCrit && D.flashRefund) C.mana = Math.min(D.maxMana, C.mana + spellCost(SP.flash) * D.flashRefund); },
   renew: t => {
     const rw = D.sp.renew, total = D.heal * rw.amt * rw.dur;
-    C.party[t].hots = [{ rate: total * (1 - rw.bloom) / rw.dur, left: rw.dur, acc: 0 }];
+    setHot(t, 'renew', total * (1 - rw.bloom), rw.dur);
     if (rw.bloom) heal(t, total * rw.bloom);
     fxLeaves(t);
   },
@@ -1816,6 +1829,10 @@ const RUN_SPELL = {
   blessing: () => { C.buff.bless = D.sp.blessing.dur; },
 };
 function setHot(t, kind, total, dur) { const m = C.party[t]; if (!m || !m.alive) return; m.hots = m.hots.filter(h => h.kind !== kind).concat({ kind, rate: total / dur, left: dur, acc: 0 }); }
+const HOT_INFO = {
+  renew: () => [SP.renew.name, clsId() === 'occultist' ? 'leech' : 'renew'], rejuv: () => ['Rejuvenation', 'rejuv'], regrowth: () => [SP.heal.name, 'regrowth'],
+  wild: () => [SP.prayer.name, 'wild'], hymn: () => ['Divine Hymn', 'hymn'],
+};
 const lowestOther = t => aliveIdx().filter(k => k !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0];
 function addRejuv(t) {
   const m = C.party[t]; if (!m || !m.alive) return;
@@ -1836,7 +1853,7 @@ const CLASS_RUN = {
   occultist: {
     heal: t => { const a = D.heal * D.sp.heal.amt; heal(t, a); fxBeam(t, '#e0605a'); const f = front(); if (f) { dealFoe(f, a * D.drainDmg, '', YOU); burst(f.x, f.y - f.h / 2, '#c43a5a', 6); } },
     renew: t => { RUN_SPELL.renew(t); const f = front(); if (f) f.leech = { rate: D.heal * D.sp.renew.amt, left: D.sp.renew.dur, acc: 0 }; },
-    meditate: () => { const m = C.party[YOU], c = m.max * 0.15; if (m.hp > c + 1) { m.hp -= c; floatTxt(YOU, '-' + fmt(c), 'dmg'); } C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.sp.meditate.amt); fxRingAt(YOU, '#c43a5a'); },
+    meditate: () => { const m = C.party[YOU], c = m.max * 0.15; if (m.hp > c + 1) { m.hp -= c; floatTxt(YOU, '-' + fmt(Math.round(c)), 'dmg'); } C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.sp.meditate.amt); fxRingAt(YOU, '#c43a5a'); },
     prayer: () => { const k = 1 + 0.15 * liveFoes().length; aliveIdx().forEach(i => heal(i, D.heal * D.sp.prayer.amt * k)); fxRing(); },
   },
 };
@@ -2118,7 +2135,7 @@ function dealFoe(f, dmg, col, src) {
   if (src === YOU && D.siphon) siphonHeal(real * D.siphon);
   if (src != null && src !== YOU && D.vamp) C.vampPool += real * D.vamp;
   f.hp -= dmg; f.flash = 0.06; f.kb = 0.14;
-  foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
+  foeNum(f, fmt(Math.max(1, Math.round(dmg))) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : col === 'burn' ? '#ff9f43' : col === 'frost' ? '#bfe6ff' : '#f3ead8');
   if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); foeGold(f); if (f.elite) eliteLoot(f);
     if (D.killMana) C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.killMana);
     if (src === 1) { if (pk(1, 3) && C.party[1].alive) heal(1, C.party[1].max * 0.1, 0, true); if (pk(1, 5)) C.rookRamp = Math.min(5, (C.rookRamp || 0) + 1); } }
@@ -2407,6 +2424,7 @@ const CAUSE_TIP = {
   'Festering Bite': 'Festering Bite poisons: Purify the target.', 'Scorching Air': 'Scorching Air hurts everyone every 4 seconds: Renew and Prayer keep up with it.',
   'Fireball': 'Imps throw Fireballs at random allies: watch their cast bars.',
 };
+const spellWords = str => str.replace(/\b(Ward|Purify|Sanctuary|Prayer|Renew|Meditate|Flash Heal)\b/g, w => (SP[w === 'Flash Heal' ? 'flash' : w.toLowerCase()] || {}).name || w);
 function wipeReport() {
   const r = C.rstats || {}, out = [], dg = DUNGEONS[S.dun.current];
   const deaths = r.deathLog || [];
@@ -2426,7 +2444,7 @@ function wipeReport() {
   const ups = S.inv.filter(isUpgrade).length; if (ups) todo.push(`${ups} upgrade${ups > 1 ? 's' : ''} in your bag`);
   if (todo.length) out.push(`Unspent: ${todo.join(', ')}.`);
   if (!out.length) out.push(C.stage === dg.stages ? 'The boss is the real test. Farm for levels, gear and talent points, then come back.' : 'Rewards from cleared stages are kept. Farm, then try again.');
-  return `<ul class="wreport">${out.map(x => `<li>${x}</li>`).join('')}</ul>`;
+  return `<ul class="wreport">${out.map(x => `<li>${spellWords(x)}</li>`).join('')}</ul>`;
 }
 function wipe() {
   C.cast = null; S.stats.wipes++;
@@ -3153,10 +3171,16 @@ function burst(x, y, col, n = 8, up = 0) {
   if (reduced()) n = Math.min(n, 3);
   for (let k = 0; k < n; k++) FX.push({ t: 'p', x, y, vx: rand(-25, 25), vy: rand(-35, -5) - up, g: up ? 0 : 60, life: rand(0.4, 0.8), max: 0.8, col, s: 1 });
 }
-function pnumFx(i, str, col) { if (document.hidden) return; const p = HERO_POS[i]; FX.push({ t: 'num', x: p.x + rand(-6, 6), y: p.y - 34, str, col, life: 0.9, max: 0.9 }); }
+// sign + value merge into the hero's last number of the same colour while it is fresh, so HoT ticks read as one rising total
+function pnumFx(i, sign, v, col) {
+  if (document.hidden) return; const p = HERO_POS[i];
+  if (v) { const L = FX.find(f => f.t === 'num' && f.hero === i && f.col === col && f.v != null && f.max - f.life < 0.35); if (L) { L.v += v; L.str = sign + fmt(Math.round(L.v)); return; } }
+  FX.push({ t: 'num', x: p.x + rand(-6, 6), y: p.y - 34, str: v ? sign + fmt(Math.round(v)) : sign, col, life: 0.9, max: 0.9, hero: i, v: v || null });
+}
+const CLASS_FX = { priest: ['#86dcb8', '#e9fff4', '#fff2a8'], druid: ['#8fdc6a', '#e8ffd0', '#d6ff9a'], occultist: ['#e0605a', '#ffd0d8', '#ff8a9a'] };
 function fxHeal(i, crit) {
-  const p = HERO_POS[i];
-  for (let k = 0; k < (crit ? 12 : 6); k++) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(2, 18), vx: rand(-4, 4), vy: rand(-22, -12), g: 0, life: rand(0.5, 0.9), max: 0.9, col: crit ? '#e9fff4' : '#86dcb8', s: 1 });
+  const p = HERO_POS[i], fc = CLASS_FX[clsId()];
+  for (let k = 0; k < (crit ? 12 : 6); k++) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(2, 18), vx: rand(-4, 4), vy: rand(-22, -12), g: 0, life: rand(0.5, 0.9), max: 0.9, col: crit ? fc[1] : fc[0], s: 1 });
 }
 function fxBeam(i, col) { const p = HERO_POS[i]; FX.push({ t: 'beam', x: p.x, y: p.y, life: 0.45, max: 0.45, col }); }
 function fxStar(i) { const p = HERO_POS[i]; FX.push({ t: 'star', x: p.x, y: p.y - 12, life: 0.35, max: 0.35 }); }
@@ -3168,18 +3192,18 @@ function fxRing() { FX.push({ t: 'ring', x: 104, y: 140, life: 0.6, max: 0.6 });
 function fxProj(e, i, col, s) { const p = HERO_POS[i]; FX.push({ t: 'proj', x: e.x - 10, y: e.y - (e.h || 20) * 0.6, tx: p.x, ty: p.y - 12, sp: 300, col, s }); }
 function fxHeroProj(i, f) {
   const p = HERO_POS[i];
-  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : i === 2 ? '#e8e2d4' : '#fff2a8', s: i === 3 ? 3 : 2, arrow: i === 2 });
+  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : i === 2 ? '#e8e2d4' : CLASS_FX[clsId()][2], s: i === 3 ? 3 : i === YOU && clsId() === 'occultist' ? 3 : 2, arrow: i === 2 });
 }
 function fxCoins(f, g) {
   if (document.hidden) return;
   sfx('coin'); if (f.boss) for (let k = 1; k < 8; k++) setTimeout(() => sfx('coin'), k * 70);
   const n = f.boss ? (reduced() ? 8 : 28) : (reduced() ? 2 : 3 + Math.floor(Math.random() * 4)), y = f.y - f.h / 2;
   for (let k = 0; k < n; k++) FX.push({ t: 'coin', x: f.x + rand(-4, 4), y, vx: rand(-40, 30) * (f.boss ? 1.6 : 1), vy: -rand(30, 70) * (f.boss ? 1.4 : 1), wait: rand(0.35, 0.55) + (f.boss ? k * 0.03 : 0), sp: 0, life: 9, max: 9 });
-  if (f.boss) { FX.push({ t: 'ringat', x: f.x, y, life: 0.6, max: 0.6, col: '#ffd36b' }); FX.push({ t: 'num', x: f.x, y: f.y - f.h - 14, str: '+' + fmt(g), col: '#ffd36b', life: 1.6, max: 1.6 }); }
-  else FX.push({ t: 'num', x: f.x, y: f.y - f.h - 6, str: '+' + fmt(g), col: '#e4b75c', life: 0.9, max: 0.9 });
+  if (f.boss) { FX.push({ t: 'ringat', x: f.x, y, life: 0.6, max: 0.6, col: '#ffd36b' }); FX.push({ t: 'num', x: f.x, y: f.y - f.h - 14, str: '+' + fmt(Math.round(g)), col: '#ffd36b', life: 1.6, max: 1.6 }); }
+  else FX.push({ t: 'num', x: f.x, y: f.y - f.h - 6, str: '+' + fmt(Math.max(1, Math.round(g))), col: '#e4b75c', life: 0.9, max: 0.9 });
 }
 function fxLabel(i, str, col) { if (document.hidden) return; const p = HERO_POS[i]; FX.push({ t: 'label', x: p.x, y: p.y - 38, str, col, life: 1.1, max: 1.1 }); }
-function goldFx(g) { if (document.hidden) return; const p = HERO_POS[YOU]; FX.push({ t: 'num', x: p.x, y: p.y - 44, str: '+' + fmt(g), col: '#e4b75c', life: 1.1, max: 1.1 }); }
+function goldFx(g) { if (document.hidden) return; const p = HERO_POS[YOU]; FX.push({ t: 'num', x: p.x, y: p.y - 44, str: '+' + fmt(Math.round(g)), col: '#e4b75c', life: 1.1, max: 1.1 }); }
 function foeNum(f, str, col) { if (document.hidden) return; FX.push({ t: 'num', x: f.x + rand(-8, 8), y: f.y - f.h - 12, str, col, life: 0.8, max: 0.8 }); }
 function resetScene() { FX = FX.filter(f => f.t === 'num' || f.t === 'coin'); heroAnim.forEach(a => { a.atk = -1; a.flash = 0; a.cast = 0; }); }
 
@@ -3295,7 +3319,7 @@ function renderScene(dt) {
     e.kb = Math.max(0, (e.kb || 0) - dt);
     blit((X, Y) => e.boss ? drawBoss(e.kind, e.c, X, Y, sceneT) : drawMob(e.kind, e.c, X, Y, sceneT, e.seed), e.x + enterX + lx + (e.kb > 0 ? (e.boss ? 1 : 2) * e.kb / 0.14 : 0), e.y + (e.alive ? 0 : (1 - alpha) * 6), { flash: e.flash, alpha });
     if (e.alive && e.enter <= 0) {
-      const pips = [e.sunder > 0 && '#e0605a', e.mark > 0 && '#ffd36b', e.poison && '#8fdc6a', e.burn && '#ff9f43', e.slow > 0 && '#8fd0ff', e.stun > 0 && '#ffffff'].filter(Boolean);
+      const pips = [e.leech && '#ff8a9a', e.sunder > 0 && '#e0605a', e.mark > 0 && '#ffd36b', e.poison && '#8fdc6a', e.burn && '#ff9f43', e.slow > 0 && '#8fd0ff', e.stun > 0 && '#ffffff'].filter(Boolean);
       const py = e.boss ? e.y - e.h - 8 : e.y - e.h - 15, px = Math.round(e.x - pips.length * 1.5);
       pips.forEach((c, k) => { cx.fillStyle = '#0b0910'; cx.fillRect(px + k * 3 - 1, py - 1, 4, 4); cx.fillStyle = c; cx.fillRect(px + k * 3, py, 2, 2); });
     }
@@ -3368,7 +3392,8 @@ function renderScene(dt) {
       cx.globalAlpha = 0.55 + 0.15 * Math.sin(sceneT * 5); cx.strokeStyle = '#d3dbff'; cx.lineWidth = 1;
       cx.beginPath(); cx.arc(p.x, p.y - 11, 14, 0, Math.PI * 2); cx.stroke(); cx.globalAlpha = 1;
     }
-    if (m.hots.length && Math.random() < dt * 3) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(0, 14), vx: 0, vy: -10, g: 0, life: 0.6, max: 0.6, col: '#8fdc6a', s: 1 });
+    if (m.hots.length && Math.random() < dt * (2 + m.hots.length * 1.5)) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(0, 14), vx: 0, vy: -10, g: 0, life: 0.6, max: 0.6, col: { rejuv: '#a8f07a', regrowth: '#6fbf73', wild: '#d6ff9a', hymn: '#fff2a8' }[pick(m.hots).kind] || (clsId() === 'occultist' ? '#ff8a9a' : '#8fdc6a'), s: 1 });
+    if (m.bark > 0 && Math.random() < dt * 4) FX.push({ t: 'p', x: p.x + rand(-7, 7), y: p.y - rand(2, 16), vx: 0, vy: -4, g: 0, life: 0.5, max: 0.5, col: '#a8763a', s: 1 });
     if (m.dots.length && Math.random() < dt * 4) FX.push({ t: 'p', x: p.x + rand(-5, 5), y: p.y - rand(4, 16), vx: 0, vy: -6, g: 0, life: 0.5, max: 0.5, col: '#a3c45c', s: 1 });
     if (fighting && i === (C.hover ?? C.target)) {
       cx.fillStyle = '#e4b75c'; const by = p.y - 33 + Math.round(Math.sin(sceneT * 5));
@@ -3396,7 +3421,7 @@ function renderScene(dt) {
   }
   drawPets();
   const yp = HERO_POS[YOU];
-  if (C.cast && Math.random() < dt * 24) FX.push({ t: 'p', x: yp.x + 3 + rand(-3, 3), y: yp.y - 22 + rand(-3, 3), vx: rand(-6, 6), vy: rand(-12, -4), g: 0, life: 0.4, max: 0.4, col: '#fff2a8', s: 1 });
+  if (C.cast && Math.random() < dt * 24) FX.push({ t: 'p', x: yp.x + 3 + rand(-3, 3), y: yp.y - 22 + rand(-3, 3), vx: rand(-6, 6), vy: rand(-12, -4), g: 0, life: 0.4, max: 0.4, col: CLASS_FX[clsId()][2], s: 1 });
   if (C.medi && Math.random() < dt * 16) FX.push({ t: 'p', x: yp.x + rand(-8, 8), y: yp.y - rand(0, 6), vx: 0, vy: -18, g: 0, life: 0.8, max: 0.8, col: '#7ba3ee', s: 1 });
 
   FX = FX.filter(f => {
@@ -3630,12 +3655,16 @@ function updateActionBar() {
     cdtEl.textContent = cd > 1 ? Math.ceil(cd) : '';
   });
 }
-function floatTxt(i, text, cls) {
+function floatTxt(i, text, cls, v) {
   if (document.hidden) return;
   const fe = frameEls[i]; if (!fe) return;
-  if (fe.floats.childElementCount > 4) fe.floats.firstChild.remove();
-  const s = document.createElement('span'); s.className = 'ft ' + cls; s.textContent = text;
-  s.style.left = (35 + Math.random() * 30) + '%';
+  // small ticks (HoTs, DoTs, chip hits) landing close together merge into one number instead of a pile
+  const now = performance.now(), L = fe.lastFt;
+  if (v && L && L.cls === cls && now - L.t < 450 && L.el.isConnected) { L.v += v; L.el.textContent = (cls === 'dmg' ? '-' : '+') + fmt(Math.round(L.v)); return; }
+  if (fe.floats.childElementCount > 3) fe.floats.firstChild.remove();
+  const s = document.createElement('span'); s.className = 'ft ' + cls; s.textContent = v ? (cls === 'dmg' ? '-' : '+') + fmt(Math.round(v)) : text;
+  fe.lastFt = v ? { cls, el: s, t: now, v } : null;
+  s.style.left = (50 + Math.random() * 30) + '%';
   s.addEventListener('animationend', () => s.remove());
   fe.floats.appendChild(s);
 }
@@ -3705,10 +3734,14 @@ function renderArena() {
     fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
     fe.f.classList.toggle('plea', !!C.plea && C.plea.i === i);
     fe.f.classList.toggle('danger', C.phase === 'fight' && C.foes.some(f => f.alive && f.boss && f.cast && (f.cast.all || f.cast.t === i)));
-    const k = (m.hots.length ? 'r' : '') + (m.shield > 0 ? 's' : '') + m.dots.map(d => d.kind).join(',');
+    const hk = {}; m.hots.forEach(h => { const kk = h.kind || 'renew'; hk[kk] = (hk[kk] || 0) + 1; });
+    const shieldName = m.shield > 0 ? (m.wardSize ? SP.ward.name : 'Shield') : '';
+    const k = JSON.stringify(hk) + shieldName + (m.bark > 0 ? 'b' : '') + m.dots.map(d => d.kind).join(',') + clsId();
     if (k !== fe.fxKey) {
       fe.fxKey = k;
-      fe.fx.innerHTML = (k.includes('r') ? '<span class="fx renew">Renew</span>' : '') + (k.includes('s') ? '<span class="fx ward">Ward</span>' : '') + m.dots.map(d => `<span class="fx ${DEBUFF[d.kind].cls}">${DEBUFF[d.kind].name}</span>`).join('');
+      fe.fx.innerHTML = Object.entries(hk).map(([kk, n]) => { const [nm, cl] = (HOT_INFO[kk] || HOT_INFO.renew)(); return `<span class="fx ${cl}">${nm}${n > 1 ? ` <b>×${n}</b>` : ''}</span>`; }).join('')
+        + (m.bark > 0 ? '<span class="fx bark">Barkskin</span>' : '') + (shieldName ? `<span class="fx ${m.wardSize && clsId() === 'occultist' ? 'bone' : 'ward'}">${shieldName}</span>` : '')
+        + m.dots.map(d => `<span class="fx ${DEBUFF[d.kind].cls}">${DEBUFF[d.kind].name}</span>`).join('');
     }
   });
 
@@ -3903,6 +3936,7 @@ function renderTalents() {
     <div class="section-h"><h3>Healer class</h3><span class="label">Switch any time; your Cleric talents are refunded</span></div>
     <div class="classes" role="group" aria-label="Healer class">${Object.entries(CLASSES).map(([id, c]) => `<button class="classcard" data-cls="${id}" aria-pressed="${id === clsId()}" style="--sc:${c.col}"><img class="crest" src="${crest(c.crest)}" alt=""><b>${c.name}</b><span>${c.tag}</span></button>`).join('')}</div>
     <div class="passive" style="--sc:${cls().col}"><span class="label">Class passive</span><b>${cls().passive[0]}</b> ${cls().passive[1]}.</div>
+    <details class="clsspells" style="--sc:${cls().col}"><summary>Your spells as a ${cls().name}</summary><div class="cslist">${SPELLS.map(sp => `<div class="${known(sp.id) ? '' : 'unk'}">${img('s_' + sp.id, 0, 'sm')}<b>${sp.name}</b><span>${sp.desc}${known(sp.id) ? '' : ' <i>Not learned yet.</i>'}</span></div>`).join('')}</div></details>
     <div class="crests" role="group" aria-label="Talent trees">${cls().trees.map(t => { const sp = spentIn('cleric', t.id), mx = treeMax('cleric', t);
       return `<button class="crestcard" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">
         <img class="crest" src="${crest(t.id)}" alt=""><b>${t.name}</b>
@@ -4360,7 +4394,7 @@ function renderArmory() {
     ${S.inv.length ? `<div class="bag">${bagHtml}</div>` : '<p class="empty">Enemies drop gear. Bosses always drop at least one item.</p>'}`;
 }
 let chronScope = 'run';
-const SRC_NAME = id => id === 'draught' ? 'Healing Draught' : id === 'acolyte' ? 'Acolyte' : id === 'ward' ? 'Ward (absorbed)' : id === 'renew' ? 'Renew' : SP_NAMES[id] || (id === 'heal' ? 'Heal' : 'Other');
+const SRC_NAME = id => ({ draught: 'Healing Draught', acolyte: 'Acolyte', siphon: 'Siphon Life', vamp: 'Vampiric Embrace' })[id] || (id === 'ward' ? SP.ward.name + ' (absorbed)' : SP[id] ? SP[id].name : 'Other');
 const SRC_ICON = id => id === 'acolyte' ? 'acolyte' : SP[id] ? 's_' + id : 'scroll';
 function healingTable(b) {
   const rows = Object.entries(b.spell || {}).filter(([, r]) => r.h + r.o > 0).sort((x, y) => y[1].h - x[1].h);
@@ -4454,7 +4488,7 @@ pane.addEventListener('click', e => {
   if (d.pick) { learnSpell(d.pick); return; }
   if (d.loot != null) { S.lootFilter = +d.loot; shopDirty = true; return; }
   if (d.chron) { chronScope = d.chron; shopDirty = true; return; }
-  if (d.cls && d.cls !== clsId()) { S.cls = d.cls; S.tree = {}; talTree = cls().trees[0].id; tSel = null; applyClassNames(); recalc(); barKey = ''; shopDirty = true; log(`You walk the path of the <b>${cls().name}</b>.`); toast(`You are now a ${cls().name}. Talents refunded.`); return; }
+  if (d.cls && d.cls !== clsId()) { S.cls = d.cls; frameEls.forEach(fe => { fe.fxKey = ''; }); S.tree = {}; talTree = cls().trees[0].id; tSel = null; applyClassNames(); recalc(); barKey = ''; shopDirty = true; log(`You walk the path of the <b>${cls().name}</b>.`); toast(`You are now a ${cls().name}. Talents refunded.`); return; }
   if (d.peril) { const [di, dl] = d.peril.split(':').map(Number); S.dun.peril = S.dun.peril || []; S.dun.peril[di] = clamp(perilOf(di) + dl, 0, maxPeril(di)); if (di === S.dun.current && C.phase !== 'done') toast('Peril applies from your next run.'); shopDirty = true; return; }
   if (d.stance) { S.stance = d.stance; recalc(); shopDirty = true; return; }
   if (d.town) {
@@ -4606,7 +4640,7 @@ function checkHints(real) {
   for (const id in HINTS) {
     if (S.hints[id]) continue;
     const txt = HINTS[id](); if (!txt) continue;
-    S.hints[id] = 1; $('#hintTxt').innerHTML = txt; box.hidden = false; hintT = 14; return;
+    S.hints[id] = 1; $('#hintTxt').innerHTML = spellWords(txt); box.hidden = false; hintT = 14; return;
   }
 }
 $('#hintOk').addEventListener('click', () => { $('#hint').hidden = true; });

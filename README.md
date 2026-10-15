@@ -58,6 +58,9 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - Talents are fewer and much bigger: up to 3 ranks of +5–15% per rank, plus keystones (2–3 points) that change how spells work. Examples: Chain Heal, Inner Light, Atonement, Divine Hymn, Lifebloom, Efflorescence, Germination, Tree of Life, Ironbark, Wrath, Soul Drain, Haunt, Vampiric Embrace, Curse of Doom and Eclipse of Souls. Each tree ends in a capstone.
 - Talents with a small spell icon need that spell and open once you know it. Deeper rows need points spent in that tree first (2 per row). Resetting is free.
 - Talent points: 1 every 2 Cleric levels, plus 1 for each first dungeon clear, the Library and an achievement.
+- Each class has its own spell icon colors, heal effects and casting sparkles. The Talents tab lists your spells as that class under "Your spells as a …".
+- Party frames show one badge per heal over time with its class name and a stack count, for example "Rejuvenation ×3", Regrowth, Wild Growth, Leech Seed or Divine Hymn, plus Barkskin and Bone Shield. Enemies with Leech Seed show a red pip.
+- Combat numbers are whole and bold. Heal-over-time and damage ticks that land close together on the same hero merge into one rising number instead of a pile.
 
 ## The party
 

@@ -213,39 +213,39 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .pill{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:2px 9px;border:1px solid}
 .pill.ok{color:var(--r1);border-color:var(--r1)}
 
-.treewrap{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:radial-gradient(circle at 50% 50%,#2a2438 0%,#17141f 65%,#121018 100%)}
-.tree{display:block;width:100%;height:auto;aspect-ratio:1/1;max-height:580px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
-.tree.dragging{cursor:grabbing}
-.tree .orbit{fill:none;stroke:#ffffff0f;stroke-width:1;stroke-dasharray:2 7}
-.tree .region{font:700 26px var(--display);letter-spacing:.18em;text-transform:uppercase;text-anchor:middle;dominant-baseline:middle;opacity:.32}
-.tree .edge{stroke:#3a3448;stroke-width:4;stroke-linecap:round}
-.tree .edge.half{stroke:#6a5a8f}
-.tree .edge.on{stroke:var(--gold);stroke-width:5}
-.tree .tn{cursor:pointer}
-.tree .tn .body{fill:#1d1a26;stroke:var(--sc);stroke-width:3}
-.tree .tn .inner{fill:none;stroke:var(--sc);stroke-width:2;opacity:.8}
-.tree .tn .ring{fill:none;stroke:none}
-.tree .tn.locked{opacity:.42}
-.tree .tn.near .body{stroke-width:3.5}
-.tree .tn.avail .body{stroke:var(--sc);stroke-width:4;animation:availpulse 1.4s ease-in-out infinite}
-.tree .tn.avail{filter:drop-shadow(0 0 4px #ffffffaa)}
-.tree .tn.alloc .body{fill:var(--sc);stroke:var(--gold);stroke-width:3.5}
-.tree .tn.alloc .inner{stroke:#1b1622}
-.tree .tn.alloc{filter:drop-shadow(0 0 5px #e4b75c88)}
-.tree .tn.spell.alloc .body,.tree .tn.start .body{fill:#2e2840;stroke:var(--gold)}
-.tree .tn.keystone .body{stroke-width:4}
-.tree .tn.sel .ring{stroke:var(--gold);stroke-width:2;stroke-dasharray:4 4}
-.tree .tn image{image-rendering:pixelated}
-.tree .tlabel{fill:var(--ink);font:600 13px var(--body);text-anchor:middle;paint-order:stroke;stroke:#121018;stroke-width:4px;pointer-events:none}
-.tree .tn.locked .tlabel{fill:var(--muted)}
-@keyframes availpulse{50%{stroke-width:5.5}}
-.treectl{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
-.treectl .btn{width:34px;height:34px;padding:0;display:grid;place-items:center;font-size:1rem;background:#201d2acc}
-.tdetail{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:104px}
+.ttabs{display:flex;gap:6px;flex-wrap:wrap}
+.chipbtn{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.88rem;display:flex;gap:6px;align-items:baseline}
+.chipbtn small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.chipbtn[aria-pressed="true"]{border-color:var(--sc,var(--gold));box-shadow:0 0 0 1px var(--sc,var(--gold)) inset}
+.tgrid{display:grid;gap:10px 8px;align-items:stretch}
+.gate{grid-column:1;align-self:center;text-align:center;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.tcell{position:relative;background:#1d1a26;border:1px solid var(--line);border-radius:8px;padding:6px 4px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;min-width:0}
+.tcell b{font-size:.74rem;line-height:1.1;font-weight:500;overflow-wrap:anywhere}
+.tcell .rk{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.tcell.major,.tcell.spell{border-width:2px}
+.tcell.spell{background:#262036}
+.tcell.locked{opacity:.38}
+.tcell.avail{border-color:var(--sc)}
+.tcell.avail .rk{color:var(--xp)}
+.tcell.part{border-color:var(--sc)}
+.tcell.part .rk{color:var(--gold)}
+.tcell.max{border-color:var(--gold);background:#2c2638}
+.tcell.max .rk{color:var(--gold)}
+.tcell.sel{box-shadow:0 0 0 2px var(--gold)}
+.tcell:hover:not(.locked){border-color:var(--gold)}
+.tcell.link::before{content:"";position:absolute;left:50%;top:-11px;width:2px;height:10px;background:var(--line);transform:translateX(-50%)}
+.tcell.link.part::before,.tcell.link.max::before,.tcell.link.avail::before{background:var(--sc)}
+.ctrees{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:560px){.ctrees{grid-template-columns:minmax(0,1fr)}}
+.ctree{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ctree h4{margin:0;font-family:var(--display);font-weight:500;font-size:1.1rem;display:flex;justify-content:space-between;gap:6px}
+.ctree h4 small{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.tdetail{background:#1a1722;border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:96px}
 .tdetail p{margin:0;font-size:.9rem}
+.tdetail .sub{font-size:.78rem;color:var(--muted)}
 .tdh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .tdh b{font-family:var(--display);font-size:1.15rem;font-weight:500}
-.tdh .swatch{width:12px;height:12px;border-radius:50%;background:var(--sc)}
+.tdh .swatch{width:12px;height:12px;border-radius:50%}
 .slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 @media (max-width:420px){.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .slot,.bagitem{text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 8px;align-items:center}
@@ -347,7 +347,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
         <button class="tab" role="tab" data-tab="dungeons" aria-selected="true">Dungeons</button>
         <button class="tab" role="tab" data-tab="talents" aria-selected="false">Talents</button>
         <button class="tab" role="tab" data-tab="armory" aria-selected="false">Armory</button>
-        <button class="tab" role="tab" data-tab="barracks" aria-selected="false">Barracks</button>
+        <button class="tab" role="tab" data-tab="party" aria-selected="false">Party</button>
         <button class="tab" role="tab" data-tab="sanctum" aria-selected="false">Sanctum</button>
         <button class="tab" role="tab" data-tab="chronicle" aria-selected="false">Chronicle</button>
       </div>
@@ -441,12 +441,13 @@ const img = (name, rar, cls = '') => `<img class="ico ${cls}" src="${icon(name, 
 /* =========================================================
    Data: party, dungeons, enemies
    ========================================================= */
+// dmg is damage per hit, spd is seconds between attacks
 const PARTY = [
-  { name: 'Bram', role: 'Guardian',   hp: 420, dps: 7,  tank: true },
-  { name: 'Rook', role: 'Warrior',    hp: 260, dps: 17 },
-  { name: 'Vess', role: 'Rogue',      hp: 220, dps: 22 },
-  { name: 'Ilda', role: 'Pyromancer', hp: 190, dps: 26 },
-  { name: 'You',  role: 'Cleric',     hp: 210, dps: 2,  you: true },
+  { name: 'Bram', role: 'Guardian',   hp: 420, dmg: 10, spd: 1.5, tank: true },
+  { name: 'Rook', role: 'Warrior',    hp: 260, dmg: 19, spd: 1.1 },
+  { name: 'Vess', role: 'Rogue',      hp: 220, dmg: 15, spd: 0.7 },
+  { name: 'Ilda', role: 'Pyromancer', hp: 190, dmg: 44, spd: 1.7, ranged: true },
+  { name: 'You',  role: 'Cleric',     hp: 210, dmg: 6,  spd: 3.0, ranged: true, you: true },
 ];
 const YOU = 4;
 
@@ -524,129 +525,145 @@ const SPELLS = [
 ];
 const SP = Object.fromEntries(SPELLS.map(s => [s.id, s]));
 
-/* Talent tree: a web that spreads out from the centre, Path of Exile style.
-   Six schools branch outward and link up with their neighbours.
-   Minor talents cost 1 point, notables 2, spells 3 or 4, keystones 3.
-   a = angle in degrees clockwise from north, r = distance from the centre. */
-const COST = { start: 0, minor: 1, notable: 2, spell: 3, keystone: 3 };
-const TN = [];
-const tn = (id, type, a, r, name, desc, fx = {}, extra = {}) => TN.push({ id, type, a, r, name, desc, fx, ...extra });
+/* Talent trees, WoW style. Each tree is a grid of tiers; deeper tiers need points spent in that tree.
+   Most talents take several ranks of small bonuses; later ranks cost more points.
+   Major talents and new spells take one rank and cost more. fx values are per rank. */
+const TIER_GATE = 2;
+const T_ = (id, row, col, name, icon, max, per, fx, extra = {}) => ({ id, row, col, name, icon, max, per, fx, kind: max > 1 ? 'minor' : 'major', ...extra });
+const SPELLNODE = (id, row, col, cost) => ({ id, row, col, name: SP_NAMES[id], icon: 's_' + id, max: 1, per: SP_DESC[id], fx: {}, kind: 'spell', spell: id, cost });
+const SP_NAMES = { flash: 'Flash Heal', renew: 'Renew', ward: 'Ward', purify: 'Purify', meditate: 'Meditate', prayer: 'Prayer', sanctuary: 'Sanctuary', blessing: 'Blessing' };
+const SP_DESC = {
+  flash: 'Learn Flash Heal: a fast, costly heal for emergencies.', renew: 'Learn Renew: heals one ally over 10 seconds.',
+  ward: 'Learn Ward: shields one ally from incoming damage.', purify: 'Learn Purify: removes poisons and curses, then heals a little.',
+  meditate: 'Learn Meditate: restores 35% of your mana over 5 seconds.', prayer: 'Learn Prayer: heals the whole party.',
+  sanctuary: 'Learn Sanctuary: the party takes 30% less damage for 6 seconds.', blessing: 'Learn Blessing: party damage +40% for 10 seconds.',
+};
+// Cleric minor ranks cost 1 point for ranks 1-5, then 2 points each.
+const clericRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 5 ? 1 : 2;
+const compRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 3 ? 1 : 2;
 
-tn('start', 'start', 0, 0, 'Vow of the Cleric', 'Where every path begins. You already know Heal.');
-
-// Mending (north): single-target healing
-tn('n1', 'minor', 0, 85, 'Steady Hands', '+5% Heal healing', { heal_pow: 0.05 });
-tn('flash', 'spell', -11, 160, 'Flash Heal', 'Learn Flash Heal: a fast, costly heal for emergencies.', {}, { spell: 'flash' });
-tn('n2', 'minor', 11, 160, 'Thrift', '-5% Heal mana cost', { heal_cost: 0.05 });
-tn('f1', 'minor', -11, 235, 'Bright Burst', '+8% Flash Heal healing', { flash_pow: 0.08 }, { needs: 'flash' });
-tn('f2', 'minor', -12, 310, 'Spare Light', '-6% Flash Heal mana cost', { flash_cost: 0.06 }, { needs: 'flash' });
-tn('surge', 'notable', -14, 385, 'Surge', 'Flash Heal has +15% critical chance', { flash_crit: 0.15 }, { needs: 'flash' });
-tn('qw', 'notable', 11, 235, 'Quick Words', '-0.3s Heal cast time', { heal_cast: 0.3 });
-tn('n3', 'minor', 12, 310, 'Mending Arts', '+6% Heal healing', { heal_pow: 0.06 });
-tn('echo', 'notable', 14, 385, 'Echo', 'Heal has a 20% chance to also heal the most injured ally for half', { heal_echo: 0.2 });
-tn('martyr', 'keystone', 12, 470, "Martyr's Vow", 'All healing +25%. Max mana -20%.', { healAll: 0.25, mana: -0.2 });
-
-// Growth (north-east): healing over time
-tn('g1', 'minor', 60, 85, 'Green Thumb', '+3% all healing', { healAll: 0.03 });
-tn('renew', 'spell', 60, 160, 'Renew', 'Learn Renew: heals one ally over 10 seconds.', {}, { spell: 'renew' });
-tn('r1', 'minor', 52, 235, 'Sap', '+8% Renew healing', { renew_pow: 0.08 }, { needs: 'renew' });
-tn('r2', 'minor', 50, 310, 'Long Roots', '+2s Renew duration', { renew_dur: 2 }, { needs: 'renew' });
-tn('bloom', 'notable', 48, 385, 'Bloom', 'Renew heals 20% of its total instantly', { renew_bloom: 0.2 }, { needs: 'renew' });
-tn('r3', 'minor', 68, 235, 'Sap', '+8% Renew healing', { renew_pow: 0.08 }, { needs: 'renew' });
-tn('evergreen', 'notable', 72, 310, 'Evergreen', 'Renew lasts 3s longer and heals 10% more', { renew_dur: 3, renew_pow: 0.1 }, { needs: 'renew' });
-tn('g2', 'minor', 78, 385, 'Verdance', '+3% all healing', { healAll: 0.03 });
-
-// Protection (south-east): shields and the tank
-tn('p1', 'minor', 120, 85, 'Stout Hearts', '+4% party health', { partyHp: 0.04 });
-tn('ward', 'spell', 120, 160, 'Ward', 'Learn Ward: shields one ally from incoming damage.', {}, { spell: 'ward' });
-tn('w1', 'minor', 113, 235, 'Thick Glass', '+10% Ward absorb', { ward_pow: 0.1 }, { needs: 'ward' });
-tn('w2', 'minor', 110, 310, 'Readiness', '-1s Ward cooldown', { ward_cd: 1 }, { needs: 'ward' });
-tn('mendward', 'notable', 108, 385, 'Mending Ward', 'When a Ward breaks, it heals for 25% of its size', { ward_mend: 0.25 }, { needs: 'ward' });
-tn('bulwark', 'keystone', 106, 470, 'Bulwark Doctrine', 'Ward has no cooldown, but costs 60% more mana.', { ward_nocd: 1, ward_costUp: 0.6 }, { needs: 'ward' });
-tn('p2', 'minor', 128, 235, 'Shieldbearer', 'Bram takes 3% less damage', { tankDR: 0.03 });
-tn('p3', 'minor', 130, 310, 'Stout Hearts', '+5% party health', { partyHp: 0.05 });
-tn('sanctuary', 'spell', 132, 385, 'Sanctuary', 'Learn Sanctuary: the party takes 30% less damage for 6 seconds.', {}, { spell: 'sanctuary', cost: 4 });
-tn('sa1', 'minor', 134, 460, 'Long Vigil', '+1s Sanctuary duration', { sanct_dur: 1 }, { needs: 'sanctuary' });
-tn('hallowed', 'notable', 135, 535, 'Hallowed Ground', 'Sanctuary blocks 10% more damage', { sanct_amt: 0.1 }, { needs: 'sanctuary' });
-
-// Devotion (south): mana
-tn('d1', 'minor', 180, 85, 'Inner Well', '+6% max mana', { mana: 0.06 });
-tn('meditate', 'spell', 180, 160, 'Meditate', 'Learn Meditate: restores 35% of your mana over 5 seconds.', {}, { spell: 'meditate' });
-tn('d2', 'minor', 172, 235, 'Deep Breath', 'Meditate restores 8% more of your mana', { med_amt: 0.08 }, { needs: 'meditate' });
-tn('calm', 'notable', 169, 310, 'Calm Mind', '-10s Meditate cooldown', { med_cd: 10 }, { needs: 'meditate' });
-tn('d3', 'minor', 188, 235, 'Still Waters', '+6% mana regeneration', { regen: 0.06 });
-tn('d4', 'minor', 190, 310, 'Inner Well', '+6% max mana', { mana: 0.06 });
-tn('deepwell', 'notable', 191, 385, 'Deep Well', '+15% max mana', { mana: 0.15 });
-tn('d5', 'minor', 192, 460, 'Grace', '2% chance a spell costs no mana', { clarity: 0.02 });
-tn('clarity', 'notable', 193, 535, 'Clarity', '5% chance a spell costs no mana', { clarity: 0.05 });
-tn('ascetic', 'keystone', 193, 615, 'Ascetic', 'Mana regeneration +60%. Max mana -30%.', { regen: 0.6, mana: -0.3 });
-
-// Command (south-west): the party's damage, gold and experience
-tn('c1', 'minor', 240, 85, 'Battle Hymn', '+4% party damage', { partyDps: 0.04 });
-tn('c2', 'minor', 240, 160, 'Battle Hymn', '+4% party damage', { partyDps: 0.04 });
-tn('rally', 'notable', 240, 235, 'Rally', '+10% party damage', { partyDps: 0.1 });
-tn('blessing', 'spell', 234, 310, 'Blessing', 'Learn Blessing: party damage +40% for 10 seconds.', {}, { spell: 'blessing', cost: 4 });
-tn('b1', 'minor', 231, 385, 'Zeal', 'Blessing grants 10% more damage', { bless_amt: 0.1 }, { needs: 'blessing' });
-tn('fervor', 'notable', 229, 460, 'Fervor', 'Blessing lasts 4s longer', { bless_dur: 4 }, { needs: 'blessing' });
-tn('c3', 'minor', 248, 310, 'Scholar', '+6% party experience', { xp: 0.06 });
-tn('c4', 'minor', 250, 385, 'Tithe', '+8% gold find', { gold: 0.08 });
-tn('spoils', 'notable', 252, 460, 'Spoils of War', '+15% gold find and +10% party experience', { gold: 0.15, xp: 0.1 });
-tn('zealot', 'keystone', 253, 540, 'Zealot', 'Party damage +30%. All healing -10%.', { partyDps: 0.3, healAll: -0.1 });
-
-// Purity (north-west): cleansing, critical heals and group healing
-tn('u1', 'minor', 300, 85, 'Keen Eye', '+2% critical heals', { crit: 2 });
-tn('purify', 'spell', 300, 160, 'Purify', 'Learn Purify: removes poisons and curses, then heals a little.', {}, { spell: 'purify' });
-tn('pu1', 'minor', 293, 235, 'Cleansing Light', '+30% Purify healing', { purify_pow: 0.3 }, { needs: 'purify' });
-tn('pu2', 'minor', 290, 310, 'Readiness', '-1s Purify cooldown', { purify_cd: 1 }, { needs: 'purify' });
-tn('u2', 'minor', 308, 235, 'Swift Prayers', '+3% haste', { haste: 3 });
-tn('insight', 'notable', 310, 310, 'Insight', '+4% critical heals and +3% haste', { crit: 4, haste: 3 });
-tn('prayer', 'spell', 312, 385, 'Prayer', 'Learn Prayer: heals the whole party.', {}, { spell: 'prayer', cost: 4 });
-tn('pr1', 'minor', 314, 460, 'Choir Voice', '+8% Prayer healing', { prayer_pow: 0.08 }, { needs: 'prayer' });
-tn('pr2', 'minor', 315, 535, 'Quick Psalm', '-0.3s Prayer cast time', { prayer_cast: 0.3 }, { needs: 'prayer' });
-tn('choir', 'notable', 316, 610, 'Choir of Saints', 'Prayer heals 12% more and costs 10% less', { prayer_pow: 0.12, prayer_cost: 0.1 }, { needs: 'prayer' });
-
-// Inner ring: cheap links between neighbouring schools
-tn('i1', 'minor', 30, 140, 'Focus', '+3% max mana', { mana: 0.03 });
-tn('i2', 'minor', 90, 140, 'Gentle Light', '+3% all healing', { healAll: 0.03 });
-tn('i3', 'minor', 150, 140, 'Fortitude', '+3% party health', { partyHp: 0.03 });
-tn('i4', 'minor', 210, 140, 'Calm', '+4% mana regeneration', { regen: 0.04 });
-tn('i5', 'minor', 270, 140, 'Valor', '+3% party damage', { partyDps: 0.03 });
-tn('i6', 'minor', 330, 140, 'Keen Eye', '+1% critical heals', { crit: 1 });
-
-// Outer bridges between the far ends of each school
-tn('o1', 'minor', 33, 420, 'Radiance', '+4% all healing', { healAll: 0.04 });
-tn('campfire', 'notable', 92, 400, 'Campfire', 'Resting between stages restores 10% more health and mana', { camp: 0.1 });
-tn('o3', 'minor', 152, 430, 'Endurance', '+4% max mana and +3% party health', { mana: 0.04, partyHp: 0.03 });
-tn('o4', 'minor', 211, 420, 'Flow', '+5% mana regeneration', { regen: 0.05 });
-tn('o5', 'minor', 271, 400, 'Swiftness', '+3% haste', { haste: 3 });
-tn('o6', 'minor', 335, 440, 'Sharp Mind', '+2% critical heals', { crit: 2 });
-
-const TEDGES = [
-  'start-n1', 'start-g1', 'start-p1', 'start-d1', 'start-c1', 'start-u1',
-  'n1-flash', 'n1-n2', 'flash-f1', 'f1-f2', 'f2-surge', 'n2-qw', 'qw-n3', 'n3-echo', 'echo-martyr',
-  'g1-renew', 'renew-r1', 'r1-r2', 'r2-bloom', 'renew-r3', 'r3-evergreen', 'evergreen-g2',
-  'p1-ward', 'ward-w1', 'w1-w2', 'w2-mendward', 'mendward-bulwark', 'ward-p2', 'p2-p3', 'p3-sanctuary', 'sanctuary-sa1', 'sa1-hallowed',
-  'd1-meditate', 'meditate-d2', 'd2-calm', 'meditate-d3', 'd3-d4', 'd4-deepwell', 'deepwell-d5', 'd5-clarity', 'clarity-ascetic',
-  'c1-c2', 'c2-rally', 'rally-blessing', 'blessing-b1', 'b1-fervor', 'rally-c3', 'c3-c4', 'c4-spoils', 'spoils-zealot',
-  'u1-purify', 'purify-pu1', 'pu1-pu2', 'purify-u2', 'u2-insight', 'insight-prayer', 'prayer-pr1', 'pr1-pr2', 'pr2-choir',
-  'n1-i1', 'i1-g1', 'g1-i2', 'i2-p1', 'p1-i3', 'i3-d1', 'd1-i4', 'i4-c1', 'c1-i5', 'i5-u1', 'u1-i6', 'i6-n1',
-  'echo-o1', 'o1-bloom', 'g2-campfire', 'campfire-mendward', 'sanctuary-o3', 'o3-calm', 'deepwell-o4', 'o4-b1', 'c4-o5', 'o5-pu2', 'pr1-o6', 'o6-surge',
+const CLERIC_TREES = [
+  { id: 'holy', name: 'Holy', col: '#86dcb8', desc: 'Single-target healing, Flash Heal and Prayer', nodes: [
+    T_('h_pow', 0, 0, 'Improved Heal', 's_heal', 10, '+3% Heal healing', { heal_pow: 0.03 }),
+    T_('h_cost', 0, 1, 'Thrift', 'coin', 5, '-3% Heal mana cost', { heal_cost: 0.03 }),
+    T_('holy', 0, 2, 'Holy Light', 's_prayer', 10, '+2% all healing', { healAll: 0.02 }),
+    SPELLNODE('flash', 1, 0, 3),
+    T_('h_cast', 1, 1, 'Quick Words', 'scroll', 5, '-0.06s Heal cast time', { heal_cast: 0.06 }),
+    T_('insight', 1, 2, 'Insight', 's_core', 10, '+0.5% critical heals', { crit: 0.5 }),
+    T_('f_pow', 2, 0, 'Bright Burst', 's_flash', 5, '+5% Flash Heal healing', { flash_pow: 0.05 }, { req: 'flash' }),
+    T_('echo', 2, 1, 'Echo', 's_heal', 1, 'Heal has a 20% chance to also heal the most injured ally for half', { heal_echo: 0.2 }, { cost: 2, req: 'h_cast' }),
+    T_('f_cost', 2, 2, 'Spare Light', 'coin', 5, '-4% Flash Heal mana cost', { flash_cost: 0.04 }, { req: 'flash' }),
+    T_('surge', 3, 0, 'Surge', 's_flash', 1, 'Flash Heal has +15% critical chance', { flash_crit: 0.15 }, { cost: 2, req: 'f_pow' }),
+    T_('h_pow2', 3, 1, 'Divine Fury', 's_heal', 5, '+4% Heal healing', { heal_pow: 0.04 }),
+    T_('swift', 3, 2, 'Swift Prayers', 'scroll', 10, '+1% haste', { haste: 1 }),
+    SPELLNODE('prayer', 4, 1, 4),
+    T_('martyr', 4, 2, "Martyr's Vow", 's_core', 1, 'All healing +25%, but max mana -20%', { healAll: 0.25, mana: -0.2 }, { cost: 3 }),
+    T_('pr_pow', 5, 1, 'Choir Voice', 's_prayer', 5, '+5% Prayer healing and -2% Prayer mana cost', { prayer_pow: 0.05, prayer_cost: 0.02 }, { req: 'prayer' }),
+    T_('pr_cast', 5, 0, 'Quick Psalm', 'scroll', 3, '-0.2s Prayer cast time', { prayer_cast: 0.2 }, { req: 'prayer' }),
+  ] },
+  { id: 'disc', name: 'Discipline', col: '#7ba3ee', desc: 'Shields, cleansing and keeping the tank alive', nodes: [
+    T_('tank', 0, 0, 'Shieldbearer', 'shield', 10, 'Bram takes 1% less damage', { tankDR: 0.01 }),
+    T_('fort', 0, 1, 'Fortify', 'shield', 10, '+2% party health', { partyHp: 0.02 }),
+    T_('keen', 0, 2, 'Keen Eye', 's_core', 5, '+1% critical heals', { crit: 1 }),
+    SPELLNODE('purify', 1, 0, 3),
+    SPELLNODE('ward', 1, 1, 3),
+    T_('camp', 1, 2, 'Campfire', 'bandage', 5, 'Resting between stages restores 3% more health and mana', { camp: 0.03 }),
+    T_('pu_pow', 2, 0, 'Cleansing Light', 's_purify', 5, '+12% Purify healing', { purify_pow: 0.12 }, { req: 'purify' }),
+    T_('w_pow', 2, 1, 'Thick Glass', 's_ward', 10, '+4% Ward absorb', { ward_pow: 0.04 }, { req: 'ward' }),
+    T_('w_cd', 2, 2, 'Readiness', 'scroll', 4, '-0.5s Ward cooldown', { ward_cd: 0.5 }, { req: 'ward' }),
+    T_('pu_cd', 3, 0, 'Swift Cleanse', 'scroll', 3, '-0.5s Purify cooldown', { purify_cd: 0.5 }, { req: 'pu_pow' }),
+    T_('mendward', 3, 1, 'Mending Ward', 's_ward', 1, 'When a Ward breaks, it heals for 25% of its size', { ward_mend: 0.25 }, { cost: 2, req: 'w_pow' }),
+    T_('stout', 3, 2, 'Stout Hearts', 'shield', 5, '+3% party health', { partyHp: 0.03 }),
+    SPELLNODE('sanctuary', 4, 1, 4),
+    T_('bulwark', 4, 0, 'Bulwark Doctrine', 's_ward', 1, 'Ward has no cooldown, but costs 60% more mana', { ward_nocd: 1, ward_costUp: 0.6 }, { cost: 3, req: 'mendward' }),
+    T_('sa_str', 5, 1, 'Hallowed Ground', 's_sanctuary', 5, 'Sanctuary blocks 2% more damage', { sanct_amt: 0.02 }, { req: 'sanctuary' }),
+    T_('sa_dur', 5, 2, 'Long Vigil', 'scroll', 4, '+0.5s Sanctuary duration', { sanct_dur: 0.5 }, { req: 'sanctuary' }),
+  ] },
+  { id: 'devo', name: 'Devotion', col: '#a98cf0', desc: 'Mana, Renew, Meditate and empowering the party', nodes: [
+    T_('well', 0, 0, 'Inner Well', 's_meditate', 10, '+3% max mana', { mana: 0.03 }),
+    T_('still', 0, 1, 'Still Waters', 's_meditate', 10, '+3% mana regeneration', { regen: 0.03 }),
+    T_('rally', 0, 2, 'Battle Hymn', 'sword', 10, '+2% party damage', { partyDps: 0.02 }),
+    SPELLNODE('renew', 1, 0, 3),
+    SPELLNODE('meditate', 1, 1, 3),
+    T_('scholar', 1, 2, 'Scholar', 'scroll', 5, '+3% party experience and +3% gold find', { xp: 0.03, gold: 0.03 }),
+    T_('r_pow', 2, 0, 'Sap', 's_renew', 10, '+4% Renew healing', { renew_pow: 0.04 }, { req: 'renew' }),
+    T_('m_amt', 2, 1, 'Deep Breath', 's_meditate', 5, 'Meditate restores 3% more of your mana', { med_amt: 0.03 }, { req: 'meditate' }),
+    T_('clarity', 2, 2, 'Clarity', 's_core', 5, '1% chance a spell costs no mana', { clarity: 0.01 }),
+    T_('r_dur', 3, 0, 'Long Roots', 's_renew', 5, '+1s Renew duration', { renew_dur: 1 }, { req: 'renew' }),
+    T_('m_cd', 3, 1, 'Calm Mind', 'scroll', 4, '-4s Meditate cooldown', { med_cd: 4 }, { req: 'meditate' }),
+    SPELLNODE('blessing', 3, 2, 4),
+    T_('bloom', 4, 0, 'Bloom', 's_renew', 1, 'Renew heals 20% of its total instantly', { renew_bloom: 0.2 }, { cost: 2, req: 'r_pow' }),
+    T_('deepwell', 4, 1, 'Deep Well', 's_meditate', 1, '+15% max mana', { mana: 0.15 }, { cost: 2 }),
+    T_('bl_amt', 4, 2, 'Zeal', 's_blessing', 5, 'Blessing grants 4% more damage', { bless_amt: 0.04 }, { req: 'blessing' }),
+    T_('ascetic', 5, 0, 'Ascetic', 's_meditate', 1, 'Mana regeneration +60%, but max mana -30%', { regen: 0.6, mana: -0.3 }, { cost: 3 }),
+    T_('zealot', 5, 1, 'Zealot', 'sword', 1, 'Party damage +30%, but all healing -10%', { partyDps: 0.3, healAll: -0.1 }, { cost: 3, req: 'rally' }),
+    T_('bl_dur', 5, 2, 'Fervor', 's_blessing', 4, '+1s Blessing duration', { bless_dur: 1 }, { req: 'blessing' }),
+  ] },
 ];
-const SCHOOLS = [
-  { name: 'Mending', a: 0, r: 545, col: '#86dcb8' }, { name: 'Growth', a: 60, r: 500, col: '#8fdc6a' }, { name: 'Protection', a: 120, r: 610, col: '#7ba3ee' },
-  { name: 'Devotion', a: 180, r: 690, col: '#a98cf0' }, { name: 'Command', a: 240, r: 615, col: '#e0605a' }, { name: 'Purity', a: 300, r: 690, col: '#e4b75c' },
+
+/* Companion trees: two specs each. Companions earn their own points (one every 2 levels). */
+const COMP_TREES = [
+  [ { id: 'bulwark', name: 'Bulwark', col: '#7ba3ee', desc: 'Bram soaks more punishment', nodes: [
+      T_('tough', 0, 0, 'Toughness', 'shield', 5, '+5% health', { hp: 0.05 }),
+      T_('block', 0, 1, 'Shield Block', 'shield', 5, '-2% damage taken', { dr: 0.02 }),
+      T_('iron', 1, 0, 'Iron Hide', 'chest', 5, '+4% health', { hp: 0.04 }),
+      T_('laststand', 1, 1, 'Last Stand', 'shield', 1, 'Below 30% health, Bram takes 25% less damage', { laststand: 1 }, { cost: 2 }),
+      T_('fortress', 2, 0, 'Fortress', 'chest', 1, '+20% health', { hp: 0.2 }, { cost: 2, req: 'iron' }),
+      T_('steady', 2, 1, 'Steadfast', 'shield', 5, '-2% damage taken', { dr: 0.02 }) ] },
+    { id: 'venge', name: 'Vengeance', col: '#e0605a', desc: 'Bram hits back', nodes: [
+      T_('heavy', 0, 0, 'Heavy Blows', 'sword', 5, '+6% damage', { dmg: 0.06 }),
+      T_('rhythm', 0, 1, 'Battle Rhythm', 'sword', 5, '+4% attack speed', { spd: 0.04 }),
+      T_('bash', 1, 0, 'Shield Bash', 'shield', 1, 'Every 4th hit deals triple damage', { bash: 1 }, { cost: 2 }),
+      T_('sharp', 1, 1, 'Sharpened Edge', 'sword', 5, '+3% critical chance', { crit: 0.03 }),
+      T_('crush', 2, 0, 'Crushing Blows', 'sword', 5, '+15% critical damage', { critDmg: 0.15 }),
+      T_('avenger', 2, 1, 'Avenger', 'sword', 1, '+25% damage and +10% attack speed', { dmg: 0.25, spd: 0.1 }, { cost: 2, req: 'rhythm' }) ] } ],
+  [ { id: 'berserk', name: 'Berserker', col: '#ff9f43', desc: 'Rook swings faster and faster', nodes: [
+      T_('frenzy', 0, 0, 'Frenzy', 'sword', 5, '+5% attack speed', { spd: 0.05 }),
+      T_('thick', 0, 1, 'Thick Skin', 'chest', 5, '+4% health', { hp: 0.04 }),
+      T_('bloodlust', 1, 0, 'Bloodlust', 'sword', 1, 'Below 50% health, +35% attack speed', { bloodlust: 1 }, { cost: 2 }),
+      T_('fury', 1, 1, 'Endless Fury', 'sword', 5, '+4% attack speed', { spd: 0.04 }),
+      T_('rampage', 2, 0, 'Rampage', 'sword', 1, 'Each hit gives +2% attack speed for the rest of the stage, up to +20%', { rampage: 1 }, { cost: 2, req: 'frenzy' }),
+      T_('brutal', 2, 1, 'Brutality', 'sword', 5, '+5% damage', { dmg: 0.05 }) ] },
+    { id: 'exec', name: 'Executioner', col: '#e0605a', desc: 'Rook lands huge, decisive blows', nodes: [
+      T_('axe', 0, 0, 'Sharpened Axe', 'sword', 5, '+6% damage', { dmg: 0.06 }),
+      T_('edge', 0, 1, 'Keen Edge', 'sword', 5, '+3% critical chance', { crit: 0.03 }),
+      T_('execute', 1, 0, 'Execute', 'sword', 1, 'Double damage to enemies below 25% health', { execute: 1 }, { cost: 2 }),
+      T_('cleave', 1, 1, 'Cleave', 'sword', 1, 'Every hit also strikes another enemy for 40%', { cleave: 0.4 }, { cost: 2 }),
+      T_('heft', 2, 0, 'Heft', 'sword', 5, '+15% critical damage', { critDmg: 0.15 }),
+      T_('overpower', 2, 1, 'Overpower', 'sword', 1, '+20% damage', { dmg: 0.2 }, { cost: 2, req: 'axe' }) ] } ],
+  [ { id: 'assassin', name: 'Assassin', col: '#c48bfb', desc: 'Vess hunts for critical hits', nodes: [
+      T_('precision', 0, 0, 'Precision', 'sword', 5, '+3% critical chance', { crit: 0.03 }),
+      T_('lethal', 0, 1, 'Lethality', 'sword', 5, '+15% critical damage', { critDmg: 0.15 }),
+      T_('ambush', 1, 0, 'Ambush', 'sword', 1, 'The first hit on each enemy is always critical', { ambush: 1 }, { cost: 2 }),
+      T_('quick', 1, 1, 'Quick Hands', 'hands', 5, '+4% attack speed', { spd: 0.04 }),
+      T_('shadow', 2, 0, 'Bossbane', 'sword', 1, '+30% damage against bosses', { bossDmg: 0.3 }, { cost: 2, req: 'precision' }),
+      T_('mastery', 2, 1, 'Blade Mastery', 'sword', 5, '+5% damage', { dmg: 0.05 }) ] },
+    { id: 'poison', name: 'Poisoner', col: '#a3c45c', desc: 'Vess lets poison do the work', nodes: [
+      T_('envenom', 0, 0, 'Envenom', 's_purify', 5, 'Hits poison the target for 8% of the hit every second for 5s (stacks up to 5)', { poison: 0.08 }),
+      T_('agility', 0, 1, 'Agility', 'hands', 5, '+4% attack speed', { spd: 0.04 }),
+      T_('virulence', 1, 0, 'Virulence', 's_purify', 5, '+10% poison damage', { poisonPow: 0.1 }, { req: 'envenom' }),
+      T_('toxic', 1, 1, 'Toxic Cloud', 's_purify', 1, 'Poison also spreads to every other enemy at half strength', { toxic: 1 }, { cost: 2, req: 'envenom' }),
+      T_('deep', 2, 0, 'Deep Wounds', 's_purify', 1, 'Poison stacks up to 10', { deepwounds: 1 }, { cost: 2, req: 'virulence' }),
+      T_('evasion', 2, 1, 'Evasion', 'hands', 5, '-2% damage taken', { dr: 0.02 }) ] } ],
+  [ { id: 'inferno', name: 'Inferno', col: '#ff9f43', desc: 'Ilda builds to enormous fireballs', nodes: [
+      T_('kindling', 0, 0, 'Kindling', 's_blessing', 5, '+6% damage', { dmg: 0.06 }),
+      T_('searing', 0, 1, 'Searing', 's_blessing', 5, '+3% critical chance', { crit: 0.03 }),
+      T_('pyro', 1, 0, 'Pyroblast', 's_blessing', 1, 'Every 4th fireball deals triple damage', { pyro: 1 }, { cost: 2 }),
+      T_('combust', 1, 1, 'Combustion', 's_blessing', 5, '+15% critical damage', { critDmg: 0.15 }),
+      T_('meteor', 2, 0, 'Meteor', 's_blessing', 1, 'Pyroblasts also hit every other enemy for 50%', { meteor: 0.5 }, { cost: 2, req: 'pyro' }),
+      T_('heat', 2, 1, 'Heat', 's_blessing', 5, '+5% damage', { dmg: 0.05 }) ] },
+    { id: 'storm', name: 'Ember Storm', col: '#e4b75c', desc: 'Ilda showers the whole pack', nodes: [
+      T_('rapid', 0, 0, 'Rapid Casting', 'scroll', 5, '+5% attack speed', { spd: 0.05 }),
+      T_('robes', 0, 1, 'Warm Robes', 'chest', 5, '+4% health', { hp: 0.04 }),
+      T_('chain', 1, 0, 'Chain Fire', 's_blessing', 1, 'Fireballs splash every other enemy for 30%', { splash: 0.3 }, { cost: 2 }),
+      T_('flow', 1, 1, 'Flow', 'scroll', 5, '+4% attack speed', { spd: 0.04 }),
+      T_('firestorm', 2, 0, 'Firestorm', 's_blessing', 1, 'Splash damage increased to 60%', { splash: 0.3 }, { cost: 2, req: 'chain' }),
+      T_('embers', 2, 1, 'Embers', 's_blessing', 5, '+4% damage', { dmg: 0.04 }) ] } ],
 ];
-const polar = (a, r) => ({ x: r * Math.sin(a * Math.PI / 180), y: -r * Math.cos(a * Math.PI / 180) });
-const NODE = {}, ADJ = {};
-TN.forEach(n => {
-  n.cost = n.cost ?? COST[n.type];
-  Object.assign(n, polar(n.a, n.r));
-  let best = SCHOOLS[0], bd = 999;
-  SCHOOLS.forEach(s => { const d = Math.abs(((n.a - s.a) % 360 + 540) % 360 - 180); if (d < bd) { bd = d; best = s; } });
-  n.col = n.type === 'start' ? '#f3ead8' : best.col;
-  NODE[n.id] = n; ADJ[n.id] = [];
-});
-TEDGES.forEach(e => { const [a, b] = e.split('-'); ADJ[a].push(b); ADJ[b].push(a); });
+// Owners: 'cleric' or the companion index 0-3.
+const OWNERS = { cleric: CLERIC_TREES, 0: COMP_TREES[0], 1: COMP_TREES[1], 2: COMP_TREES[2], 3: COMP_TREES[3] };
+const TNODE = {};
+for (const o in OWNERS) OWNERS[o].forEach(tr => tr.nodes.forEach(n => { n.tree = tr.id; n.owner = o; n.cost = n.cost ?? 1; TNODE[o + '|' + n.id] = n; }));
 
 /* Item skills, learned permanently by mastering an item (Astlibra-style). */
 const SKILLS = {
@@ -699,8 +716,6 @@ UPGRADES.push(
 );
 const UPG = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
 const TRAIN = [
-  { id: 'dps',   icon: 'sword',   name: 'Weapon Drills',   desc: 'Party damage ×1.15 per rank.',                              base: 40,  growth: 1.42 },
-  { id: 'hp',    icon: 'shield',  name: 'Shield Wall',     desc: 'Party max health ×1.10 per rank.',                          base: 55,  growth: 1.42 },
   { id: 'regen', icon: 'bandage', name: 'Field Dressings', desc: 'Party regenerates 0.4% of max health per second per rank.', base: 300, growth: 1.9, max: 10 },
 ];
 
@@ -739,12 +754,12 @@ const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last A
    ========================================================= */
 function newState() {
   return {
-    v: 4, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true,
+    v: 5, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true,
     buildings: {}, upgrades: {}, train: { dps: 0, hp: 0, regen: 0 },
     equip: { head: null, chest: null, hands: null, staff: makeStarter(), ring: null, trinket: null },
     inv: [], nextId: 2,
     heroes: PARTY.map(() => ({ lv: 1, xp: 0 })),
-    tree: {}, skills: {},
+    tree: {}, skills: {}, ctree: PARTY.map(() => ({})), kit: PARTY.map(() => ({ w: 0, a: 0 })),
     dun: { unlocked: 0, current: 0, clears: [], best: [] },
     stats: { healed: 0, overheal: 0, kills: 0, wipes: 0, played: 0, crits: 0, runs: 0 },
     lastSave: Date.now(),
@@ -754,23 +769,28 @@ function makeStarter() { return { id: 1, slot: 'staff', rarity: 0, ilvl: 1, up: 
 let S = newState();
 const D = { sp: {} };
 const C = { party: [], foes: [], mana: 100, cast: null, gcd: 0, cds: {}, phase: 'fight', phaseT: 0, target: 0, hover: null, time: 0,
-  stage: 1, run: null, buff: { sanct: 0, bless: 0 }, medi: null, silenced: null, heatT: 4, scroll: 0 };
+  stage: 1, run: null, buff: { sanct: 0, bless: 0 }, medi: null, silenced: null, heatT: 4, scroll: 0,
+  atkT: [], hits: [], hitN: [], ramp: [] };
 const LOG = [];
 let logVer = 0;
 
 const own = id => S.buildings[id] || 0;
 const has = id => !!S.upgrades[id];
-const alloc = id => id === 'start' || !!S.tree[id];
-const known = id => id === 'heal' || !!S.tree[id];
+const ranksOf = o => o === 'cleric' ? S.tree : S.ctree[o];
+const rankOf = (o, id) => ranksOf(o)[id] || 0;
+const rankCost = (n, r) => n.owner === 'cleric' ? clericRankCost(n, r) : compRankCost(n, r);
+const totalCost = (n, r) => { let c = 0; for (let k = 1; k <= r; k++) c += rankCost(n, k); return c; };
+const spentIn = (o, treeId) => OWNERS[o].filter(t => !treeId || t.id === treeId).reduce((a, t) => a + t.nodes.reduce((b, n) => b + totalCost(n, rankOf(o, n.id)), 0), 0);
+const pointsOf = o => o === 'cleric' ? Math.floor(S.heroes[YOU].lv / 2) + S.bonusPts - spentIn('cleric') : Math.floor(S.heroes[o].lv / 2) - spentIn(o);
+const known = id => id === 'heal' || rankOf('cleric', id) > 0;
 const K = id => S.skills[id] || 0;
 const prog = () => S.dun.best.reduce((a, b) => a + (b || 0), 0);
 const bagCap = () => 24 + (has('bags') ? 12 : 0);
 const statVal = (it, k) => (it.stats[k] || 0) * (1 + 0.1 * (it.up || 0));
 const xpNeed = lv => Math.round(40 * Math.pow(1.22, lv - 1));
 const lvMult = i => Math.pow(1.07, S.heroes[i].lv - 1);
-const skillPoints = () => S.heroes[YOU].lv - 1 + S.bonusPts - Object.keys(S.tree).reduce((a, k) => a + (NODE[k] ? NODE[k].cost : 0), 0);
-const memberMax = i => Math.round(PARTY[i].hp * D.partyHp * lvMult(i));
-const memberDps = i => PARTY[i].dps * D.partyDps * lvMult(i) * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1);
+const skillPoints = () => pointsOf('cleric');
+const memberMax = i => Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * Math.pow(1.1, S.kit[i].a) * D.cs[i].hpMul);
 const modIs = (...m) => m.includes(DUNGEONS[S.dun.current].mod);
 const berserkAt = () => modIs('tide') ? 70 : 120;
 const hpScale = (d, s) => Math.pow(2.2, d) * (1 + 0.12 * (s - 1));
@@ -786,11 +806,12 @@ function bldMult(b) {
   return m;
 }
 
-function treeStats() {
-  const t = {};
-  for (const id in S.tree) { const n = NODE[id]; if (n) for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k]; }
-  return k => t[k] || 0;
+function sumFx(o) {
+  const t = {}, rk = ranksOf(o) || {};
+  for (const id in rk) { const n = TNODE[o + '|' + id]; if (n) for (const k in n.fx) t[k] = (t[k] || 0) + n.fx[k] * rk[id]; }
+  return t;
 }
+function treeStats() { const t = sumFx('cleric'); return k => t[k] || 0; }
 function recalc() {
   const s = { power: 0, mana: 0, regen: 0, crit: 0, haste: 0, greed: 0, vigor: 0 };
   for (const k in S.equip) { const it = S.equip[k]; if (it) for (const st in it.stats) s[st] += statVal(it, st); }
@@ -809,8 +830,13 @@ function recalc() {
   D.greed = (s.greed + 5 * K('plenty')) / 100 + t('gold');
   D.vigor = s.vigor / 100;
   D.xpMult = 1 + 0.05 * K('scholar') + t('xp');
-  D.partyHp = Math.pow(1.1, S.train.hp) * (1 + D.vigor) * (1 + t('partyHp') + 0.03 * K('fort'));
-  D.partyDps = Math.pow(1.15, S.train.dps) * (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
+  D.partyHp = (1 + D.vigor) * (1 + t('partyHp') + 0.03 * K('fort'));
+  D.partyDps = (has('sermon') ? 1.25 : 1) * (1 + t('partyDps') + 0.03 * K('valor'));
+  D.cs = PARTY.map((p, i) => {
+    const c = i === YOU ? {} : sumFx(i), g = k => c[k] || 0;
+    return { ...c, dmg: p.dmg * lvMult(i) * Math.pow(1.12, S.kit[i].w) * Math.max(0.1, 1 + g('dmg')) * D.partyDps,
+      spd: g('spd'), crit: 0.05 + g('crit'), critDmg: 1.5 + g('critDmg'), dr: g('dr'), hpMul: 1 + g('hp'), poisonPow: g('poisonPow') };
+  });
   D.partyRegen = 0.004 * S.train.regen;
   D.healGold = 0.08 * (has('tithe1') ? 2 : 1) * (has('tithe2') ? 2 : 1) * (1 + D.greed);
   D.gps = BUILDINGS.reduce((tot, b) => tot + own(b.id) * b.gps * bldMult(b), 0);
@@ -935,6 +961,8 @@ function startStage() {
   C.buff = { sanct: 0, bless: 0 };
   C.party.forEach(m => { m.shield = 0; m.hots = []; m.dots = []; });
   if (modIs('poison')) C.party.forEach(m => { if (m.alive) m.dots = [{ rate: m.max * 0.012, left: 12, acc: 0 }]; });
+  C.foes.forEach(f => { f.hitBy = {}; f.poison = null; });
+  C.atkT = PARTY.map(() => rand(0.3, 0.9)); C.hits = []; C.hitN = PARTY.map(() => 0); C.ramp = PARTY.map(() => 0);
   const silenceable = SPELLS.filter(s => known(s.id) && s.id !== 'heal');
   C.silenced = modIs('silence') && silenceable.length ? pick(silenceable).id : null;
   $('#overlay').hidden = true;
@@ -948,6 +976,9 @@ function hit(i, amt) {
   if (!m || !m.alive || C.phase !== 'fight') return;
   if (C.buff.sanct > 0) amt *= 1 - D.sp.sanctuary.amt;
   if (i === 0) amt *= 1 - D.tankDR;
+  const cs = D.cs[i];
+  amt *= 1 - Math.min(0.6, cs.dr);
+  if (cs.laststand && m.hp / m.max < 0.3) amt *= 0.75;
   const a = Math.min(m.shield, amt);
   if (a > 0) {
     m.shield -= a; amt -= a; floatTxt(i, 'absorb ' + fmt(a), 'abs');
@@ -1093,13 +1124,15 @@ function stepFight(dt) {
     if (C.heatT <= 0) { C.heatT += 4; aliveIdx().forEach(i => hit(i, C.party[i].max * 0.02)); }
   }
 
-  // the party focuses the front enemy
+  // each companion swings on their own timer; damage lands when the hit connects
   const f = front();
-  if (f && f.enter <= 0) {
-    const dps = C.party.reduce((t, m, i) => t + (m.alive ? memberDps(i) : 0), 0);
-    f.hp -= dps * dt;
-    if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); }
-  }
+  if (f && f.enter <= 0) C.party.forEach((m, i) => {
+    if (!m.alive) return;
+    C.atkT[i] -= dt;
+    if (C.atkT[i] <= 0) { C.atkT[i] += attackInterval(i); heroAttack(i, f); }
+  });
+  C.hits = C.hits.filter(h => { h.t -= dt; if (h.t > 0) return true; landHit(h); return false; });
+  C.foes.forEach(e => { if (e.alive && e.poison) tickPoison(e, dt); });
   C.foes.forEach(e => { if (e.alive) foeAct(e, dt); });
 
   if (C.cast) {
@@ -1110,6 +1143,56 @@ function stepFight(dt) {
   if (!liveFoes().length) return stageCleared();
   const others = C.party.some((m, i) => i !== YOU && m.alive);
   if (!C.party[YOU].alive || !others) return wipe();
+}
+
+function heroAttack(i, f) {
+  let delay = 0.16;
+  if (PARTY[i].ranged) {
+    const p = HERO_POS[i];
+    delay = Math.hypot(f.x - 4 - (p.x + 6), f.y - f.h * 0.5 - (p.y - 22)) / 180;
+    fxHeroProj(i, f);
+  } else heroAnim[i].atk = 0;
+  C.hits.push({ i, t: delay, foe: f });
+}
+function dealFoe(f, dmg, col) {
+  if (!f || !f.alive) return;
+  f.hp -= dmg; f.flash = 0.06;
+  foeNum(f, fmt(dmg) + (col === 'crit' ? '!' : ''), col === 'crit' ? '#ffb347' : col === 'poison' ? '#a3c45c' : '#f3ead8');
+  if (f.hp <= 0) { f.hp = 0; f.alive = false; f.die = 0.5; f.cast = null; S.stats.kills++; burst(f.x, f.y - f.h / 2, f.boss ? '#ffd36b' : '#ffe9b0', f.boss ? 30 : 12); }
+}
+function applyPoison(e, rate, cs) {
+  if (!e.alive) return;
+  const cap = cs.deepwounds ? 10 : 5;
+  if (!e.poison) e.poison = { rate, stacks: 0, left: 5, acc: 0 };
+  e.poison.rate = Math.max(e.poison.rate, rate); e.poison.stacks = Math.min(cap, e.poison.stacks + 1); e.poison.left = 5;
+}
+function tickPoison(e, dt) {
+  const p = e.poison; p.acc += dt;
+  while (p.acc >= 1 && e.alive) { p.acc -= 1; p.left -= 1; dealFoe(e, p.rate * p.stacks, 'poison'); if (p.left <= 0) { e.poison = null; return; } }
+}
+function landHit(h) {
+  const f = h.foe.alive ? h.foe : front(); if (!f) return;
+  const cs = D.cs[h.i], n = ++C.hitN[h.i];
+  let dmg = cs.dmg * (C.buff.bless > 0 ? 1 + D.sp.blessing.amt : 1) * rand(0.92, 1.08);
+  if (f.boss && cs.bossDmg) dmg *= 1 + cs.bossDmg;
+  if (cs.execute && f.hp / f.max < 0.25) dmg *= 2;
+  const big = (cs.bash || cs.pyro) && n % 4 === 0;
+  if (big) dmg *= 3;
+  const crit = Math.random() < cs.crit || (cs.ambush && !f.hitBy[h.i]);
+  if (crit) dmg *= cs.critDmg;
+  f.hitBy[h.i] = 1;
+  const others = liveFoes().filter(e => e !== f && e.enter <= 0);
+  dealFoe(f, dmg, crit || big ? 'crit' : '');
+  burst(f.x - 4, f.y - f.h * 0.5 + rand(-4, 4), big ? '#ffb347' : '#ffe9b0', big ? 10 : 4);
+  if (cs.cleave && others.length) dealFoe(pick(others), dmg * cs.cleave, '');
+  if (cs.splash) others.forEach(e => dealFoe(e, dmg * cs.splash, ''));
+  if (big && cs.meteor) others.forEach(e => dealFoe(e, dmg * cs.meteor, ''));
+  if (cs.poison) {
+    const rate = cs.dmg * cs.poison * (1 + cs.poisonPow);
+    applyPoison(f, rate, cs);
+    if (cs.toxic) others.forEach(e => applyPoison(e, rate * 0.5, cs));
+  }
+  if (cs.rampage) C.ramp[h.i] = Math.min(10, C.ramp[h.i] + 1);
 }
 
 function gainXp(amount) {
@@ -1164,10 +1247,10 @@ function dungeonCleared() {
   S.dun.clears[d] = (S.dun.clears[d] || 0) + 1;
   let extra = '';
   if (first) {
-    S.bonusPts += 2;
+    S.bonusPts += 1;
     if (S.dun.unlocked === d && d < DUNGEONS.length - 1) { S.dun.unlocked = d + 1; extra += `<p>New dungeon unlocked: <b>${DUNGEONS[d + 1].name}</b>. It is much harder. Farm here until you're ready.</p>`; }
-    extra += '<p class="lvl">First clear: +2 talent points</p>';
-    log(`<span class="x">First clear of ${DUNGEONS[d].name}: +2 talent points.</span>`);
+    extra += '<p class="lvl">First clear: +1 Cleric talent point</p>';
+    log(`<span class="x">First clear of ${DUNGEONS[d].name}: +1 talent point.</span>`);
   }
   log(`Cleared <b>${DUNGEONS[d].name}</b>. <span class="g">+${fmt(C.run.gold)} gold</span> <span class="x">+${fmt(C.run.xp)} exp</span>`);
   endRun('', `<h3>${esc(DUNGEONS[d].name)} cleared</h3>${extra}`);
@@ -1176,7 +1259,7 @@ function wipe() {
   C.cast = null; S.stats.wipes++;
   const dg = DUNGEONS[S.dun.current];
   log(`The party fell on stage ${C.stage} of <b>${dg.name}</b>.`);
-  const tip = C.time > berserkAt() ? 'The enemies went berserk. Your party needs more damage: Weapon Drills, levels, Rally or Blessing.'
+  const tip = C.time > berserkAt() ? 'The enemies went berserk. Your party needs more damage: weapon upgrades and talents in the Party tab, or Blessing.'
     : C.stage === dg.stages ? 'The boss is the real test. Farm for levels, gear and talent points, then come back.'
     : 'Rewards from cleared stages are kept. Farm, then try again.';
   endRun('wipe', `<h3>The party has fallen</h3><p>Stage ${C.stage} of ${dg.stages}. ${tip}</p>`);
@@ -1222,7 +1305,6 @@ const cv = $('#scene'), cx = cv.getContext('2d');
 cx.imageSmoothingEnabled = false;
 const HERO_POS = [{ x: 154, y: 138 }, { x: 130, y: 150 }, { x: 126, y: 124 }, { x: 92, y: 134 }, { x: 60, y: 146 }];
 const heroAnim = PARTY.map(() => ({ atk: -1, next: rand(0.2, 1.2), flash: 0, lvl: 0, cast: 0, hitDone: false }));
-const ATK_EVERY = [1.5, 1.1, 0.7, 1.7, 3];
 let FX = [], AMB = [];
 let sceneT = 0, bgCache = null, bgFor = -1, vign = null;
 
@@ -1621,10 +1703,11 @@ function fxSlash(i, small) { const p = HERO_POS[i]; FX.push({ t: 'slash', x: p.x
 function fxWave(b) { FX.push({ t: 'wave', x: b.x - 20, life: 0.9, max: 0.9 }); }
 function fxRing() { FX.push({ t: 'ring', x: 104, y: 140, life: 0.6, max: 0.6 }); }
 function fxProj(e, i, col, s) { const p = HERO_POS[i]; FX.push({ t: 'proj', x: e.x - 10, y: e.y - (e.h || 20) * 0.6, tx: p.x, ty: p.y - 12, sp: 300, col, s }); }
-function fxHeroProj(i) {
-  const p = HERO_POS[i], f = front(); if (!f) return;
-  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5 + rand(-4, 4), sp: 180, col: i === 3 ? '#ff9f43' : '#fff2a8', s: i === 3 ? 3 : 2, hero: f });
+function fxHeroProj(i, f) {
+  const p = HERO_POS[i];
+  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : '#fff2a8', s: i === 3 ? 3 : 2 });
 }
+function foeNum(f, str, col) { if (document.hidden) return; FX.push({ t: 'num', x: f.x + rand(-8, 8), y: f.y - f.h - 12, str, col, life: 0.8, max: 0.8 }); }
 function resetScene() { FX = FX.filter(f => f.t === 'num'); heroAnim.forEach(a => { a.atk = -1; a.flash = 0; a.cast = 0; }); }
 
 function heroAt(px, py) {
@@ -1692,17 +1775,9 @@ function renderScene(dt) {
   ambient(dt, dg.amb);
 
   const f0 = front();
-  heroAnim.forEach((a, i) => {
+  heroAnim.forEach(a => {
     a.flash = Math.max(0, a.flash - dt); a.lvl = Math.max(0, a.lvl - dt); a.cast = Math.max(0, a.cast - dt);
-    if (!fighting || !C.party[i] || !C.party[i].alive || !f0 || f0.enter > 0) { a.atk = -1; return; }
     if (a.atk >= 0) { a.atk += dt; if (a.atk > 0.32) a.atk = -1; }
-    a.next -= dt;
-    if (a.next <= 0) {
-      a.next = ATK_EVERY[i] * rand(0.85, 1.15) / (C.buff.bless > 0 ? 1.4 : 1);
-      if (i === 3 || i === 4) fxHeroProj(i);
-      else { a.atk = 0; a.hitDone = false; }
-    }
-    if (a.atk > 0.16 && !a.hitDone) { a.hitDone = true; f0.flash = 0.06; burst(f0.x - 4, f0.y - f0.h * 0.5 + rand(-4, 4), '#ffe9b0', 4); }
   });
 
   cx.fillStyle = '#00000050';
@@ -1970,14 +2045,14 @@ function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + Object.values(S.equip).map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
   const key = tab + '|' + (tab === 'sanctum' ? visibleBuildings().length + ':' + availableUpgrades().map(u => u.id).join(',') + ':' + S.buyMode
     : tab === 'armory' ? itemsKey + (sel ? sel.where + sel.id : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
-    : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints()
+    : tab === 'talents' ? JSON.stringify(S.tree) + skillPoints() + talTree
     : tab === 'dungeons' ? JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest')
-    : tab === 'barracks' ? S.heroes.map(h => h.lv).join(',')
+    : tab === 'party' ? JSON.stringify(S.ctree) + JSON.stringify(S.kit) + partySel + S.heroes.map(h => h.lv).join(',')
     : tab === 'chronicle' ? logVer + '' + confirmReset : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
   const st = pane.scrollTop;
-  ({ sanctum: renderSanctum, barracks: renderBarracks, talents: renderTalents, armory: renderArmory, dungeons: renderDungeons, chronicle: renderChronicle })[tab]();
+  ({ sanctum: renderSanctum, party: renderParty, talents: renderTalents, armory: renderArmory, dungeons: renderDungeons, chronicle: renderChronicle })[tab]();
   pane.scrollTop = st;
   updatePane();
 }
@@ -1985,7 +2060,7 @@ function renderPane() {
 function renderDungeons() {
   pane.innerHTML = `
     <div class="section-h"><h3>Dungeons</h3><span class="label">Choose when to push deeper</span></div>
-    <p class="intro">Each dungeon is a run of stages that ends with a boss. Health and mana carry over between stages, with a short rest in between. Every new dungeon is far harder than the last, so expect to farm. First clears give 2 talent points.</p>
+    <p class="intro">Each dungeon is a run of stages that ends with a boss. Health and mana carry over between stages, with a short rest in between. Every new dungeon is far harder than the last, so expect to farm. First clears give a Cleric talent point.</p>
     <div class="dungeons">${DUNGEONS.map((dg, i) => {
       const locked = i > S.dun.unlocked, cur = i === S.dun.current, clears = S.dun.clears[i] || 0, best = S.dun.best[i] || 0;
       const status = locked ? `Clear ${DUNGEONS[i - 1].name} to unlock` : clears ? `Cleared ${clears}×` : best ? `Best: stage ${best} of ${dg.stages}` : 'Not attempted';
@@ -1999,113 +2074,103 @@ function renderDungeons() {
         ${btn}</div>`;
     }).join('')}</div>`;
 }
-/* ---------- Talent tree UI ---------- */
-const HOME_VIEW = { x: -330, y: -330, w: 660 };
-let TV = { ...HOME_VIEW }, tSel = 'start';
-function canAlloc(id) {
-  const n = NODE[id];
-  if (alloc(id)) return 'Already allocated.';
-  if (!ADJ[id].some(alloc)) return 'Connect it to a talent you already have.';
-  if (n.needs && !known(n.needs)) return `Requires ${SP[n.needs].name}.`;
-  if (skillPoints() < n.cost) return `Needs ${n.cost} talent point${n.cost > 1 ? 's' : ''}.`;
+/* ---------- Talent grids (Cleric in Talents, companions in Party) ---------- */
+let talTree = 'holy', partySel = 0, tSel = null;
+function canLearn(n) {
+  const o = n.owner, r = rankOf(o, n.id);
+  if (r >= n.max) return 'Fully learned.';
+  const tr = OWNERS[o].find(t => t.id === n.tree), need = n.row * TIER_GATE, have = spentIn(o, n.tree);
+  if (have < need) return `Needs ${need} points spent in ${tr.name} (${have} so far).`;
+  if (n.req && rankOf(o, n.req) < 1) return `Needs ${TNODE[o + '|' + n.req].name} first.`;
+  const c = rankCost(n, r + 1);
+  if (pointsOf(o) < c) return `Needs ${c} talent point${c > 1 ? 's' : ''}.`;
   return true;
 }
-function refundBlock(id) {
-  if (id === 'start') return 'Your starting point.';
-  const rest = new Set(Object.keys(S.tree)); rest.delete(id);
-  const seen = new Set(['start']), q = ['start'];
-  while (q.length) { const c = q.shift(); for (const nb of ADJ[c]) if (rest.has(nb) && !seen.has(nb)) { seen.add(nb); q.push(nb); } }
-  for (const k of rest) if (!seen.has(k)) return `${NODE[k].name} depends on it. Refund that first.`;
-  if (NODE[id].spell) for (const k of rest) if (NODE[k].needs === NODE[id].spell) return `${NODE[k].name} needs this spell. Refund that first.`;
-  return null;
+function cellHtml(n) {
+  const o = n.owner, r = rankOf(o, n.id), key = o + '|' + n.id;
+  const st = r >= n.max ? 'max' : canLearn(n) === true ? 'avail' : r > 0 ? 'part' : 'locked';
+  const pre = n.req && TNODE[o + '|' + n.req];
+  const link = pre && pre.col === n.col && pre.row === n.row - 1 ? 'link' : '';
+  const rk = n.kind === 'minor' ? `${r}/${n.max}` : r ? 'Learned' : n.kind === 'spell' ? 'Spell' : 'Major';
+  return `<button class="tcell ${n.kind} ${st} ${link} ${tSel === key ? 'sel' : ''}" style="grid-row:${n.row + 1};grid-column:${n.col + 2}" data-tal="${key}" title="${esc(n.name)}: ${esc(n.per)}">
+    ${img(n.icon, 0, 'sm')}<b>${esc(n.name)}</b><span class="rk">${rk}</span></button>`;
 }
-function nodeState(id) { return alloc(id) ? 'alloc' : canAlloc(id) === true ? 'avail' : ADJ[id].some(alloc) ? 'near' : 'locked'; }
-function nodeSvg(n) {
-  const R = { start: 30, minor: 12, notable: 19, spell: 25, keystone: 28 }[n.type];
-  let body = n.type === 'keystone'
-    ? `<polygon class="body" points="0,${-R} ${R},0 0,${R} ${-R},0"/><polygon class="inner" points="0,-11 11,0 0,11 -11,0"/>`
-    : `<circle class="body" r="${R}"/>` + (n.type === 'notable' ? '<circle class="inner" r="11"/>' : '');
-  if (n.type === 'spell' || n.type === 'start') body += `<image href="${icon('s_' + (n.spell || 'heal'))}" x="-15" y="-15" width="30" height="30"/>`;
-  const label = n.type === 'spell' || n.type === 'keystone' || n.type === 'start' ? `<text class="tlabel" y="${R + 15}">${esc(n.name)}</text>` : '';
-  return `<g class="tn ${n.type} ${nodeState(n.id)} ${tSel === n.id ? 'sel' : ''}" data-tn="${n.id}" transform="translate(${n.x.toFixed(1)} ${n.y.toFixed(1)})" style="--sc:${n.col}">
-    <title>${esc(n.name)} (${n.cost ? n.cost + ' pt' : 'start'}): ${esc(n.desc)}</title><circle class="ring" r="${R + 7}"/>${body}${label}</g>`;
+function gridHtml(tr, cols) {
+  const rows = Math.max(...tr.nodes.map(n => n.row)) + 1;
+  const gates = Array.from({ length: rows }, (_, r) => `<span class="gate" style="grid-row:${r + 1}" title="Points needed in this tree">${r ? r * TIER_GATE : ''}</span>`).join('');
+  return `<div class="tgrid" style="--sc:${tr.col};grid-template-columns:18px repeat(${cols},minmax(0,1fr))">${gates}${tr.nodes.map(cellHtml).join('')}</div>`;
 }
-function treeSvg() {
-  const orbits = [85, 160, 235, 310, 385, 460, 535, 610].map(r => `<circle class="orbit" r="${r}"/>`).join('');
-  const regions = SCHOOLS.map(s => { const p = polar(s.a, s.r); return `<text class="region" x="${p.x.toFixed(0)}" y="${p.y.toFixed(0)}" fill="${s.col}">${s.name}</text>`; }).join('');
-  const edges = TEDGES.map(e => {
-    const [a, b] = e.split('-'), A = NODE[a], B = NODE[b], on = alloc(a) && alloc(b), half = alloc(a) || alloc(b);
-    return `<line class="edge ${on ? 'on' : half ? 'half' : ''}" x1="${A.x.toFixed(1)}" y1="${A.y.toFixed(1)}" x2="${B.x.toFixed(1)}" y2="${B.y.toFixed(1)}"/>`;
-  }).join('');
-  return orbits + regions + edges + TN.map(nodeSvg).join('');
+function talDetailHtml() {
+  const n = tSel && TNODE[tSel];
+  if (!n) return '<p class="empty">Click a talent to see what it does. Double-click learns it.</p>';
+  const o = n.owner, r = rankOf(o, n.id), c = canLearn(n), tr = OWNERS[o].find(t => t.id === n.tree);
+  const kind = n.kind === 'spell' ? 'New spell' : n.kind === 'major' ? 'Major talent' : `Rank ${r} of ${n.max}`;
+  const nc = r < n.max ? rankCost(n, r + 1) : 0, pts = `${nc} point${nc > 1 ? 's' : ''}`;
+  const per = esc(n.per.replace(/\.$/, ''));
+  const eff = n.kind === 'minor' ? `<p>Each rank: ${per}.</p><p class="sub">Ranks 1–${o === 'cleric' ? 5 : 3} cost 1 point; later ranks cost 2.</p>` : `<p>${per}.</p>`;
+  const label = n.kind === 'spell' ? 'Learn spell' : n.kind === 'major' ? 'Learn' : `Learn rank ${r + 1}`;
+  const btn = r >= n.max ? '<span class="label">Fully learned</span>'
+    : c === true ? `<button class="btn primary" data-learn="${tSel}">${label} · ${pts}</button>`
+    : `<button class="btn" disabled>${label} · ${pts}</button><span class="label">${esc(c)}</span>`;
+  return `<div class="tdh"><span class="swatch" style="background:${tr.col}"></span><b>${esc(n.name)}</b><span class="label">${tr.name} · ${kind}</span></div>${eff}<div class="actions">${btn}</div>`;
 }
-function tDetailHtml() {
-  const n = NODE[tSel] || NODE.start;
-  const kind = { start: 'Starting point', minor: 'Minor talent', notable: 'Notable talent', spell: 'Spell', keystone: 'Keystone' }[n.type];
-  const pts = n.cost ? ` · ${n.cost} point${n.cost > 1 ? 's' : ''}` : '';
-  let act;
-  if (n.type === 'start') act = '<span class="label">Always yours</span>';
-  else if (alloc(n.id)) { const why = refundBlock(n.id); act = why ? `<button class="btn" disabled>Refund</button><span class="label">${esc(why)}</span>` : `<button class="btn" data-trefund="${n.id}">Refund · get ${n.cost} back</button>`; }
-  else { const c = canAlloc(n.id); act = c === true ? `<button class="btn primary" data-talloc="${n.id}">Allocate${pts}</button>` : `<button class="btn" disabled>Allocate${pts}</button><span class="label">${esc(c)}</span>`; }
-  return `<div class="tdh" style="--sc:${n.col}"><span class="swatch"></span><b>${esc(n.name)}</b><span class="label">${kind}${pts}</span></div><p>${esc(n.desc)}</p><div class="actions">${act}</div>`;
+function selectTal(key) {
+  tSel = key;
+  pane.querySelectorAll('.tcell.sel').forEach(b => b.classList.remove('sel'));
+  const b = pane.querySelector(`[data-tal="${key}"]`); if (b) b.classList.add('sel');
+  const d = $('#tdetail'); if (d) d.innerHTML = talDetailHtml();
 }
-function renderTalents() {
-  const pts = skillPoints();
-  pane.innerHTML = `
-    <div class="section-h"><h3>Talent tree</h3><span class="label">Talent points <b style="color:var(--xp);font-family:var(--mono)">${pts}</b></span></div>
-    <p class="intro">Start at the centre and spread outward; you can take any talent next to one you have. Small talents cost 1 point, notables 2, new spells 3–4 and keystones 3. You earn a point every Cleric level and 2 on each first dungeon clear. Drag to look around, scroll or use the buttons to zoom, and click a talent to see it. Double-click allocates.</p>
-    <div class="treewrap">
-      <svg class="tree" id="tree" role="img" aria-label="Talent tree">${treeSvg()}</svg>
-      <div class="treectl"><button class="btn" data-zoom="in" aria-label="Zoom in">+</button><button class="btn" data-zoom="out" aria-label="Zoom out">−</button><button class="btn" data-zoom="home" aria-label="Back to the centre">⌂</button><button class="btn" data-zoom="all" aria-label="Show the whole tree">⤢</button></div>
-    </div>
-    <div class="tdetail" id="tdetail">${tDetailHtml()}</div>
-    <div class="actions"><button class="btn" data-act="respec" ${Object.keys(S.tree).length ? '' : 'disabled'}>Refund all talents</button>
-      <span class="label">${Object.keys(S.tree).length} talents allocated</span></div>`;
-  wireTree();
-}
-function applyView(svg) { svg.setAttribute('viewBox', `${TV.x.toFixed(1)} ${TV.y.toFixed(1)} ${TV.w.toFixed(1)} ${TV.w.toFixed(1)}`); }
-function zoomTo(f, px, py) {
-  const w = clamp(TV.w * f, 280, 1500);
-  TV.x = px - (px - TV.x) * w / TV.w; TV.y = py - (py - TV.y) * w / TV.w; TV.w = w;
-}
-function selectTalent(id) {
-  tSel = id;
-  pane.querySelectorAll('.tn.sel').forEach(g => g.classList.remove('sel'));
-  const g = pane.querySelector(`[data-tn="${id}"]`); if (g) g.classList.add('sel');
-  const d = $('#tdetail'); if (d) d.innerHTML = tDetailHtml();
-}
-function allocTalent(id) {
-  if (canAlloc(id) !== true) return;
-  S.tree[id] = 1; recalc();
-  const n = NODE[id];
+function learnTal(key) {
+  const n = TNODE[key]; if (!n || canLearn(n) !== true) return;
+  const rk = ranksOf(n.owner); rk[n.id] = (rk[n.id] || 0) + 1;
+  recalc();
   if (n.spell) { log(`<span class="x">Learned ${n.name}.</span>`); toast(`Learned ${n.name}. It's on your spell bar.`); }
-  shopDirty = true; renderPane();
+  tSel = key; shopDirty = true; renderPane();
 }
-function wireTree() {
-  const svg = $('#tree'); if (!svg) return;
-  applyView(svg);
-  let down = null;
-  svg.addEventListener('pointerdown', e => {
-    const g = e.target.closest('[data-tn]');
-    down = { x: e.clientX, y: e.clientY, vx: TV.x, vy: TV.y, node: g && g.dataset.tn, moved: false };
-    svg.setPointerCapture(e.pointerId);
-  });
-  svg.addEventListener('pointermove', e => {
-    if (!down) return;
-    const dx = e.clientX - down.x, dy = e.clientY - down.y;
-    if (!down.moved && Math.hypot(dx, dy) > 5) { down.moved = true; svg.classList.add('dragging'); }
-    if (down.moved) { const k = TV.w / Math.min(svg.clientWidth, svg.clientHeight); TV.x = down.vx - dx * k; TV.y = down.vy - dy * k; applyView(svg); }
-  });
-  const up = () => { if (down && !down.moved && down.node) selectTalent(down.node); svg.classList.remove('dragging'); down = null; };
-  svg.addEventListener('pointerup', up);
-  svg.addEventListener('pointercancel', () => { svg.classList.remove('dragging'); down = null; });
-  svg.addEventListener('dblclick', e => { const g = e.target.closest('[data-tn]'); if (g) allocTalent(g.dataset.tn); });
-  svg.addEventListener('wheel', e => {
-    e.preventDefault();
-    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
-    zoomTo(e.deltaY > 0 ? 1.15 : 1 / 1.15, p.x, p.y); applyView(svg);
-  }, { passive: false });
+pane.addEventListener('dblclick', e => { const b = e.target.closest('[data-tal]'); if (b) learnTal(b.dataset.tal); });
+
+function renderTalents() {
+  const pts = pointsOf('cleric'), tr = CLERIC_TREES.find(t => t.id === talTree) || CLERIC_TREES[0];
+  if (!tSel || !tSel.startsWith('cleric|')) tSel = null;
+  pane.innerHTML = `
+    <div class="section-h"><h3>Cleric talents</h3><span class="label">Talent points <b style="color:var(--xp);font-family:var(--mono)">${pts}</b></span></div>
+    <p class="intro">You earn a talent point every 2 Cleric levels and one on each first dungeon clear, so spend them carefully. Most talents take many ranks of small bonuses. Major talents and new spells cost more. Deeper rows need points spent in that tree first (the number on the left).</p>
+    <div class="ttabs" role="group" aria-label="Talent trees">${CLERIC_TREES.map(t => `<button class="chipbtn" style="--sc:${t.col}" data-ttree="${t.id}" aria-pressed="${t.id === tr.id}">${t.name} <small>${spentIn('cleric', t.id)}</small></button>`).join('')}</div>
+    <p class="intro">${tr.desc}.</p>
+    ${gridHtml(tr, 3)}
+    <div class="tdetail" id="tdetail">${talDetailHtml()}</div>
+    <div class="actions"><button class="btn" data-treset="cleric" ${spentIn('cleric') ? '' : 'disabled'}>Reset all Cleric talents</button><span class="label">Free</span></div>`;
+}
+
+const kitCost = (i, k) => Math.round((k === 'w' ? 30 : 40) * Math.pow(1.6, S.kit[i][k]));
+const attackInterval = i => {
+  const cs = D.cs[i], m = C.party[i];
+  return PARTY[i].spd / (1 + cs.spd + (cs.bloodlust && m && m.hp / m.max < 0.5 ? 0.35 : 0) + (cs.rampage ? 0.02 * (C.ramp[i] || 0) : 0));
+};
+const memberDps = i => { const cs = D.cs[i]; return cs.dmg * (1 + cs.crit * (cs.critDmg - 1)) / attackInterval(i); };
+function renderParty() {
+  const i = partySel, p = PARTY[i], comp = i !== YOU;
+  if (tSel && !tSel.startsWith(i + '|')) tSel = null;
+  const kitRow = (k, name, icon, desc) => `<button class="row" data-kit="${k}:${i}">${img(icon)}<span class="nm">${name}</span><span class="owned" data-own></span>
+    <span class="ds">${desc}</span><span class="meta"><span class="cost" data-cost></span></span></button>`;
+  pane.innerHTML = `
+    <div class="ttabs" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="chipbtn" data-comp="${k}" aria-pressed="${k === i}">${q.name} <small>Lv ${S.heroes[k].lv}${k !== YOU && pointsOf(k) > 0 ? ' · ' + pointsOf(k) + ' pt' : ''}</small></button>`).join('')}</div>
+    <div class="section-h"><h3>${p.name} · ${p.role}</h3><span class="label">Level ${S.heroes[i].lv}</span></div>
+    <div class="bar xp"><i class="fill" id="pxp"></i></div>
+    <div class="statgrid" id="pstats"></div>
+    <div class="section-h"><h3>Gear upgrades</h3><span class="label">Each rank costs 60% more</span></div>
+    <div class="rows">
+      ${comp ? kitRow('w', 'Weapon', 'sword', `+12% damage per rank for ${p.name}.`) : ''}
+      ${kitRow('a', comp ? 'Armor' : 'Vestments', 'chest', `+10% health per rank for ${p.name}.`)}
+      <button class="row" data-train="regen">${img('bandage')}<span class="nm">Field Dressings</span><span class="owned" data-own></span>
+        <span class="ds">The whole party regenerates 0.4% of max health per second per rank.</span><span class="meta"><span class="cost" data-cost></span></span></button>
+    </div>
+    ${comp ? `
+    <div class="section-h"><h3>${p.name}'s talents</h3><span class="label">Points <b style="color:var(--xp);font-family:var(--mono)">${pointsOf(i)}</b> · one every 2 levels</span></div>
+    <div class="ctrees">${COMP_TREES[i].map(tr => `<div class="ctree"><h4 style="color:${tr.col}">${tr.name} <small>${spentIn(i, tr.id)} spent</small></h4><p class="intro">${tr.desc}.</p>${gridHtml(tr, 2)}</div>`).join('')}</div>
+    <div class="tdetail" id="tdetail">${talDetailHtml()}</div>
+    <div class="actions"><button class="btn" data-treset="${i}" ${spentIn(i) ? '' : 'disabled'}>Reset ${p.name}'s talents</button><span class="label">Free</span></div>`
+    : '<p class="intro">Your own talents are in the Talents tab.</p>'}`;
 }
 function renderSanctum() {
   const bs = visibleBuildings(), ups = availableUpgrades();
@@ -2119,14 +2184,6 @@ function renderSanctum() {
     <div class="section-h"><h3>Blessings</h3><span class="label">One-time upgrades</span></div>
     ${ups.length ? `<div class="upgrades">${ups.map(u => `<button class="upg" data-upg="${u.id}">${img(u.icon)}<b>${u.name}</b><span>${u.desc}</span><span class="cost">${fmt(u.cost)} gold</span></button>`).join('')}</div>`
       : '<p class="empty">New blessings appear as you build and clear stages.</p>'}`;
-}
-function renderBarracks() {
-  pane.innerHTML = `
-    <div class="section-h"><h3>Training</h3><span class="label">Applies immediately</span></div>
-    <div class="rows">${TRAIN.map(t => `<button class="row" data-train="${t.id}">${img(t.icon)}<span class="nm">${t.name}</span><span class="owned" data-own></span>
-      <span class="ds">${t.desc}</span><span class="meta"><span class="cost" data-cost></span></span></button>`).join('')}</div>
-    <div class="section-h"><h3>Party</h3><span class="label">Each level: +7% health and damage</span></div>
-    <div class="roster" id="roster"></div>`;
 }
 function itemLines(it, cmp) {
   const keys = new Set([...Object.keys(it.stats), ...(cmp ? Object.keys(cmp.stats) : [])]);
@@ -2211,21 +2268,27 @@ function updatePane() {
       r.querySelector('[data-each]').textContent = `+${fmt(b.gps * bldMult(b))}/s each${own(b.id) ? ` · ${fmt(own(b.id) * b.gps * bldMult(b))}/s total` : ''}`;
     });
     pane.querySelectorAll('[data-upg]').forEach(u => u.classList.toggle('cant', S.gold < UPG[u.dataset.upg].cost));
-  } else if (tab === 'barracks') {
+  } else if (tab === 'party') {
+    const i = partySel, cs = D.cs[i], h = S.heroes[i];
+    pane.querySelectorAll('[data-kit]').forEach(r => {
+      const k = r.dataset.kit.split(':')[0], c = kitCost(i, k);
+      r.classList.toggle('cant', S.gold < c);
+      r.querySelector('[data-own]').textContent = S.kit[i][k];
+      r.querySelector('[data-cost]').textContent = `${fmt(c)} gold`;
+    });
     pane.querySelectorAll('[data-train]').forEach(r => {
       const t = TRAIN.find(x => x.id === r.dataset.train), maxed = t.max && S.train[t.id] >= t.max;
       r.classList.toggle('cant', maxed || S.gold < trainCost(t));
       r.querySelector('[data-own]').textContent = S.train[t.id];
       r.querySelector('[data-cost]').textContent = maxed ? 'Fully trained' : `${fmt(trainCost(t))} gold`;
     });
-    const ro = $('#roster');
-    if (ro) ro.innerHTML = PARTY.map((p, i) => {
-      const h = S.heroes[i];
-      return `<div class="hero"><header><b>${p.name} · ${p.role}</b><span>Lv ${h.lv}</span></header>
-        <div class="bar xp"><i class="fill" style="width:${100 * h.xp / xpNeed(h.lv)}%"></i></div>
-        <small>${fmt(h.xp)} / ${fmt(xpNeed(h.lv))} exp</small>
-        <small>${fmt(memberMax(i))} hp · ${fmt(memberDps(i))} dps</small></div>`;
-    }).join('');
+    const xp = $('#pxp'); if (xp) xp.style.width = (100 * h.xp / xpNeed(h.lv)) + '%';
+    const ps = $('#pstats');
+    if (ps) ps.innerHTML = [
+      ['Health', fmt(memberMax(i))], ['Damage per hit', fmt(cs.dmg)], ['Attacks per second', (1 / attackInterval(i)).toFixed(2)],
+      ['Damage per second', fmt(memberDps(i))], ['Critical chance', (cs.crit * 100).toFixed(0) + '%'], ['Critical damage', '×' + cs.critDmg.toFixed(2)],
+      ['Damage taken', '-' + (Math.min(0.6, cs.dr) * 100).toFixed(0) + '%'], ['Experience', `${fmt(h.xp)} / ${fmt(xpNeed(h.lv))}`],
+    ].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('');
   } else if (tab === 'armory') {
     const cs = $('#cstats');
     if (cs) cs.innerHTML = [
@@ -2235,9 +2298,9 @@ function updatePane() {
     const en = pane.querySelector('[data-act="enchant"]');
     if (en) en.disabled = S.gold < +en.dataset.cost;
   }
-  const dot = TN.some(n => canAlloc(n.id) === true);
-  const tt = document.querySelector('[data-tab="talents"]');
-  if (!!tt.querySelector('.dot') !== dot) tt.innerHTML = 'Talents' + (dot ? '<span class="dot" aria-label="talents you can take"></span>' : '');
+  const dotFor = (sel, label, on) => { const tt = document.querySelector(sel); if (!!tt.querySelector('.dot') !== on) tt.innerHTML = label + (on ? '<span class="dot" aria-label="talents you can learn"></span>' : ''); };
+  dotFor('[data-tab="talents"]', 'Talents', CLERIC_TREES.some(t => t.nodes.some(n => canLearn(n) === true)));
+  dotFor('[data-tab="party"]', 'Party', [0, 1, 2, 3].some(i => COMP_TREES[i].some(t => t.nodes.some(n => canLearn(n) === true))));
 }
 
 pane.addEventListener('click', e => {
@@ -2253,15 +2316,17 @@ pane.addEventListener('click', e => {
   } else if (d.train) {
     const tr = TRAIN.find(x => x.id === d.train), c = trainCost(tr);
     if ((!tr.max || S.train[tr.id] < tr.max) && S.gold >= c) { S.gold -= c; S.train[tr.id]++; recalc(); }
-  } else if (d.talloc) { allocTalent(d.talloc); return; }
-  else if (d.trefund) { if (!refundBlock(d.trefund)) { delete S.tree[d.trefund]; recalc(); } }
-  else if (d.zoom) {
-    const svg = $('#tree');
-    if (d.zoom === 'home') TV = { ...HOME_VIEW };
-    else if (d.zoom === 'all') TV = { x: -720, y: -720, w: 1440 };
-    else zoomTo(d.zoom === 'in' ? 1 / 1.3 : 1.3, TV.x + TV.w / 2, TV.y + TV.w / 2);
-    if (svg) applyView(svg);
-    return;
+  } else if (d.tal) { selectTal(d.tal); return; }
+  else if (d.learn) { learnTal(d.learn); return; }
+  else if (d.ttree) { talTree = d.ttree; tSel = null; }
+  else if (d.comp != null) { partySel = +d.comp; tSel = null; }
+  else if (d.kit) {
+    const [k, i] = d.kit.split(':'), c = kitCost(+i, k);
+    if (S.gold >= c) { S.gold -= c; S.kit[+i][k]++; recalc(); }
+  } else if (d.treset != null) {
+    const o = d.treset;
+    if (o === 'cleric') S.tree = {}; else S.ctree[+o] = {};
+    tSel = null; recalc();
   } else if (d.enter != null) { enterDungeon(+d.enter); }
   else if (d.eq) { sel = { where: 'eq', id: d.eq }; confirmSell = false; }
   else if (d.inv) { sel = { where: 'inv', id: +d.inv }; confirmSell = false; }
@@ -2283,8 +2348,7 @@ function act(a) {
     const it = S.equip[sel.id]; if (!it) return;
     const c = enchantCost(it); if (S.gold < c) return;
     S.gold -= c; it.up = (it.up || 0) + 1; recalc();
-  } else if (a === 'respec') { S.tree = {}; tSel = 'start'; recalc(); }
-  else if (a === 'sellweak') confirmSell = true;
+  } else if (a === 'sellweak') confirmSell = true;
   else if (a === 'sellweak-no') confirmSell = false;
   else if (a === 'sellweak-yes') {
     const keep = [];
@@ -2350,24 +2414,27 @@ function save() { S.lastSave = Date.now(); try { localStorage.setItem(SAVE_KEY, 
 function load(data) {
   let raw = data && data.S;
   if (!raw) { try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { raw = null; } }
-  if (!raw || ![1, 2, 3, 4].includes(raw.v)) return false;
+  if (!raw || ![1, 2, 3, 4, 5].includes(raw.v)) return false;
   const base = newState();
   S = Object.assign(base, raw, {
-    v: 4,
+    v: 5,
     stats: Object.assign(base.stats, raw.stats), train: Object.assign(base.train, raw.train), equip: Object.assign(base.equip, raw.equip),
     heroes: raw.heroes || base.heroes, skills: raw.skills || {},
-    tree: raw.v === 4 ? raw.tree || {} : {},
+    tree: raw.v === 5 ? raw.tree || {} : {},
+    ctree: raw.v === 5 && raw.ctree ? raw.ctree : base.ctree,
+    kit: raw.v === 5 && raw.kit ? raw.kit : base.kit,
     dun: Object.assign(base.dun, raw.dun),
   });
-  if (raw.v < 4) {
-    // older saves: the talent tree is new, so refund everything as talent points
+  if (raw.v < 5) {
+    // older saves: talents are new again, so refund them; old party training becomes gear ranks
     if (raw.scales) S.inv.push(...(raw.scales.L || []), ...(raw.scales.R || []));
-    const cleared = S.dun.clears.filter(c => c > 0).length;
-    const spellsOwned = Object.keys(raw.spells || {}).filter(k => k !== 'heal').length;
-    S.bonusPts = 2 * cleared + (raw.v < 3 ? Math.min(6, Math.floor((raw.maxStage || 1) / 2)) : (raw.rubies || 0) + spellsOwned);
+    S.bonusPts = S.dun.clears.filter(c => c > 0).length;
+    const tr = raw.train || {};
+    S.kit = PARTY.map((_, i) => ({ w: i === YOU ? 0 : tr.dps || 0, a: tr.hp || 0 }));
     ['scales', 'talents', 'maxStage', 'stage', 'autoAdvance', 'rubies', 'spells'].forEach(k => delete S[k]);
   }
-  for (const id in S.tree) if (!NODE[id]) delete S.tree[id];
+  for (const id in S.tree) if (!TNODE['cleric|' + id]) delete S.tree[id];
+  S.ctree.forEach((t, i) => { for (const id in t) if (!TNODE[i + '|' + id]) delete t[id]; });
   Object.values(S.equip).forEach(it => it && ensureItem(it));
   S.inv.forEach(ensureItem);
   return true;

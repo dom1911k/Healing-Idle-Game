@@ -14,6 +14,10 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Dungeons.** The Dungeons tab is a map of the descent: each dungeon has a painted banner with its boss, its rule, your progress through its stages, and how hard it is for your party's level. Eight dungeons, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **Readable battlefield text.** Banners, ability names, level-ups, boss name cards and town labels use a crisp pixel font with an outline.
 - **Debuffs.** Poison ramps up with every tick, a hex halves the healing its target receives, and wolves cause short bleeds. Purify removes all of them. A Ward that is still holding makes its target resist new poisons and hexes.
+- **Bosses test the healer.** Bosses act more often the deeper you go, and from the second dungeon on they bring checks you have to answer:
+  - **Plague** (green countdown badge): cleanse it within 7 seconds or it bursts on the whole party. A Ward or Bone Shield on the target blocks it before it lands.
+  - **Necrotic Grip**: soaks up the next heals on that ally (the badge shows how much is left), so you have to heal through it.
+  - **Skull Crusher**: a slow, telegraphed blow on Bram for five times a normal hit. Shield him, Barkskin him or top him up before it lands.
 - **Boss telegraphs.** When a boss starts a big ability, the cast bar names the target, a red marker hovers over that hero and their party frame pulses red. Wave attacks mark the whole party. Later bosses add **Doom**, a slow cast that hits one ally for a huge amount: shield them with Ward or top them up in time.
 - **Boss second phases.** At half health every boss changes: Gnasher calls in rats, the Mire Hag poisons everyone, the Grave Warden raises skeletons, Ashjaw sets the floor on fire, Thornmother weakens healing and summons wisps, the Iron Penitent casts Doom at once and speeds up, and so on. Each dungeon card says what to expect.
 - **Elites.** Now and then a stage holds an elite with a gold crown and one trait: Shielded (a barrier soaks damage first), Enraged (faster below half health), Mender (heals its allies) or Venomous (poisons). Elites have four times the health and always drop an uncommon-or-better item, extra materials and five times the gold.
@@ -29,9 +33,10 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 ## Getting started
 
-- One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril and sets.
+- One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril, sets, Plague, Necrotic Grip, Skull Crusher and losing the tank.
 - A **Next** line under the arena header suggests the most useful thing to do now, like choosing a spell, equipping upgrades, spending points, promoting someone or building in the Town. Click it to jump to the right tab.
-- **Sound.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements. Use the speaker button and slider in the header to mute or set the volume.
+- **Sound and music.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements, and a chiptune theme for every dungeon (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
+- **Phones.** On narrow screens the party frames sit three to a row, the tabs wrap into two rows and empty action-bar slots hide until you edit keybinds.
 
 ## Why heal actively
 
@@ -41,18 +46,20 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 ## Spells
 
-- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in the trees: Flash Heal, Purify and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing.
+- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in your class's trees (for the Priest: Flash Heal, Purify and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing).
 - With *Repeat dungeon* on, the next run waits until you've chosen. You can also choose from the Talents tab, which always shows which spells your next first clear will offer.
 
 ## Healer classes and talents
 
-- Pick a healer class in the Talents tab, in the spirit of Mini Healer's Priest, Druid and Occultist trees. Switching is free and refunds your Cleric talents. Each class renames and reworks your spells, has its own passive, its own look and three talent trees of its own:
+- Pick a healer class in the Talents tab, in the spirit of Mini Healer's Priest, Druid and Occultist trees. Switching is free. **Each class keeps its own talents and its own spell choices**: a class you haven't played yet starts with one spell pick per dungeon you've already cleared, so you choose its spells from that class's offer. Switching back restores that class's setup. Each class renames and reworks your spells, has its own passive, its own look, its own reward resource (Devotion, Harmony or Dread) and three talent trees of its own:
 
-  | Class | Passive | How the spells play |
+  | Class | Resource | How it plays |
   |---|---|---|
-  | **Priest** | Radiant Overflow: 30% of overhealing becomes a shield | Direct heals, Ward, Prayer (the original Cleric) |
-  | **Druid** | Living Seed: Rejuvenation stacks, and heal-over-time ticks restore mana | Regrowth (heal plus a heal over time), Swiftmend (stronger on allies with a heal over time), stacking Rejuvenation, Barkskin (35% damage reduction), instant Wild Growth, Tranquility (party heal every second) |
-  | **Occultist** | Siphon Life: your attacks hit 4× harder and heal the most injured ally. Blood Pact: spend health when out of mana | Drain Life (heals and drains the front enemy), Leech Seed, Bone Shield, Dark Pact (health for mana), Soul Harvest (stronger with more enemies) |
+  | **Priest** | **Holy Power** (up to 3) | Heal and Flash Heal build Holy Power. Prayer spends it for +25% healing per point and is instant at 3. A Ward cast at 3 also shields the rest of the party for half. Radiant Overflow turns 30% of overhealing into shields. |
+  | **Druid** | Heals over time | Plant Rejuvenation (stacks twice) and Regrowth, then **Swiftmend eats the strongest one** to heal for everything it had left plus 30%. **Tree of Life** (replaces Mark of the Wild): 15 seconds where heals over time heal 40% more, Regrowth is instant and the party deals 15% more damage, and you turn into a tree. Barkskin, instant Wild Growth, Tranquility. Heal-over-time ticks restore mana. |
+  | **Occultist** | **Souls** (up to 5) | You heal by hurting. **Drain Life is a 3-second channel** that drains the front enemy and pours it into the ally you chose; it does nothing with no enemy in reach. **Leech Seed goes on an enemy** and heals your chosen ally every second as it damages. **Blood Bolt** costs your own health instead of mana. **Purge** throws cleansed debuffs at the enemy. Every kill and every finished Drain Life gives a Soul, and **Soul Harvest** spends them all (weak with none, huge with five). **Unholy Ground** damages every enemy each second, and Siphon Life turns that into healing. Blood Pact pays for spells with health when you're out of mana. |
+
+- Holy Power and Souls show as pips under the cast bar.
 
 - Trees: Priest has Holy, Discipline and Devotion; Druid has Restoration, Wild Spirit and Thornguard; Occultist has Affliction, Blood and Shadow.
 - Talents are fewer and much bigger: up to 3 ranks of +5–15% per rank, plus keystones (2–3 points) that change how spells work. Examples: Chain Heal, Inner Light, Atonement, Divine Hymn, Lifebloom, Efflorescence, Germination, Tree of Life, Ironbark, Wrath, Soul Drain, Haunt, Vampiric Embrace, Curse of Doom and Eclipse of Souls. Each tree ends in a capstone.
@@ -60,9 +67,14 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - Talent points: 1 every 2 Cleric levels, plus 1 for each first dungeon clear, the Library and an achievement.
 - Each class has its own spell icon colors, heal effects and casting sparkles. The Talents tab lists your spells as that class under "Your spells as a …".
 - Party frames show one badge per heal over time with its class name and a stack count, for example "Rejuvenation ×3", Regrowth, Wild Growth, Leech Seed or Divine Hymn, plus Barkskin and Bone Shield. Enemies with Leech Seed show a red pip.
+- Your weapon in the arena takes on its item's rarity: rare weapons glow blue, epic ones purple and legendary ones gold, pulsing. Epic or legendary armor still gives a colored outline.
+- Numbers on the party frames rise from above the frame's right side so they don't cover the health text.
 - Combat numbers are whole and bold. Heal-over-time and damage ticks that land close together on the same hero merge into one rising number instead of a pile.
 
 ## The party
+
+- **Bram is the tank.** Enemies attack him about two thirds of the time (bosses always do). If he falls, the enemies run wild: they hit everyone 60% harder and 25% faster until the stage ends, with a red warning in the arena. His Bulwark tree has three new tank talents: **Guardian** (takes up to 24% of the damage aimed at other allies), **Challenging Shout** (enemies attack him more often) and **Unbreakable** (the rest of the party takes 10% less damage while he stands).
+- **Party auras.** Each companion unlocks an aura at level 10 and doubles it at level 20: Bram's Guardian Aura (party takes 4% / 8% less damage), Rook's Battle Shout (+6% / +12% party damage), Vess's Hunter's Mark (enemies take 5% / 10% more damage) and Ilda's Arcane Intellect (+8% / +16% max mana). They're shown in the Party tab.
 
 - Companions attack on their own timers. Every hit has its own damage, attack speed, critical chance and critical damage. Melee hits land at the end of a swing; Vess's arrows and Ilda's fireballs land when they arrive.
 - The Party tab shows each member as a portrait card in their class color, with a badge when they have talent points to spend. The party frames in the arena show the same portraits and colors.

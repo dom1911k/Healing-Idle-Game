@@ -210,7 +210,6 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .node b{font-size:.82rem;display:flex;justify-content:space-between;gap:6px}
 .node b i{font-style:normal;font-family:var(--mono);font-size:.72rem;color:var(--xp)}
 .node span{font-size:.72rem;color:var(--muted)}
-.rubybtn{border-color:var(--ruby)!important;color:var(--ruby)!important}
 .pill{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:2px 9px;border:1px solid}
 .pill.ok{color:var(--r1);border-color:var(--r1)}
 
@@ -513,15 +512,15 @@ const ABIL = {
    Spells and the talent tree
    ========================================================= */
 const SPELLS = [
-  { id: 'heal',      name: 'Heal',       cost: 10, cast: 1.8, cd: 0,  ruby: 0, desc: 'A steady single-target heal. Your first spell.' },
-  { id: 'flash',     name: 'Flash Heal', cost: 20, cast: 0.6, cd: 0,  ruby: 1, desc: 'A fast, costly heal for emergencies.' },
-  { id: 'renew',     name: 'Renew',      cost: 14, cast: 0,   cd: 0,  ruby: 1, desc: 'Heals one ally over 10 seconds.' },
-  { id: 'ward',      name: 'Ward',       cost: 22, cast: 0,   cd: 8,  ruby: 1, desc: 'Shields one ally from incoming damage.' },
-  { id: 'purify',    name: 'Purify',     cost: 12, cast: 0,   cd: 4,  ruby: 1, desc: 'Removes poisons and curses, then heals a little.' },
-  { id: 'meditate',  name: 'Meditate',   cost: 0,  cast: 0,   cd: 45, ruby: 1, desc: 'Restores 35% of your mana over 5 seconds.', self: true },
-  { id: 'prayer',    name: 'Prayer',     cost: 40, cast: 2.2, cd: 0,  ruby: 2, desc: 'Heals the whole party.', group: true },
-  { id: 'sanctuary', name: 'Sanctuary',  cost: 35, cast: 0,   cd: 40, ruby: 2, desc: 'The party takes 30% less damage for 6 seconds.', group: true },
-  { id: 'blessing',  name: 'Blessing',   cost: 30, cast: 0,   cd: 30, ruby: 2, desc: 'Party damage +40% for 10 seconds.', group: true },
+  { id: 'heal',      name: 'Heal',       cost: 10, cast: 1.8, cd: 0, desc: 'A steady single-target heal. Your first spell.' },
+  { id: 'flash',     name: 'Flash Heal', cost: 20, cast: 0.6, cd: 0, desc: 'A fast, costly heal for emergencies.' },
+  { id: 'renew',     name: 'Renew',      cost: 14, cast: 0,   cd: 0, desc: 'Heals one ally over 10 seconds.' },
+  { id: 'ward',      name: 'Ward',       cost: 22, cast: 0,   cd: 8, desc: 'Shields one ally from incoming damage.' },
+  { id: 'purify',    name: 'Purify',     cost: 12, cast: 0,   cd: 4, desc: 'Removes poisons and curses, then heals a little.' },
+  { id: 'meditate',  name: 'Meditate',   cost: 0,  cast: 0,   cd: 45, desc: 'Restores 35% of your mana over 5 seconds.', self: true },
+  { id: 'prayer',    name: 'Prayer',     cost: 40, cast: 2.2, cd: 0, desc: 'Heals the whole party.', group: true },
+  { id: 'sanctuary', name: 'Sanctuary',  cost: 35, cast: 0,   cd: 40, desc: 'The party takes 30% less damage for 6 seconds.', group: true },
+  { id: 'blessing',  name: 'Blessing',   cost: 30, cast: 0,   cd: 30, desc: 'Party damage +40% for 10 seconds.', group: true },
 ];
 const SP = Object.fromEntries(SPELLS.map(s => [s.id, s]));
 

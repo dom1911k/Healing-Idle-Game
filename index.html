@@ -176,7 +176,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .fr-role{font-size:.72rem;color:var(--muted);white-space:nowrap}
 .fr-role b{color:var(--xp);font-weight:500}
 .bar.hp{height:22px}
-.bar.hp .fill{background:linear-gradient(#69c49a,#2f8562)}
+.bar.hp .fill{background:linear-gradient(#7ad8aa 0,#69c49a 35%,#2f8562);transition:width .12s}
+.bar.hp .trail{position:absolute;top:0;bottom:0;left:0;background:#f3ead8cc}
+.bar.hp .fill{box-shadow:inset 0 1px 0 #ffffff40}
 .bar.hp .shield{position:absolute;top:0;bottom:0;left:0;width:0;background:repeating-linear-gradient(45deg,#d3dbff88 0 4px,#d3dbff33 4px 8px);border-right:2px solid var(--shield)}
 .fr-fx{display:flex;gap:4px;min-height:16px;flex-wrap:wrap}
 .fx{font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:0 5px;border-radius:3px;line-height:16px}
@@ -286,6 +288,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .bbar{position:relative;height:14px;background:#14121a;border-radius:3px;overflow:hidden}.bbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(#e4b75c,#a8803a)}.bbar span{position:relative;font-family:var(--mono);font-size:.7rem;display:block;text-align:center;line-height:14px}
 .breward{color:var(--muted);font-size:.8rem}.breward em{color:#c48bfb;font-style:normal}
 .craft{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px dashed var(--line);padding-top:8px;margin-top:4px}.craft .label{flex-basis:100%}
+.curses{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}.curses .label{flex-basis:100%}.curses small{color:#c48bfb}.curses .sub{flex-basis:100%}
+.cosmos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.cosbtn{display:flex;flex-direction:column;gap:3px;padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}.cosbtn.on{border-color:#c48bfb;box-shadow:0 0 10px #c48bfb44}.cosbtn:disabled{opacity:.5}.cosbtn span{font-size:.78rem;color:var(--muted)}.cosbtn em{font-style:normal;font-family:var(--mono);font-size:.78rem;color:#c48bfb}
+.savecode textarea{width:100%;box-sizing:border-box;background:#14121a;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px;font-family:var(--mono);font-size:.72rem;word-break:break-all;resize:vertical}
 .actsep{font-family:var(--display);font-size:1.05rem;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 0 4px;margin-top:6px;letter-spacing:.04em}.actsep b{color:var(--gold);margin-right:8px}.actsep.act2 b{color:#c48bfb}
 .dcard{position:relative;border-radius:10px;overflow:visible;background:var(--surface-2);border:1px solid var(--line)}
 .dcard+.dcard::before{content:'';position:absolute;left:34px;top:-19px;height:18px;border-left:2px dashed #5a5070}
@@ -1031,7 +1036,7 @@ const CLASSES = {
       blessing: 'Become a Tree of Life for 15 seconds: heals over time heal 40% more, Regrowth is instant and the party deals 15% more damage.', renew: 'Heals over 10 seconds. Stacks on the same ally.',
       ward: 'The target takes 35% less damage for 8 seconds.', prayer: 'Instant: a heal over time on the whole party.', sanctuary: 'Heals the whole party for 6% of their health every second for 5 seconds.' } },
   occultist: { name: 'Occultist', res: 'Dread', crest: 'afflict', col: '#c43a5a', trees: OCC_TREES, tag: 'Healing by draining your enemies',
-    passive: ['Siphon Life', 'You heal by hurting. Your own attacks hit 4× harder and heal the most injured ally for half the damage. Every enemy that dies gives you a Soul (up to 5) for Soul Harvest. Blood Pact: without enough mana, spells cost your health instead'],
+    passive: ['Siphon Life', 'You heal by hurting. Your own attacks hit 4× harder and heal the most injured ally for half the damage. Every enemy that dies gives you a Soul (up to 5) for Soul Harvest, and each Soul restores 3% of your mana. Blood Pact: without enough mana, spells cost your health instead'],
     names: { heal: 'Drain Life', flash: 'Blood Bolt', renew: 'Leech Seed', ward: 'Bone Shield', purify: 'Purge', meditate: 'Dark Pact', prayer: 'Soul Harvest', sanctuary: 'Unholy Ground', blessing: 'Bloodlust' },
     descs: { heal: 'Channel for 3 seconds: drain the front enemy and pour it into the ally you chose. Finishing the channel grants a Soul. Does nothing with no enemy in reach.',
       flash: 'Instant and nearly free: costs 6% of your own health. Heals one ally and strikes the front enemy.',
@@ -1479,7 +1484,7 @@ const xpNeed = lv => Math.round(40 * Math.pow(1.22, lv - 1));
 const lvMult = i => Math.pow(1.07, S.heroes[i].lv - 1);
 const skillPoints = () => pointsOf('cleric');
 // Training: small additive bonuses per rank, costs that grow like Cookie Clicker buildings
-const memberMax = i => Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * D.cs[i].hpMul);
+const memberMax = i => (i === 0 && curse('frail') ? 0.6 : 1) * Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * D.cs[i].hpMul);
 const modIs = (...m) => m.includes(DUNGEONS[S.dun.current].mod);
 const berserkAt = () => modIs('tide') ? 70 : 120;
 const HP_STEP = 3.5, DMG_STEP = 3.0; // how much tougher each dungeon is
@@ -1578,7 +1583,7 @@ function recalc() {
   D.lowWard = cset >= 3;
   if (pk(YOU, 5)) D.crit += 0.1;
   const A = achFx();
-  D.heal *= 1 + 0.08 * echoRank('grace'); D.partyDps *= 1 + 0.1 * echoRank('might'); D.partyHp *= 1 + 0.1 * echoRank('life');
+  D.heal *= (1 + 0.08 * echoRank('grace')) * (curse('dim') ? 0.8 : 1); D.partyDps *= 1 + 0.1 * echoRank('might'); D.partyHp *= 1 + 0.1 * echoRank('life');
   D.greed += 0.15 * echoRank('fortune'); D.xpMult += 0.15 * echoRank('fortune');
   D.heal *= 1 + A.healAll; D.maxMana *= 1 + A.mana; D.regen *= 1 + A.regen; D.crit += A.crit / 100;
   D.greed += A.greed; D.partyDps *= 1 + A.partyDps; D.partyHp *= 1 + A.partyHp; D.xpMult += A.xp;
@@ -1603,7 +1608,7 @@ function recalc() {
   D.sp.renew.cost = 1 - t('renew_cost'); D.sp.renew.amt *= 1 + D.hotPow;
   if (t('prayer_instant')) D.sp.prayer.cast = 0;
   if (cl === 'druid') { D.sp.prayer.cast = 0; D.sp.prayer.cd = 8; D.sp.blessing = { amt: 0.15 + t('bless_amt'), dur: 15, cd: 60 }; }
-  if (cl === 'occultist') { D.sp.flash.cost *= 0.15; D.sp.prayer.cast = 1.2; D.sp.sanctuary.amt *= 0.5; }
+  if (cl === 'occultist') { D.sp.heal.cost *= 0.75; D.sp.flash.cost *= 0.15; D.sp.prayer.cast = 1.2; D.sp.sanctuary.amt *= 0.5; }
   if (pk(YOU, 6)) { D.sp.prayer.amt *= 1.2; D.sp.prayer.cost *= 0.7; }
   C.party.forEach((m, i) => {
     const nm = memberMax(i);
@@ -1780,7 +1785,7 @@ function makeFoes(d, s) {
       dmg: 38 * Math.pow(DMG_STEP, d) * actK(d) * (1 + 0.05 * (s - 1)) * perilDmg(), atk: 1.6, p2: false, d, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
       x: BOSS_SLOT.x, y: BOSS_SLOT.y, alive: true, enter: 0.7, lunge: -1, flash: 0, die: 0, h: 60, seed: 0 }];
   }
-  const n = clamp(2 + Math.floor((s - 1) / 2) + (Math.random() < 0.3 ? 1 : 0), 2, 4);
+  const n = clamp(2 + Math.floor((s - 1) / 2) + (Math.random() < 0.3 ? 1 : 0), 2, 4) + (curse('swarm') ? 1 : 0);
   const eliteAt = Math.random() < 0.12 + 0.03 * (C.peril || 0) ? Math.floor(Math.random() * n) : -1;
   return Array.from({ length: n }, (_, k) => k === eliteAt ? makeElite(mobAt(d, s, k)) : mobAt(d, s, k));
 }
@@ -1844,6 +1849,7 @@ function startStage() {
   C.silenced = modIs('silence') && silenceable.length ? pick(silenceable).id : null;
   $('#overlay').hidden = true;
   resetScene();
+  if (curse('wrath')) { const b = C.foes.find(f => f.boss); if (b) bossPhase(b); }
   updateHeader(true);
 }
 
@@ -1927,7 +1933,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
   if (C.inCast && !npc) C.castAmt += amt;
   if (!npc && eff > 0) sfx(crit ? 'crit' : 'heal');
   floatTxt(i, '+' + fmt(Math.round(amt)) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal', crit ? 0 : amt);
-  if (crit) pnumFx(i, '+' + fmt(Math.round(amt)) + '!', 0, '#e9fff4'); else pnumFx(i, '+', amt, CLASS_FX[clsId()][0]);
+  if (crit) pnumFx(i, '+' + fmt(Math.round(amt)) + '!', 0, '#e9fff4'); else pnumFx(i, '+', amt, fxCols()[0]);
   fxHeal(i, crit);
   return eff;
 }
@@ -1981,6 +1987,7 @@ const PIPS = { priest: { name: 'Holy Power', max: 3, col: '#fff2a8' }, occultist
 function gainPip(n = 1) {
   const p = PIPS[clsId()]; if (!p) return;
   const was = C.pips || 0; C.pips = Math.min(p.max, was + n);
+  if (clsId() === 'occultist') C.mana = Math.min(D.maxMana, C.mana + D.maxMana * 0.03 * n);
   if (C.pips > was && clsId() === 'occultist') { const h = HERO_POS[YOU]; FX.push({ t: 'p', x: h.x + rand(-4, 4), y: h.y - 22, vx: 0, vy: -10, g: 0, life: 0.8, max: 0.8, col: p.col, s: 2 }); }
 }
 const spendPips = () => { const n = C.pips || 0; C.pips = 0; return n; };
@@ -2060,7 +2067,7 @@ const castTime = sp => {
 };
 const spellCd = sp => (D.sp[sp.id] && D.sp[sp.id].cd != null ? D.sp[sp.id].cd : sp.cd);
 const spellCost = sp => sp.cost * D.costMult * (D.sp[sp.id] && D.sp[sp.id].cost != null ? D.sp[sp.id].cost : 1);
-const barSpells = () => SPELLS.filter(s => known(s.id));
+const barSpells = () => SPELLS.filter(s => known(s.id) && !(s.id === 'ward' && curse('noward')));
 
 function drinkDraught() {
   if (C.phase !== 'fight' || !(C.draughts > 0) || (C.cds.draught || 0) > 0) return;
@@ -2169,7 +2176,7 @@ function foeAct(e, dt) {
   e.frenzy = Math.max(0, e.frenzy - dt);
   e.slow = Math.max(0, (e.slow || 0) - dt);
   const rage = e.elite === 'enraged' && e.hp / e.max < 0.5 ? 1.5 : 1;
-  e.atkT -= dt * (tankDown() ? TANK_DOWN_SPD : 1) * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1) * rage * (e.haste || 1) * (1 - (D.foeSlow || 0));
+  e.atkT -= dt * (curse('fury') ? 1.2 : 1) * (tankDown() ? TANK_DOWN_SPD : 1) * (e.frenzy > 0 ? 2.2 : 1) * (e.slow > 0 ? 0.7 : 1) * rage * (e.haste || 1) * (1 - (D.foeSlow || 0));
   if (e.elite === 'mender' && (e.mendT -= dt) <= 0) {
     e.mendT = 4; liveFoes().forEach(o => { if (o !== e) { o.hp = Math.min(o.max, o.hp + o.max * 0.06); burst(o.x, o.y - o.h / 2, '#86dcb8', 4, 10); } });
   }
@@ -3407,7 +3414,7 @@ function drawHero(i, X, Y, t, castPose, rk = promoRank(i)) {
   }
   const helm = i === YOU ? S.equip.head : null;
   if (helm && helm.rarity >= 3) { P.fillStyle = RCOL[helm.rarity][0]; P.fillRect(X - 2, Y - bob + art.headTop, 5, 1); P.fillRect(X, Y - bob + art.headTop - 1, 1, 1); }
-  if (castPose && i === YOU) { P.fillStyle = CLASS_FX[clsId()][2]; P.fillRect(X + art.tip[0] - 1, Y + art.tip[1] - 1 - bob, 3, 3); }
+  if (castPose && i === YOU) { P.fillStyle = fxCols()[2]; P.fillRect(X + art.tip[0] - 1, Y + art.tip[1] - 1 - bob, 3, 3); }
 }
 // Pets from promotions: Vess's hawk circles overhead and dives; Ilda's familiar orbits and shoots
 const famPos = () => { const p = HERO_POS[3]; return { x: p.x + Math.cos(sceneT * 2.5) * 10, y: p.y - 24 + Math.sin(sceneT * 2.5) * 4 }; };
@@ -4033,8 +4040,9 @@ function pnumFx(i, sign, v, col) {
   FX.push({ t: 'num', x: p.x + rand(-6, 6), y: p.y - 34, str: v ? sign + fmt(Math.round(v)) : sign, col, life: 0.9, max: 0.9, hero: i, v: v || null });
 }
 const CLASS_FX = { priest: ['#86dcb8', '#e9fff4', '#fff2a8'], druid: ['#8fdc6a', '#e8ffd0', '#d6ff9a'], occultist: ['#e0605a', '#ffd0d8', '#ff8a9a'] };
+const fxCols = () => { const c = typeof S !== 'undefined' && S && cosGroup('fx'); return c ? c.fx : CLASS_FX[clsId()]; };
 function fxHeal(i, crit) {
-  const p = HERO_POS[i], fc = CLASS_FX[clsId()];
+  const p = HERO_POS[i], fc = fxCols();
   for (let k = 0; k < (crit ? 12 : 6); k++) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(2, 18), vx: rand(-4, 4), vy: rand(-22, -12), g: 0, life: rand(0.5, 0.9), max: 0.9, col: crit ? fc[1] : fc[0], s: 1 });
 }
 function fxBeam(i, col) { const p = HERO_POS[i]; FX.push({ t: 'beam', x: p.x, y: p.y, life: 0.45, max: 0.45, col }); }
@@ -4047,7 +4055,7 @@ function fxRing() { FX.push({ t: 'ring', x: 104, y: 140, life: 0.6, max: 0.6 });
 function fxProj(e, i, col, s) { const p = HERO_POS[i]; FX.push({ t: 'proj', x: e.x - 10, y: e.y - (e.h || 20) * 0.6, tx: p.x, ty: p.y - 12, sp: 300, col, s }); }
 function fxHeroProj(i, f) {
   const p = HERO_POS[i];
-  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : i === 2 ? '#e8e2d4' : CLASS_FX[clsId()][2], s: i === 3 ? 3 : i === YOU && clsId() === 'occultist' ? 3 : 2, arrow: i === 2 });
+  FX.push({ t: 'proj', x: p.x + 6, y: p.y - 22, tx: f.x - 4, ty: f.y - f.h * 0.5, sp: 180, col: i === 3 ? '#ff9f43' : i === 2 ? '#e8e2d4' : fxCols()[2], s: i === 3 ? 3 : i === YOU && clsId() === 'occultist' ? 3 : 2, arrow: i === 2 });
 }
 function fxCoins(f, g) {
   if (document.hidden) return;
@@ -4102,6 +4110,46 @@ function miniBar(x, y, w, frac, col) {
   cx.fillStyle = col; cx.fillRect(x, y, Math.max(0, Math.round(w * frac)), 2);
 }
 
+/* Lighting: each dungeon sits under a layer of darkness with light cut out around torches, heroes, enemies and spells */
+const LIGHT = [
+  { dark: 0.32, col: '#050806', grade: '#6aa05a' }, { dark: 0.34, col: '#080a04', grade: '#8fbf4a' }, { dark: 0.42, col: '#05050c', grade: '#6fa8d8' },
+  { dark: 0.22, col: '#140604', grade: '#ff8a3a' }, { dark: 0.44, col: '#03060a', grade: '#5a8ad8' }, { dark: 0.38, col: '#060608', grade: '#c9504a' },
+  { dark: 0.32, col: '#020a10', grade: '#4fa3a8' }, { dark: 0.3, col: '#06040e', grade: '#e4b75c' }, { dark: 0.48, col: '#05040a', grade: '#9a8ab8' },
+  { dark: 0.34, col: '#020612', grade: '#7ad6ff' }, { dark: 0.18, col: '#0a1424', grade: '#bfe6ff' }, { dark: 0.5, col: '#08030c', grade: '#c44a8a' },
+];
+const lightCv = document.createElement('canvas'); lightCv.width = 320; lightCv.height = 160;
+const lx = lightCv.getContext('2d');
+function lightPass(d, off) {
+  if (reduced()) return;
+  const L = LIGHT[d] || LIGHT[0];
+  lx.globalCompositeOperation = 'source-over'; lx.clearRect(0, 0, SW, SH);
+  lx.globalAlpha = L.dark; lx.fillStyle = L.col; lx.fillRect(0, 0, SW, SH); lx.globalAlpha = 1;
+  lx.globalCompositeOperation = 'destination-out';
+  const hole = (x, y, r, a) => { const g = lx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)'); lx.fillStyle = g; lx.fillRect(x - r, y - r, r * 2, r * 2); };
+  for (const base of [60, 220]) { const tx = ((base - off) % SW + SW) % SW; for (const xx of [tx, tx - SW]) if (xx > -80 && xx < SW + 80) hole(xx, 42, 80 + Math.sin(sceneT * 9 + base) * 2, 0.95); }
+  HERO_POS.forEach((p, i) => { if (C.party[i] && C.party[i].alive) hole(p.x, p.y - 10, i === YOU && C.cast ? 44 : 30, 0.6); });
+  C.foes.forEach(f => { if (f.alive) hole(f.x, f.y - f.h / 2, f.boss ? 46 : 22, f.cast ? 0.75 : 0.45); });
+  let n = 0; for (const f of FX) { if ((f.t === 'beam' || f.t === 'ring' || f.t === 'ringat' || f.t === 'proj') && n < 14) { hole(f.x, f.y - (f.t === 'beam' ? 10 : 0), f.t === 'ring' ? 60 : 24, 0.7); n++; } }
+  cx.drawImage(lightCv, 0, 0);
+}
+// A foreground layer that slides past faster than the background while the party walks: hanging shapes above, debris below
+const FG = ['roots', 'roots', 'chains', 'rocks', 'roots', 'chains', 'roots', 'chains', 'webs', 'shards', 'icicles', 'chains'];
+function foreground(d) {
+  if (reduced()) return;
+  const kind = FG[d] || 'roots', W = SW + 120, off = (C.scroll * 1.7) % W, col = '#07050b';
+  cx.fillStyle = col; cx.globalAlpha = 0.9;
+  for (let k = 0; k < 5; k++) {
+    const x = Math.round(((k * 97 + 40 - off) % W + W) % W - 60), h = 8 + Math.floor(hash(k + d * 7) * 16);
+    if (kind === 'chains') { for (let j = 0; j < h; j += 3) cx.fillRect(x + (j % 6 ? 0 : 1), j, 2, 2); cx.fillRect(x - 2, h, 6, 4); }
+    else if (kind === 'webs') { cx.fillRect(x, 0, 1, h + 6); cx.fillRect(x - 3, h + 4, 7, 5); }
+    else if (kind === 'icicles' || kind === 'shards') { for (let j = 0; j < h; j++) { const w = Math.max(1, Math.round(6 * (1 - j / h))); cx.fillRect(x - (w >> 1), j, w, 1); } }
+    else if (kind === 'rocks') { for (let j = 0; j < h; j++) { const w = Math.max(1, Math.round(9 * (1 - j / h))); cx.fillRect(x - (w >> 1), j, w, 1); } }
+    else { for (let j = 0; j < h; j++) cx.fillRect(x + Math.round(Math.sin(j * 0.5 + k) * 1.5), j, 2, 1); cx.fillRect(x + 2, h - 4, 3, 1); }
+    const bx = Math.round(((k * 131 + 90 - off) % W + W) % W - 60);
+    for (let j = 0; j < 5; j++) cx.fillRect(bx + j * 2, SH - 2 - Math.floor(hash(k * 5 + j + d) * 6), 2, 6);
+  }
+  cx.globalAlpha = 1;
+}
 function renderScene(dt) {
   sceneT += dt;
   const d = S.dun.current, dg = DUNGEONS[d];
@@ -4231,7 +4279,11 @@ function renderScene(dt) {
     }
     const rank = promoRank(i), rc = ROLE_COL[i], hx = p.x + dx - (a.kb > 0 ? 2 * a.kb / 0.14 : 0) - (a.shot > 0 ? 1 : 0), hy = p.y + walk;
     if (a.shot > 0.12 && (i === 3 || i === 2)) { const tp = heroArt(i).tip, wp = i === 3 ? tp : [tp[0], -9]; FX.push({ t: 'p', x: hx + wp[0] + 2, y: hy + wp[1], vx: rand(4, 14), vy: rand(-6, 6), g: 0, life: 0.18, max: 0.18, col: i === 3 ? '#ffd36b' : '#f3ead8', s: 1 }); }
-    if (rank >= 4) { cx.globalAlpha = 0.18 + 0.08 * Math.sin(sceneT * 3 + i); cx.fillStyle = rc; cx.beginPath(); cx.ellipse(hx, hy, 12, 4, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; }
+    const ca = cosGroup('aura');
+    if (rank >= 4 || ca) { cx.globalAlpha = (ca ? 0.3 : 0.18) + 0.08 * Math.sin(sceneT * 3 + i); cx.fillStyle = ca ? ca.col : rc; cx.beginPath(); cx.ellipse(hx, hy, 12, 4, 0, 0, Math.PI * 2); cx.fill(); cx.globalAlpha = 1; }
+    if (cosOn('trail') && C.phase === 'rest' && Math.random() < dt * 8) FX.push({ t: 'p', x: hx - 2, y: hy - 1, vx: -35, vy: 0, g: 0, life: 0.8, max: 0.8, col: ca ? ca.col : '#fff2a8', s: 1 });
+    if (cosOn('banner') && i === 0) { const wv = Math.round(Math.sin(sceneT * 4)); cx.fillStyle = '#5a3d28'; cx.fillRect(hx - 7, hy - 34, 1, 32); cx.fillStyle = fxCols()[0]; cx.fillRect(hx - 6, hy - 33 + wv, 7, 5); cx.fillRect(hx - 6, hy - 28 + wv, 5, 2); cx.fillStyle = '#ffd36b'; cx.fillRect(hx - 6, hy - 33 + wv, 7, 1); }
+    if (cosOn('crown') && i === YOU) { const cy0 = hy - 35 + Math.round(Math.sin(sceneT * 2.5) * 1.5); cx.fillStyle = '#ffd36b'; cx.fillRect(hx - 3, cy0 + 2, 7, 2); cx.fillRect(hx - 3, cy0, 1, 2); cx.fillRect(hx, cy0 - 1, 1, 3); cx.fillRect(hx + 3, cy0, 1, 2); cx.fillStyle = '#e0605a'; cx.fillRect(hx, cy0 + 2, 1, 1); }
     const arm = i === YOU ? S.equip.chest : S.cequip[i].carmor, wpn = i === YOU ? S.equip.staff : S.cequip[i].cweapon;
     blit((X, Y) => drawHero(i, X, Y, sceneT, casting), hx, hy, { flash: a.flash, outline: arm && arm.rarity >= 3 ? RCOL[arm.rarity][1] : '#0b0910' });
     if (wpn && wpn.rarity >= 3 && Math.random() < dt * (wpn.rarity === 4 ? 10 : 5)) {
@@ -4274,8 +4326,10 @@ function renderScene(dt) {
   }
   drawPets();
   const yp = HERO_POS[YOU];
-  if (C.cast && Math.random() < dt * 24) FX.push({ t: 'p', x: yp.x + 3 + rand(-3, 3), y: yp.y - 22 + rand(-3, 3), vx: rand(-6, 6), vy: rand(-12, -4), g: 0, life: 0.4, max: 0.4, col: CLASS_FX[clsId()][2], s: 1 });
+  if (C.cast && Math.random() < dt * 24) FX.push({ t: 'p', x: yp.x + 3 + rand(-3, 3), y: yp.y - 22 + rand(-3, 3), vx: rand(-6, 6), vy: rand(-12, -4), g: 0, life: 0.4, max: 0.4, col: fxCols()[2], s: 1 });
   if (C.medi && Math.random() < dt * 16) FX.push({ t: 'p', x: yp.x + rand(-8, 8), y: yp.y - rand(0, 6), vx: 0, vy: -18, g: 0, life: 0.8, max: 0.8, col: '#7ba3ee', s: 1 });
+  lightPass(d, off);
+  foreground(d);
 
   FX = FX.filter(f => {
     if (f.t === 'coin') {
@@ -4310,15 +4364,18 @@ function renderScene(dt) {
     const k = f.life / f.max;
     if (f.t === 'p') {
       f.vy += (f.g || 0) * dt; f.x += f.vx * dt; f.y += f.vy * dt;
-      cx.globalAlpha = Math.min(1, k * 1.5); cx.fillStyle = f.col; cx.fillRect(Math.round(f.x), Math.round(f.y), f.s, f.s); cx.globalAlpha = 1;
+      cx.globalAlpha = Math.min(1, k * 1.5); cx.fillStyle = f.col; cx.fillRect(Math.round(f.x), Math.round(f.y), f.s, f.s);
+      if (!reduced()) { cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = Math.min(1, k * 1.5) * 0.22; cx.fillRect(Math.round(f.x) - 1, Math.round(f.y) - 1, f.s + 2, f.s + 2); cx.globalCompositeOperation = 'source-over'; }
+      cx.globalAlpha = 1;
     } else if (f.t === 'label') {
       cx.globalAlpha = Math.min(1, k * 2); const ly = Math.round(f.y - (1 - k) * 8);
       pfont(f.str, Math.max(pfWidth(f.str) / 2 + 2, Math.min(SW - pfWidth(f.str) / 2 - 2, f.x)), ly - 7, f.col); cx.globalAlpha = 1;
     } else if (f.t === 'num') {
       cx.globalAlpha = Math.min(1, k * 2); pdraw(f.str, f.x, f.y - (1 - k) * 14, f.col); cx.globalAlpha = 1;
     } else if (f.t === 'beam') {
-      cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = k * 0.6; cx.fillStyle = f.col;
-      cx.fillRect(f.x - 3, 0, 7, f.y); cx.globalAlpha = k; cx.fillRect(f.x - 1, 0, 3, f.y);
+      cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = k * 0.25; cx.fillStyle = f.col;
+      cx.fillRect(f.x - 6, 0, 13, f.y); cx.globalAlpha = k * 0.5; cx.fillRect(f.x - 3, 0, 7, f.y); cx.globalAlpha = k; cx.fillRect(f.x - 1, 0, 3, f.y);
+      cx.globalAlpha = k * 0.6; cx.beginPath(); cx.ellipse(f.x, f.y, 10 + (1 - k) * 6, 3 + (1 - k) * 2, 0, 0, Math.PI * 2); cx.fill();
       cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
     } else if (f.t === 'star') {
       const s = Math.round((1 - k) * 10 + 3);
@@ -4350,6 +4407,8 @@ function renderScene(dt) {
     return true;
   });
 
+  const grade = LIGHT[d] || LIGHT[0];
+  if (grade.grade) { cx.globalCompositeOperation = 'soft-light'; cx.globalAlpha = 0.16; cx.fillStyle = grade.grade; cx.fillRect(0, 0, SW, SH); cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1; }
   cx.drawImage(vign, 0, 0);
   if (C.bossIntro > 0) {
     C.bossIntro -= dt; const b = C.foes.find(f => f.boss), k = Math.min(1, C.bossIntro / 0.4, (2.4 - C.bossIntro) / 0.3);
@@ -4377,7 +4436,7 @@ function buildArena() {
     f.className = 'frame'; f.type = 'button';
     f.style.setProperty('--rc', ROLE_COL[i]);
     f.innerHTML = `<div class="fr-top"><span class="fr-name">${portraitImg(i, 'fr')}${d.name}</span><span class="fr-role" title="${d.role}"><b class="lv"></b></span></div>
-      <div class="bar hp"><i class="fill"></i><i class="shield"></i><span class="txt"></span></div>
+      <div class="bar hp"><i class="trail"></i><i class="fill"></i><i class="shield"></i><span class="txt"></span></div>
       <div class="bar xp"><i class="fill xpf"></i></div>
       <div class="fr-fx"></div><div class="floats"></div>`;
     f.addEventListener('click', e => { if (ringJustOpened) { ringJustOpened = false; e.preventDefault(); return; } C.target = i; });
@@ -4393,7 +4452,7 @@ function buildArena() {
     f.addEventListener('mouseenter', () => { C.hover = i; });
     f.addEventListener('mouseleave', () => { if (C.hover === i) C.hover = null; });
     p.appendChild(f);
-    frameEls.push({ f, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
+    frameEls.push({ f, trail: f.querySelector('.hp .trail'), tv: 1, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
       floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '', por: f.querySelector('.portrait'), rk: promoRank(i) });
   });
   wireActionBar();
@@ -4612,6 +4671,8 @@ function renderArena() {
   C.party.forEach((m, i) => {
     const fe = frameEls[i], h = S.heroes[i];
     fe.fill.style.width = (100 * m.hp / m.max) + '%';
+    // a pale chunk shows the health just lost, then drains away
+    const hv = Math.max(0, m.hp / m.max); fe.tv = hv >= fe.tv ? hv : Math.max(hv, fe.tv - 0.012); fe.trail.style.width = (100 * fe.tv) + '%';
     fe.shield.style.width = Math.min(100, 100 * m.shield / m.max) + '%';
     fe.txt.textContent = m.alive ? `${fmt(m.hp)} / ${fmt(m.max)}` : 'Dead';
     fe.lv.textContent = 'Lv ' + h.lv;
@@ -4664,9 +4725,9 @@ function renderPane() {
   const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + JSON.stringify(S.bounty || {}) + (S.gold >= rerollCost()) + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
     : tab === 'armory' ? itemsKey + lvl('market') + lvl('smithy') + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? clsId() + JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
-    : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv() + confirmAscend + (S.echoes || 0) + JSON.stringify(S.echoUp || {}) + (S.cycle || 0)
+    : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv() + confirmAscend + (S.echoes || 0) + JSON.stringify(S.echoUp || {}) + (S.cycle || 0) + pickCurses.join() + JSON.stringify(S.cosmo || {})
     : tab === 'party' ? clsId() + JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
-    : tab === 'chronicle' ? logVer + '' + confirmReset + JSON.stringify(S.ach || {}) + chronScope + Math.floor(S.stats.played / 2) : '');
+    : tab === 'chronicle' ? logVer + '' + confirmReset + saveUI + saveCode.length + JSON.stringify(S.ach || {}) + chronScope + (saveUI ? 'hold' : Math.floor(S.stats.played / 2)) : '');
   if (!shopDirty && key === paneKey) return updatePane();
   shopDirty = false; paneKey = key;
   const st = pane.scrollTop;
@@ -4739,19 +4800,51 @@ const ECHOES = [
 const echoRank = id => (S.echoUp && S.echoUp[id]) || 0;
 const echoCost = (e, r) => 5 * (r + 1) + (e.id === 'start' || e.id === 'memory' ? 10 * r : 0);
 const canAscend = () => (S.dun.clears[DUNGEONS.length - 1] || 0) > 0;
-const echoGain = () => canAscend() ? 20 + Math.floor(avgLv() / 2) + 5 * cycleK() + Object.values(S.peril || {}).reduce((a, b) => a + (b || 0), 0) : 0;
+const echoGain = () => canAscend() ? Math.round((20 + Math.floor(avgLv() / 2) + 5 * cycleK() + Object.values(S.peril || {}).reduce((a, b) => a + (b || 0), 0)) * curseMul()) : 0;
+// Ascension challenges: optional curses on the next cycle, each adding to the Echoes it pays out
+const CURSES = [
+  { id: 'noward', name: 'Broken Wards', desc: 'your shield spell (Ward, Barkskin or Bone Shield) is sealed', bonus: 0.15 },
+  { id: 'wrath',  name: 'Wrath',        desc: 'bosses start in phase 2', bonus: 0.2 },
+  { id: 'frail',  name: 'Frail Guardian', desc: 'Bram has 40% less health', bonus: 0.2 },
+  { id: 'dim',    name: 'Dim Light',    desc: 'all healing is 20% weaker', bonus: 0.25 },
+  { id: 'swarm',  name: 'Swarm',        desc: 'every pack has one more enemy', bonus: 0.15 },
+  { id: 'fury',   name: 'Fury',         desc: 'enemies attack 20% faster', bonus: 0.2 },
+];
+const curse = id => !!(S.curses && S.curses.includes(id));
+const curseMul = () => 1 + (S.curses || []).reduce((a, id) => a + (CURSES.find(c => c.id === id) || { bonus: 0 }).bonus, 0);
+let pickCurses = [];
+// Echo cosmetics: bought once, toggled freely
+const COSMETICS = [
+  { id: 'aura_gold',  name: 'Golden Aura',     cost: 15, desc: 'a warm golden glow beneath every hero', group: 'aura', col: '#ffd36b' },
+  { id: 'aura_void',  name: 'Void Aura',       cost: 15, desc: 'a violet glow beneath every hero', group: 'aura', col: '#c48bfb' },
+  { id: 'fx_azure',   name: 'Azure Spells',    cost: 10, desc: 'your heals sparkle in icy blue', group: 'fx', fx: ['#7ad6ff', '#e8f6ff', '#bff5ff'] },
+  { id: 'fx_ember',   name: 'Ember Spells',    cost: 10, desc: 'your heals burn in gold and orange', group: 'fx', fx: ['#ffb347', '#fff2a8', '#ffd36b'] },
+  { id: 'banner',     name: 'War Banner',      cost: 20, desc: 'Bram carries a banner in your class color' },
+  { id: 'crown',      name: 'Floating Crown',  cost: 25, desc: 'a little gold crown hovers over your healer' },
+  { id: 'trail',      name: 'Steps of Light',  cost: 12, desc: 'the party leaves glowing footprints while walking' },
+];
+const cosOn = id => !!(S.cosmo && S.cosmo.on && S.cosmo.on[id]);
+const cosGroup = g => COSMETICS.find(c => c.group === g && cosOn(c.id));
+function cosmoAct(id) {
+  const c = COSMETICS.find(x => x.id === id); if (!c) return;
+  S.cosmo = S.cosmo || { owned: {}, on: {} };
+  if (!S.cosmo.owned[id]) { if ((S.echoes || 0) < c.cost) return; S.echoes -= c.cost; S.cosmo.owned[id] = 1; sfx('buy'); }
+  const on = !S.cosmo.on[id]; if (on && c.group) COSMETICS.forEach(o => { if (o.group === c.group) delete S.cosmo.on[o.id]; });
+  if (on) S.cosmo.on[id] = 1; else delete S.cosmo.on[id];
+  shopDirty = true;
+}
 let confirmAscend = false;
 function ascend() {
   if (!canAscend()) return;
   const gain = echoGain(), keep = {};
-  for (const k of ['ach', 'hints', 'stats', 'mute', 'vol', 'music', 'binds', 'bindSeen', 'echoes', 'echoUp', 'cycle', 'cls', 'lootFilter', 'autoGear', 'autoRetry', 'bounty']) keep[k] = S[k];
+  for (const k of ['ach', 'hints', 'stats', 'mute', 'vol', 'music', 'binds', 'bindSeen', 'echoes', 'echoUp', 'cycle', 'cls', 'lootFilter', 'autoGear', 'autoRetry', 'bounty', 'cosmo']) keep[k] = S[k];
   const spells = S.spells.slice(0, 2 * echoRank('memory'));
   S = Object.assign(newState(), keep);
-  S.cycle = (S.cycle || 0) + 1; S.echoes = (S.echoes || 0) + gain; S.spells = spells;
+  S.cycle = (S.cycle || 0) + 1; S.echoes = (S.echoes || 0) + gain; S.spells = spells; S.curses = pickCurses.slice(); pickCurses = [];
   const home = echoRank('start'); if (home) TOWN.forEach(b => { S.town[b.id] = home; });
   confirmAscend = false; sel = null; barKey = ''; shopDirty = true;
   recalc(); enterDungeon(0); sfx('ach');
-  log(`<span class="g">You ascend. Cycle ${S.cycle + 1} begins with ${gain} new Echoes.</span>`); toast(`Ascended! +${gain} Echoes. Spend them at the Echo Altar.`);
+  log(`<span class="g">You ascend. Cycle ${S.cycle + 1} begins with ${gain} new Echoes${S.curses.length ? ', under ' + S.curses.length + ' curse' + (S.curses.length > 1 ? 's' : '') : ''}.</span>`); toast(`Ascended! +${gain} Echoes. Spend them at the Echo Altar.`);
 }
 function buyEcho(id) {
   const e = ECHOES.find(x => x.id === id), r = echoRank(id); if (!e || r >= e.max) return;
@@ -4763,11 +4856,18 @@ function ascendHtml() {
   if (!any) return `<div class="section-h"><h3>Ascension</h3><span class="label">Defeat the Hollow King to unlock</span></div><p class="intro">Beating the last boss lets you ascend: start over from the sewers with permanent Echoes that make every cycle faster and stronger.</p>`;
   return `<div class="section-h"><h3>Ascension</h3><span class="label">Cycle ${(S.cycle || 0) + 1} · enemies ×${Math.pow(1.25, cycleK()).toFixed(2)} · rewards ×${Math.pow(1.3, cycleK()).toFixed(2)}</span></div>
     <div class="ascend">${canAscend() ? `<p>Ascending resets your gold, levels, dungeons, Town, gear, promotions, talents and spells. You keep achievements, stats, Echoes and the Echo Altar. The next cycle's enemies are 25% tougher and pay 30% more.</p>
+      <div class="curses"><span class="label">Curse the next cycle for more Echoes next time you ascend (now ×${curseMul().toFixed(2)} from this cycle's curses)</span>
+        ${CURSES.map(c => `<button class="chipbtn" data-curse="${c.id}" aria-pressed="${pickCurses.includes(c.id)}" title="${c.desc}">${c.name} <small>+${Math.round(c.bonus * 100)}%</small></button>`).join('')}
+        ${pickCurses.length ? `<span class="sub">Next cycle: ${pickCurses.map(id => CURSES.find(c => c.id === id).desc).join('; ')}. Its Echoes ×${(1 + pickCurses.reduce((a, id) => a + CURSES.find(c => c.id === id).bonus, 0)).toFixed(2)}.</span>` : ''}</div>
       <div class="actions">${confirmAscend ? `<span class="confirm">Start over for <b>${echoGain()} Echoes</b>? <button class="btn primary" data-act="ascend-yes">Ascend</button><button class="btn" data-act="ascend-no">Cancel</button></span>` : `<button class="btn primary" data-act="ascend">Ascend for ${echoGain()} Echoes</button>`}</div>`
       : '<p class="sub">Defeat the Hollow King again this cycle to ascend once more.</p>'}
     <div class="section-h"><h3>Echo Altar</h3><span class="label">Echoes <b class="echo">${S.echoes || 0}</b></span></div>
     <div class="echoes">${ECHOES.map(e => { const r = echoRank(e.id), c = echoCost(e, r), done = r >= e.max;
-      return `<button class="echobtn" data-act="echo:${e.id}" ${done || (S.echoes || 0) < c ? 'disabled' : ''}>${img(e.icon)}<b>${e.name}</b><small>${r}/${e.max}</small><span>${e.desc(Math.max(1, r))}${r ? '' : ' (first rank)'}</span><em>${done ? 'Maxed' : c + ' Echoes'}</em></button>`; }).join('')}</div></div>`;
+      return `<button class="echobtn" data-act="echo:${e.id}" ${done || (S.echoes || 0) < c ? 'disabled' : ''}>${img(e.icon)}<b>${e.name}</b><small>${r}/${e.max}</small><span>${e.desc(Math.max(1, r))}${r ? '' : ' (first rank)'}</span><em>${done ? 'Maxed' : c + ' Echoes'}</em></button>`; }).join('')}</div>
+    ${(S.curses || []).length ? `<p class="sub">This cycle's curses: ${S.curses.map(id => `<b>${CURSES.find(c => c.id === id).name}</b>`).join(', ')}.</p>` : ''}
+    <div class="section-h"><h3>Cosmetics</h3><span class="label">Bought with Echoes once, switch them on and off any time</span></div>
+    <div class="cosmos">${COSMETICS.map(c => { const own = S.cosmo && S.cosmo.owned && S.cosmo.owned[c.id];
+      return `<button class="cosbtn ${cosOn(c.id) ? 'on' : ''}" data-act="cos:${c.id}" ${!own && (S.echoes || 0) < c.cost ? 'disabled' : ''}><b>${c.name}</b><span>${c.desc}</span><em>${own ? (cosOn(c.id) ? 'On' : 'Off') : c.cost + ' Echoes'}</em></button>`; }).join('')}</div></div>`;
 }
 function renderDungeons() {
   pane.innerHTML = `
@@ -5431,6 +5531,26 @@ function healingTable(b) {
     <span class="num ${r.o / (r.h + r.o) > 0.4 ? 'warn' : 'muted'}" title="Overhealing">${r.h + r.o ? Math.round(100 * r.o / (r.h + r.o)) : 0}% over</span>
     <span class="num muted">${r.n ? r.n + ' casts' : ''}</span></div>`).join('')}</div>`;
 }
+/* ---------- Save codes: the whole save, deflated and base64'd, for copy and paste ---------- */
+let saveUI = null, saveCode = '';
+const b64 = u8 => { let t = ''; for (let i = 0; i < u8.length; i += 0x8000) t += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(t); };
+const unb64 = t => Uint8Array.from(atob(t), c => c.charCodeAt(0));
+async function exportSave() {
+  S.lastSave = Date.now(); const json = JSON.stringify(S);
+  if (window.CompressionStream) { const st = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw')); return 'MW2:' + b64(new Uint8Array(await new Response(st).arrayBuffer())); }
+  return 'MW1:' + b64(new TextEncoder().encode(json));
+}
+async function importSave(code) {
+  code = code.replace(/\s+/g, ''); const tag = code.slice(0, 4), body = code.slice(4); let json;
+  if (tag === 'MW2:') { const st = new Blob([unb64(body)]).stream().pipeThrough(new DecompressionStream('deflate-raw')); json = await new Response(st).text(); }
+  else if (tag === 'MW1:') json = new TextDecoder().decode(unb64(body));
+  else throw new Error('not a Mendwright save code');
+  const raw = JSON.parse(json); if (!raw || !raw.v || !raw.heroes || !raw.dun) throw new Error('the code is incomplete');
+  if (!load({ S: raw })) throw new Error('this save is from an unknown version');
+  frameEls.forEach(fe => { fe.fxKey = ''; fe.rk = ''; }); applyClassNames(); recalc(); barKey = ''; sel = null; saveUI = null;
+  enterDungeon(S.dun.current || 0); updateResLabels(); syncMute(); save(); shopDirty = true;
+  log('<span class="g">Save code loaded.</span>'); toast('Save loaded.');
+}
 function renderChronicle() {
   const st = S.stats;
   const rows = [
@@ -5453,6 +5573,11 @@ function renderChronicle() {
     <div class="section-h"><h3>Battle log</h3></div>
     <ul class="log">${LOG.map(l => `<li>${l}</li>`).join('') || '<li>Nothing yet.</li>'}</ul>
     <div class="section-h"><h3>Save</h3><span class="label">Saved in this browser every 10s</span></div>
+    <div class="savecode"><p class="sub">Move your run to another browser or device, or keep a backup: export a save code and paste it back in with Import.</p>
+      <div class="actions"><button class="btn" data-act="export">Export save code</button><button class="btn" data-act="import">Import a save code</button></div>
+      ${saveUI === 'export' ? `<textarea readonly id="saveText" rows="4" aria-label="Your save code">${esc(saveCode)}</textarea><div class="actions"><button class="btn primary" data-act="copysave">Copy</button><span class="sub">${fmt(saveCode.length)} characters</span></div>` : ''}
+      ${saveUI === 'import' ? `<textarea id="saveText" rows="4" placeholder="Paste a save code that starts with MW" aria-label="Save code to import"></textarea><div class="actions"><button class="btn primary" data-act="loadsave">Load this save</button><span class="sub">This replaces your current progress.</span></div>` : ''}
+    </div>
     <div class="actions">${confirmReset ? '<span class="confirm">Erase all progress? <button class="btn primary" data-act="reset-yes">Erase</button><button class="btn" data-act="reset-no">Cancel</button></span>' : '<button class="btn" data-act="reset">Start over</button>'}</div>`;
 }
 
@@ -5513,6 +5638,7 @@ pane.addEventListener('click', e => {
   const d = t.dataset;
   if (d.pick) { learnSpell(d.pick); return; }
   if (d.bclaim != null) { claimBounty(+d.bclaim); return; }
+  if (d.curse) { pickCurses = pickCurses.includes(d.curse) ? pickCurses.filter(x => x !== d.curse) : pickCurses.concat(d.curse); shopDirty = true; return; }
   if (d.breroll != null) { rerollBounty(+d.breroll); return; }
   if (d.loot != null) { S.lootFilter = +d.loot; shopDirty = true; return; }
   if (d.chron) { chronScope = d.chron; shopDirty = true; return; }
@@ -5594,10 +5720,15 @@ function act(a) {
     S.inv = keep; confirmSell = false; sel = null;
   } else if (a === 'reset') confirmReset = true;
   else if (a === 'reset-no') confirmReset = false;
+  else if (a === 'export') { exportSave().then(c => { saveCode = c; saveUI = 'export'; shopDirty = true; }); }
+  else if (a === 'import') { saveUI = saveUI === 'import' ? null : 'import'; }
+  else if (a === 'copysave') { const ta = $('#saveText'); ta.select(); (navigator.clipboard ? navigator.clipboard.writeText(saveCode) : Promise.reject()).then(() => toast('Save code copied.'), () => { document.execCommand && document.execCommand('copy'); toast('Save code selected: copy it with Ctrl+C.'); }); }
+  else if (a === 'loadsave') { const v = ($('#saveText') || {}).value || ''; importSave(v).catch(e => toast("Couldn't load that code: " + e.message + '.')); }
   else if (a === 'ascend') confirmAscend = true;
   else if (a === 'ascend-no') confirmAscend = false;
   else if (a === 'ascend-yes') ascend();
   else if (a.startsWith('echo:')) buyEcho(a.slice(5));
+  else if (a.startsWith('cos:')) cosmoAct(a.slice(4));
   else if (a === 'reset-yes') {
     confirmReset = false; S = newState(); LOG.length = 0; try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
     sel = null; barKey = ''; recalc(); enterDungeon(0); log('A new vow. The party gathers at the sewer gate.');
@@ -5646,7 +5777,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty, exportSave, importSave };
 addEventListener('hashchange', syncDev);
 syncDev();
 
@@ -5809,18 +5940,29 @@ function musicTick() {
   const th = THEMES[ti % 100], lead = th.lead.split(' '), step = 60 / (th.bpm * (boss ? 1.12 : 1)) / 2;
   const drums = boss ? 'kkskkkss' : th.drums;
   if (mNext < AC.currentTime) mNext = AC.currentTime + 0.02;
+  // a song is four 4-bar sections: A, A with a harmony line, a bridge (new chords, arpeggios and a slow counter-melody), and A an octave higher with echoes
+  const vol = th.wave === 'sawtooth' ? 0.035 : th.wave === 'square' ? 0.04 : 0.07, ARP = [0, 2, 4, 7, 4, 2, 0, 2], BRIDGE = [3, 4, 5, 4];
   while (mNext < AC.currentTime + 0.25) {
-    const k = mStep % 32, bar = Math.floor(k / 8), t0 = mNext, tok = lead[k];
-    if (tok !== '.' && tok !== '-') {
-      let len = 1; while (lead[(k + len) % 32] === '-' && len < 8) len++;
-      mtone(midiF(degNote(th, +tok) + 12), t0, step * len * 0.95, th.wave, th.wave === 'sawtooth' ? 0.035 : th.wave === 'square' ? 0.04 : 0.07);
+    const sec = Math.floor(mStep % 128 / 32), k = mStep % 32, bar = Math.floor(k / 8), t0 = mNext, tok = lead[k];
+    const ch = sec === 2 ? (th.chords[0] + BRIDGE[bar]) % 7 : th.chords[bar];
+    if (sec !== 2) {
+      if (tok !== '.' && tok !== '-') {
+        let len = 1; while (lead[(k + len) % 32] === '-' && len < 8) len++;
+        const deg = +tok + (sec === 3 && bar % 2 === 1 ? 7 : 0);
+        mtone(midiF(degNote(th, deg) + 12), t0, step * len * 0.95, th.wave, vol);
+        if (sec === 1) mtone(midiF(degNote(th, deg + 2) + 12), t0, step * len * 0.9, 'triangle', vol * 0.5);
+        if (sec === 3) mtone(midiF(degNote(th, deg) + 12), t0 + step * 1.5, step * len * 0.8, th.wave, vol * 0.3);
+      }
+    } else {
+      mtone(midiF(degNote(th, ch + ARP[k % 8]) + 12), t0, step * 0.8, th.wave === 'sine' ? 'triangle' : th.wave, vol * 0.7);
+      if (k % 4 === 0) { let j = k; while (lead[j] === '.' || lead[j] === '-') j = (j + 31) % 32; mtone(midiF(degNote(th, +lead[j] - 3) + 12), t0, step * 3.6, 'sine', 0.06); }
     }
-    const ch = th.chords[bar], bpat = boss ? [0, 0, 7, 0, 4, 0, 7, 4] : [0, null, 4, null, 7, null, 4, null], bd = bpat[k % 8];
-    if (bd != null) mtone(midiF(degNote(th, ch + bd) - 12), t0, step * (boss ? 0.9 : 1.8), 'triangle', 0.09);
-    const dr = drums[k % 8];
+    const bpat = boss ? [0, 0, 7, 0, 4, 0, 7, 4] : sec === 2 ? [0, null, null, null, 4, null, null, null] : [0, null, 4, null, 7, null, 4, null], bd = bpat[k % 8];
+    if (bd != null) mtone(midiF(degNote(th, ch + bd) - 12), t0, step * (boss ? 0.9 : sec === 2 ? 3.6 : 1.8), 'triangle', 0.09);
+    const fill = (sec === 1 || sec === 3) && k >= 28, dr = fill ? 's' : sec === 2 && !boss ? 'k...k.s.'[k % 8] : drums[k % 8];
     if (dr === 'k') mtone(120, t0, 0.14, 'sine', 0.2, -80);
-    else if (dr === 's') mnoise(t0, 0.1, 0.07, 1800);
-    else if (dr === 'h') mnoise(t0, 0.035, 0.03, 7000);
+    else if (dr === 's') mnoise(t0, 0.1, fill ? 0.05 + 0.01 * (k - 28) : 0.07, 1800);
+    else if (dr === 'h' || (sec === 1 && dr === '.')) mnoise(t0, 0.035, 0.03, 7000);
     mStep++; mNext += step;
   }
 }

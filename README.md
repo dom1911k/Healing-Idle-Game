@@ -27,6 +27,8 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   - **Prismatic Mark**: for 6 seconds, healing that ally heals the boss for twice as much. Shield them or let them wait.
   - **Frost Theft** steals every heal over time and shield on the party and turns them into a shield for the boss. Hold your heals over time until it lands.
 - **Ascension.** Once you beat the Hollow King, the Dungeons tab lets you **ascend**: start over from the sewers for permanent **Echoes**. You keep achievements, stats, Echoes and the Echo Altar; gold, levels, dungeons, Town, gear, promotions, talents and spells reset. Each cycle's enemies are 25% tougher and pay 30% more. Spend Echoes at the **Echo Altar** on Might (party damage), Life (party health), Grace (healing), Fortune (gold and experience), Home (start each cycle with buildings already built) and Memory (keep your first spells).
+  - **Ascension challenges.** Before you ascend, you can curse the next cycle: Broken Wards (your shield spell is sealed), Wrath (bosses start in phase 2), Frail Guardian (Bram has 40% less health), Dim Light (20% weaker healing), Swarm (one more enemy per pack) and Fury (enemies attack 20% faster). Each curse adds 15–25% to the Echoes that cycle pays when you ascend again.
+  - **Cosmetics.** Spend Echoes once on a Golden or Void aura under the party, Azure or Ember spell effects, a war banner for Bram, a floating crown for your healer, or glowing footsteps. Switch them on and off any time.
 - **Bosses test the healer.** Bosses act more often the deeper you go, and from the second dungeon on they bring checks you have to answer:
   - **Plague** (green countdown badge): cleanse it within 7 seconds or it bursts on the whole party. A Ward or Bone Shield on the target blocks it before it lands.
   - **Necrotic Grip**: soaks up the next heals on that ally (the badge shows how much is left), so you have to heal through it.
@@ -41,6 +43,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 ## Look and feel
 
 - **Every dungeon has its own scenery:** sewer pipes and a murky channel, a bog with hanging roots and drifting fog, a crypt of burial niches and candles, glowing cracks over a lava channel, a moonlit forest, barred cells with swaying chains, a flooded nave under stained glass, and a starry void with a black sun.
+- **Lighting.** Each dungeon sits under its own darkness, with light pooling around torches, heroes, enemies and spells, and a soft color grade (green in the sewers, cold blue in the crypt, ember orange in the Cinder Pit, magenta under the Hollow Crown). A foreground layer of roots, chains, webs or icicles slides past faster than the background while the party walks. Spell sparks glow, heal beams have soft edges and a ring of light at the target's feet, and health bars show a pale chunk for the health just lost before it drains away.
 - Characters and monsters get light-and-shadow shading. Hits knock targets back, Vess and Ilda recoil when they fire, fallen heroes topple before their grave rises, and every boss arrives with a name card. Bosses have been redrawn, including the Grave Warden, Thornmother, Ashjaw, the Iron Penitent, the Leviathan and the Eclipse Seraph.
 - The town sits under a dusk sky with drifting clouds, birds, a windmill and a castle on the ridge. It has cobbled streets, a plaza fountain, lamp posts, a pond and villagers who walk the main street (more of them as the town grows). Buildings are shaded and outlined, chimneys smoke, and buildings gain flower boxes at level 3 and an annex at level 5.
 
@@ -48,7 +51,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril, sets, Plague, Necrotic Grip, Skull Crusher and losing the tank.
 - A **Next** line under the arena header suggests the most useful thing to do now, like choosing a spell, equipping upgrades, spending points, promoting someone or building in the Town. Click it to jump to the right tab.
-- **Sound and music.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements, and a chiptune theme for every dungeon (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
+- **Sound and music.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements, and a chiptune song for every dungeon. Each song has four parts (the main tune, the tune with a harmony line, a bridge with new chords and arpeggios, then the tune an octave higher with echoes and drum fills), so it runs about four times longer before repeating (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
 - **Phones.** On narrow screens the party frames sit three to a row, the tabs wrap into two rows and empty action-bar slots hide until you edit keybinds. **Hold a party frame** (or right-click it on a computer) for a quick-cast ring of your spells around it: slide onto a spell and let go, or let go and tap one.
 
 ## Why heal actively
@@ -171,6 +174,10 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
   The Town tab also sells one-time blessings for gold.
 - **Expeditions.** Once you build the Acolyte Cloister, an Acolyte heals the party in the background (weakly at first). While the game is closed or in another tab, the Acolyte leads the party through the dungeon you're in, if you've cleared it, otherwise your deepest clear. They run at 20–55% of your active pace for up to 8 hours and bring back gold, experience, materials and items.
+
+## Save codes
+
+- The Chronicle tab can **export a save code**: your whole save, compressed into a short block of text. Copy it, and later **import** it in any browser to continue from there. Importing replaces your current progress.
 
 ## Playtesting
 

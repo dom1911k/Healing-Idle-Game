@@ -43,6 +43,8 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 ## Look and feel
 
 - **Every dungeon has its own scenery:** sewer pipes and a murky channel, a bog with hanging roots and drifting fog, a crypt of burial niches and candles, glowing cracks over a lava channel, a moonlit forest, barred cells with swaying chains, a flooded nave under stained glass, and a starry void with a black sun.
+- **Incoming heals, WoW style.** While you cast (or channel Drain Life), the target's health bar shows a bright pulsing segment for the health your spell will restore when it lands, on the party frame and on the small bar over the hero. Group heals like Prayer and Soul Harvest show it on everyone. Necrotic Grip and healing cuts are taken into account.
+- **Casting.** A rune circle in your class color turns under your healer and brightens as the cast fills, light rises around them, sparks gather and the orb on the staff grows, and the circle flares when the spell goes off.
 - **Lighting.** Each dungeon sits under its own darkness, with light pooling around torches, heroes, enemies and spells, and a soft color grade (green in the sewers, cold blue in the crypt, ember orange in the Cinder Pit, magenta under the Hollow Crown). A foreground layer of roots, chains, webs or icicles slides past faster than the background while the party walks. Spell sparks glow, heal beams have soft edges and a ring of light at the target's feet, and health bars show a pale chunk for the health just lost before it drains away.
 - Characters and monsters get light-and-shadow shading. Hits knock targets back, Vess and Ilda recoil when they fire, fallen heroes topple before their grave rises, and every boss arrives with a name card. Bosses have been redrawn, including the Grave Warden, Thornmother, Ashjaw, the Iron Penitent, the Leviathan and the Eclipse Seraph.
 - The town sits under a dusk sky with drifting clouds, birds, a windmill and a castle on the ridge. It has cobbled streets, a plaza fountain, lamp posts, a pond and villagers who walk the main street (more of them as the town grows). Buildings are shaded and outlined, chimneys smoke, and buildings gain flower boxes at level 3 and an annex at level 5.
@@ -51,7 +53,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
 - One-time hints appear the first time each system matters: targeting, Devotion, pleas, debuffs, boss telegraphs, mana, talent points, promotions, the Town, elites, boss phases, Peril, sets, Plague, Necrotic Grip, Skull Crusher and losing the tank.
 - A **Next** line under the arena header suggests the most useful thing to do now, like choosing a spell, equipping upgrades, spending points, promoting someone or building in the Town. Click it to jump to the right tab.
-- **Sound and music.** Short synthesized effects for heals, crits, coins, hits, boss warnings, level-ups and achievements, and a chiptune song for every dungeon. Each song has four parts (the main tune, the tune with a harmony line, a bridge with new chords and arpeggios, then the tune an octave higher with echoes and drum fills), so it runs about four times longer before repeating (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
+- **Sound and music.** Heals sound like your class: a Priest's bell, a Druid's wooden pluck, an Occultist's dark swell, each with a bright snap on top. Critical heals add a rising chime. Casts hum upward as they charge, heals over time tick softly, shields ring like glass and hits land with a thump. There are also effects for coins, boss warnings, level-ups and achievements, and a chiptune song for every dungeon. Each song has four parts (the main tune, the tune with a harmony line, a bridge with new chords and arpeggios, then the tune an octave higher with echoes and drum fills), so it runs about four times longer before repeating (bouncy in the Sewers, eerie in the Crypt, driving in the Cinder Pit, a march in the Iron Bastille and so on). Boss fights play the theme faster with heavier drums. The ♪ button toggles music, the speaker button mutes everything and the slider sets the volume.
 - **Phones.** On narrow screens the party frames sit three to a row, the tabs wrap into two rows and empty action-bar slots hide until you edit keybinds. **Hold a party frame** (or right-click it on a computer) for a quick-cast ring of your spells around it: slide onto a spell and let go, or let go and tap one.
 
 ## Why heal actively
@@ -157,6 +159,19 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   - **Empower** (Smithy 1): raise an item one rarity, up to Legendary. Its stats grow and it gains new ones.
   - **Imbue** (Smithy 4): add one extra stat to an item, once.
   - **Masterwork** (Smithy 8): crafting costs 30% fewer materials.
+- **Day and night.** The world runs on a 12-minute day. By day, kills pay **+15% gold**; at night, stages give **+15% experience and materials**. The arena header and the Town show which it is and how long until it turns. The Town shows a blue sky and sun by day, a warm dusk and dawn, and a starry night with a moon, lit windows and lamps, fireflies and fewer villagers out.
+- **Prosperity.** Every Town building level adds to your Prosperity, and milestones grant permanent bonuses:
+
+  | Levels | Title | Bonus |
+  |---|---|---|
+  | 5 | Hamlet | +5% gold find |
+  | 12 | Village | **Tithes**: the town collects gold for you every 2 hours (up to 2 stored) |
+  | 20 | Market Town | +10% experience |
+  | 30 | Town | a fourth bounty, and banners on the main street |
+  | 42 | City | day and night bonuses doubled |
+  | 56 | Great City | one more mana potion per run, +10% gold find |
+  | 72 | Capital | expeditions last up to 12 hours, and festival lights over the street |
+  | 90 | Jewel of the Realm | +20% party damage and a golden fountain |
 - **Bounty Board.** The Town shows three bounties at a time, such as "Defeat 40 enemies in the Cinder Pit", "Defeat 4 elites", "Cleanse 15 debuffs", "Clear 5 stages without anyone falling" or "Clear the Hollow Crypt as an Occultist". Finished bounties pay gold and materials, and one in five also gives an epic item. Reroll one you don't like for gold. The Town tab shows a dot when one is ready to claim.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
 - **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. The Town tab shows your town as a pixel-art map with eight plots. Click a plot to see what it would do, and build it: the building rises out of the ground and stays on the map, gaining a banner at level 4 and gold trim at level 8. Buildings go up to level 12 and cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper (including Act II) unlocks the next tier:
@@ -176,6 +191,10 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 
   The Town tab also sells one-time blessings for gold.
 - **Expeditions.** Once you build the Acolyte Cloister, an Acolyte heals the party in the background (weakly at first). While the game is closed or in another tab, the Acolyte leads the party through the dungeon you're in, if you've cleared it, otherwise your deepest clear. They run at 20–55% of your active pace for up to 8 hours and bring back gold, experience, materials and items.
+
+## Interface
+
+- Buttons press in when clicked, cards lift on hover, the tab underline slides and each tab fades in, toasts and pop-ups animate in, gold pops when it goes up, and spells flash on the action bar when used. Scrollbars, section headers, records, the battle log and the save panel were restyled to match.
 
 ## Save codes
 

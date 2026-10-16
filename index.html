@@ -82,6 +82,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .qsp.cd{opacity:.45}
 @keyframes qpop{from{transform:translate(-50%,-50%) scale(.4);opacity:0}}
 .frame{-webkit-touch-callout:none;user-select:none;touch-action:manipulation}
+.tag.daytag{color:#ffd36b;border-color:#a8803a}.tag.nighttag{color:#bfd0ff;border-color:#5a6aa8}
 .tag.danger{color:#fff;background:#a8303a;border-color:#e0605a;animation:tagpulse 1s infinite alternate}
 @keyframes tagpulse{from{opacity:1}to{opacity:.6}}
 .tag.timer{color:var(--muted);border-color:var(--line)}
@@ -177,6 +178,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .fr-role b{color:var(--xp);font-weight:500}
 .bar.hp{height:22px}
 .bar.hp .fill{background:linear-gradient(#7ad8aa 0,#69c49a 35%,#2f8562);transition:width .12s}
+.bar.hp .inc{position:absolute;top:0;bottom:0;left:0;width:0;background:linear-gradient(#b8ffd8cc,#5fd39acc);box-shadow:0 0 6px #7affc0;opacity:0}.bar.hp .inc.on{opacity:1;animation:incpulse .6s ease-in-out infinite alternate}@keyframes incpulse{from{filter:brightness(1)}to{filter:brightness(1.35)}}
 .bar.hp .trail{position:absolute;top:0;bottom:0;left:0;background:#f3ead8cc}
 .bar.hp .fill{box-shadow:inset 0 1px 0 #ffffff40}
 .bar.hp .shield{position:absolute;top:0;bottom:0;left:0;width:0;background:repeating-linear-gradient(45deg,#d3dbff88 0 4px,#d3dbff33 4px 8px);border-right:2px solid var(--shield)}
@@ -294,6 +296,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .tip{position:fixed;z-index:80;max-width:280px;background:#141119f5;border:1px solid #5a4f74;border-radius:8px;padding:9px 11px;font-size:.82rem;line-height:1.35;color:var(--ink);box-shadow:0 8px 24px #000a;pointer-events:none}
 .tip h5{margin:0 0 2px;font-size:.95rem;font-family:var(--display);color:var(--gold)}.tip .tk{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .tip p{margin:4px 0}.tip .ok{color:var(--heal)}.tip .no{color:var(--hurt)}.tip .row{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-family:var(--mono);font-size:.74rem;margin-top:5px}.tip ul{margin:4px 0;padding-left:16px}
+.prosper{border:1px solid var(--line);border-radius:10px;padding:12px;background:linear-gradient(135deg,#2a2236,#1e1a28);display:flex;flex-direction:column;gap:9px}
+.prosh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.prosh h4{margin:2px 0 0;font-family:var(--display);font-size:1.25rem;color:var(--gold)}.prosh small{font-size:.75rem;color:var(--muted);font-family:var(--mono);margin-left:6px}
+.pbar{position:relative;height:18px;border-radius:9px;background:#14121a;overflow:hidden;border:1px solid var(--line)}.pbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#a8803a,#ffd36b);transition:width .4s}.pbar span{position:relative;display:block;text-align:center;font-size:.74rem;line-height:18px;text-shadow:0 1px 2px #000}
+.milestones{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}.milestones li{font-size:.76rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 7px;opacity:.65}.milestones li.on{opacity:1;color:var(--ink);border-color:#a8803a;background:#e4b75c12}.milestones b{color:var(--gold);font-family:var(--mono);margin-right:4px}.milestones span{display:block}
+.tithe{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.84rem;border-top:1px dashed var(--line);padding-top:9px}
+.daypill{display:inline-block;font-size:.76rem;padding:4px 10px;border-radius:999px;border:1px solid}.daypill.day{color:#ffd36b;border-color:#a8803a;background:#ffd36b14}.daypill.night{color:#bfd0ff;border-color:#5a6aa8;background:#7a8aff14}
 .actsep{font-family:var(--display);font-size:1.05rem;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 0 4px;margin-top:6px;letter-spacing:.04em}.actsep b{color:var(--gold);margin-right:8px}.actsep.act2 b{color:#c48bfb}
 .dcard{position:relative;border-radius:10px;overflow:visible;background:var(--surface-2);border:1px solid var(--line)}
 .dcard+.dcard::before{content:'';position:absolute;left:34px;top:-19px;height:18px;border-left:2px dashed #5a5070}
@@ -499,7 +507,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .skills{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:.78rem;border:1px solid var(--gold-dim);border-radius:999px;padding:2px 9px;color:var(--gold)}
 
-.log{list-style:none;margin:0;padding:0;font-size:.84rem;display:flex;flex-direction:column;gap:3px;max-height:340px;overflow-y:auto}
+.log{list-style:none;margin:0;padding:4px;font-size:.84rem;display:flex;flex-direction:column;gap:1px;max-height:340px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;background:#16131d}
+.log li{padding:4px 8px;border-radius:4px}.log li:nth-child(odd){background:#ffffff06}.log li:first-child{animation:panein .25s ease-out}
+.recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}.rec{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:linear-gradient(#262132,#1e1a28);display:flex;flex-direction:column;gap:2px}.rec b{font-size:1.15rem;color:var(--gold)}.rec span{font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.savecode{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--surface-2)}
 .log li{color:var(--muted)}.log li b{color:var(--ink);font-weight:500}
 .log .g{color:var(--gold)}.log .x{color:var(--xp)}.log .rb{color:var(--ruby)}
 
@@ -519,6 +530,34 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   .purse{flex-wrap:wrap;gap:8px 16px}.sound{flex-wrap:nowrap;margin-left:auto}
   .tabpane{padding:10px}
 }
+/* ---------- polish layer: tactile controls, motion and focus ---------- */
+button{transition:transform .08s ease,background-color .15s,border-color .15s,box-shadow .15s,opacity .15s}
+.btn:not(:disabled):hover{background:#353048;border-color:#6a5f88}
+.btn.primary:not(:disabled):hover{background:#e4b75c1c;box-shadow:0 0 12px #e4b75c33}
+button:not(:disabled):active{transform:translateY(1px) scale(.97)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tab{transition:color .15s}.tab:hover{color:var(--ink)}
+.tab::after{content:'';position:absolute;left:50%;right:50%;bottom:-1px;height:2px;background:var(--gold);transition:left .2s ease,right .2s ease}
+.tab[aria-selected="true"]::after{left:12%;right:12%}.tab[aria-selected="true"]{border-bottom-color:transparent}
+.tabpane.fresh{animation:panein .18s ease-out}
+@keyframes panein{from{opacity:0;transform:translateY(4px)}}
+.dcard,.pcard,.bounty,.coffer,.slot,.bagitem,.upg,.echobtn,.cosbtn,.classcard,.crestcard,.tcell,.pickcard,.frame,.spell{transition:transform .12s ease,border-color .15s,box-shadow .15s,background-color .15s}
+.dcard:hover,.bounty:hover,.coffer:not(.locked):hover,.upg:hover,.pickcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px #0006}
+.pcard:hover,.classcard:hover,.crestcard:hover,.echobtn:not(:disabled):hover,.cosbtn:not(:disabled):hover,.bagitem:hover,.slot:not(.static):hover{transform:translateY(-1px);box-shadow:0 4px 12px #0005;border-color:#6a5f88}
+.tcell:not(.locked):hover{transform:translateY(-1px);box-shadow:0 0 0 1px var(--sc,#6a5f88),0 4px 12px #0006}
+.frame:hover{border-color:#6a5f88}
+.spell.fired{animation:fired .25s ease-out}
+@keyframes fired{0%{box-shadow:0 0 0 0 var(--gold);transform:scale(.94)}100%{box-shadow:0 0 0 8px #e4b75c00;transform:none}}
+.toast{animation:toastin .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px) scale(.96)}}
+.overlay:not([hidden])>*{animation:popin .25s cubic-bezier(.2,.9,.3,1.15)}
+@keyframes popin{from{opacity:0;transform:scale(.94)}}
+.purse b.bump{animation:goldbump .35s ease-out}
+@keyframes goldbump{40%{transform:scale(1.12);text-shadow:0 0 10px #ffd36b88}}
+.purse b{display:inline-block;transform-origin:right center}
+*{scrollbar-width:thin;scrollbar-color:#4a4260 transparent}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:#4a4260;border-radius:6px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background-color:#6a5f88}::-webkit-scrollbar-track{background:transparent}
+.section-h h3{position:relative;padding-left:10px}.section-h h3::before{content:'';position:absolute;left:0;top:.2em;bottom:.2em;width:3px;border-radius:2px;background:linear-gradient(var(--gold),#a8803a)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
 </style>
 </head>
@@ -612,6 +651,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SAVE_KEY = 'mendwright-save-v1';
 const OFFLINE_CAP = 8 * 3600;
+const offlineCap = () => OFFLINE_CAP + ((typeof S !== 'undefined' && S && prosFx().offline) || 0) * 3600;
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function fmt(n) {
@@ -1228,6 +1268,41 @@ const TOWN = [
     intro: 'Traders who sell sealed items for the deepest dungeon you have reached.', fx: L => `sealed items cost ${5 * L}% less` },
 ];
 const TOWNB = Object.fromEntries(TOWN.map(b => [b.id, b]));
+/* Day and night: a 12-minute real-time cycle. Days pay more gold; nights give more experience and materials. */
+const DAY_LEN = 720;
+function dayInfo() {
+  const t = (Date.now() / 1000 % DAY_LEN) / DAY_LEN;
+  // 0–0.42 day, 0.42–0.5 dusk, 0.5–0.92 night, 0.92–1 dawn; dark is 0 at noon and 1 at midnight
+  const dark = t < 0.42 ? 0 : t < 0.5 ? (t - 0.42) / 0.08 : t < 0.92 ? 1 : 1 - (t - 0.92) / 0.08;
+  const name = t < 0.42 ? 'Day' : t < 0.5 ? 'Dusk' : t < 0.92 ? 'Night' : 'Dawn', night = t >= 0.46 && t < 0.96;
+  const left = night ? ((0.96 - t + 1) % 1) * DAY_LEN : ((0.46 - t + 1) % 1) * DAY_LEN;
+  return { t, dark, name, night, left };
+}
+const dnBoost = () => 0.15 * (prosFx().dn || 1);
+const dayGold = () => dayInfo().night ? 1 : 1 + dnBoost();
+const nightGain = () => dayInfo().night ? 1 + dnBoost() : 1;
+/* Prosperity: every building level counts. Milestones grant permanent bonuses and change how the town looks. */
+const PROSPER = [
+  { at: 5,  name: 'Hamlet',             desc: '+5% gold find', fx: { gold: 0.05 } },
+  { at: 12, name: 'Village',            desc: 'Tithes: the town collects gold for you every 2 hours', fx: { tithe: 1 } },
+  { at: 20, name: 'Market Town',        desc: '+10% experience', fx: { xp: 0.1 } },
+  { at: 30, name: 'Town',               desc: 'a fourth bounty on the board, and banners on the main street', fx: { bounty: 1 } },
+  { at: 42, name: 'City',               desc: 'day and night bonuses doubled (+30%)', fx: { dn: 2 } },
+  { at: 56, name: 'Great City',         desc: 'one more mana potion per run and +10% gold find', fx: { potion: 1, gold: 0.1 } },
+  { at: 72, name: 'Capital',            desc: 'expeditions last up to 12 hours, and festival lights over the street', fx: { offline: 4 } },
+  { at: 90, name: 'Jewel of the Realm', desc: '+20% party damage and a golden fountain', fx: { dps: 0.2 } },
+];
+const prosperity = () => TOWN.reduce((a, b) => a + lvl(b.id), 0);
+function prosFx() { const p = prosperity(), o = {}; PROSPER.forEach(m => { if (p >= m.at) for (const k in m.fx) o[k] = k === 'dn' ? m.fx[k] : (o[k] || 0) + m.fx[k]; }); return o; }
+const prosTitle = () => { const p = prosperity(); let t = 'Camp'; PROSPER.forEach(m => { if (p >= m.at) t = m.name; }); return t; };
+const TITHE_EVERY = 7200;
+const titheAmount = () => Math.round(7 * 80 * rewardScale(S.dun.unlocked, 1) * (1 + prosperity() / 30));
+const tithesReady = () => !prosFx().tithe || !S.titheAt ? ((S.titheAt = S.titheAt || Date.now()), 0) : Math.min(2, Math.floor((Date.now() - (S.titheAt || Date.now())) / 1000 / TITHE_EVERY));
+function collectTithes() {
+  const n = tithesReady(); if (!n) return;
+  const g = titheAmount() * n; addGoldIdle(g); S.titheAt = Date.now(); sfx('ach'); shopDirty = true;
+  log(`<span class="g">The town's tithes: ${fmt(g)} gold.</span>`); toast(`Collected ${fmt(g)} gold in tithes!`);
+}
 const perk = (id, L) => lvl(id) >= L;
 const STANCES = { agg: { name: 'Aggressive', desc: '+15% party damage, +10% damage taken' }, bal: { name: 'Balanced', desc: 'No changes' }, def: { name: 'Defensive', desc: '15% less damage taken, -10% party damage' } };
 const stance = () => perk('barracks', 2) ? S.stance || 'bal' : 'bal';
@@ -1434,7 +1509,7 @@ const LEGENDS = ['Saint Odile', 'the Lamplighter', 'Mother Aveline', 'the Last A
    ========================================================= */
 function newState() {
   return {
-    v: 9, cls: 'priest', hints: {}, ach: {}, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
+    v: 9, cls: 'priest', titheAt: Date.now(), hints: {}, ach: {}, gold: 0, goldTotal: 0, bonusPts: 0, buyMode: 1, autoRetry: true, binds: {}, bindSeen: [], spells: [],
     town: {}, mats: [], upgrades: {}, promo: PARTY.map(() => 0), elixir: {}, lootFilter: 0, autoGear: false,
     equip: { head: null, chest: null, hands: null, staff: makeStarter(), ring: null, trinket: null },
     inv: [], nextId: 2,
@@ -1586,6 +1661,7 @@ function recalc() {
   D.lowWard = cset >= 3;
   if (pk(YOU, 5)) D.crit += 0.1;
   const A = achFx();
+  { const pf = prosFx(); D.greed += pf.gold || 0; D.xpMult += pf.xp || 0; D.partyDps *= 1 + (pf.dps || 0); }
   D.heal *= (1 + 0.08 * echoRank('grace')) * (curse('dim') ? 0.8 : 1); D.partyDps *= 1 + 0.1 * echoRank('might'); D.partyHp *= 1 + 0.1 * echoRank('life');
   D.greed += 0.15 * echoRank('fortune'); D.xpMult += 0.15 * echoRank('fortune');
   D.heal *= 1 + A.healAll; D.maxMana *= 1 + A.mana; D.regen *= 1 + A.regen; D.crit += A.crit / 100;
@@ -1830,7 +1906,7 @@ function enterDungeon(d) {
   C.cds = {}; C.medi = null; C.abT = {}; C.pips = 0; C.treeForm = 0; C.unholy = 0; C.slamT = 0; C.peril = perilOf(d); C.angelUsed = false;
   C.meter = { d: PARTY.map(() => 0), t: 0 };
   C.rstats = { spell: {}, taken: 0, deaths: 0, cleansed: 0, d };
-  C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden'); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
+  C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden') + (prosFx().potion || 0); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
   C.draughts = perk('garden', 7) ? 2 : perk('garden', 3) ? 1 : 0; C.bell = perk('chapel', 3);
   S.stats.runs++;
   startStage();
@@ -1934,7 +2010,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
     if (C.inCast) C.castEff += eff; else C.dev = Math.min(100, C.dev + 0.5 * (1 - C.dev / 110));
   }
   if (C.inCast && !npc) C.castAmt += amt;
-  if (!npc && eff > 0) sfx(crit ? 'crit' : 'heal');
+  if (!npc && eff > 0) sfx(C.inCast ? (crit ? 'crit' : 'heal') : crit ? 'crit' : 'tick');
   floatTxt(i, '+' + fmt(Math.round(amt)) + (crit ? '!' : ''), crit ? 'heal crit' : 'heal', crit ? 0 : amt);
   if (crit) pnumFx(i, '+' + fmt(Math.round(amt)) + '!', 0, '#e9fff4'); else pnumFx(i, '+', amt, fxCols()[0]);
   fxHeal(i, crit);
@@ -2109,8 +2185,8 @@ function tryCast(sp) {
   if (!sp.group && !sp.self && !C.party[t].alive) return toast(`${PARTY[t].name} is dead. Pick a living target.`);
   if (!canPay(spellCost(sp))) return oomNotice();
   const ch = (CLASS_CHAN[clsId()] || {})[sp.id];
-  if (ch) { pay(spellCost(sp)); trackCast(sp.id); heroAnim[YOU].cast = 0.35; C.cast = { sp, t, el: 0, dur: ch.dur * (modIs('frost') ? 1.2 : 1) / (1 + D.haste), chan: ch, n: 0 }; return; }
-  if (castTime(sp) > 0) C.cast = { sp, t, el: 0, dur: castTime(sp) / (1 + D.haste) };
+  if (ch) { pay(spellCost(sp)); trackCast(sp.id); heroAnim[YOU].cast = 0.35; C.cast = { sp, t, el: 0, dur: ch.dur * (modIs('frost') ? 1.2 : 1) / (1 + D.haste), chan: ch, n: 0 }; castSfx(C.cast.dur); return; }
+  if (castTime(sp) > 0) { C.cast = { sp, t, el: 0, dur: castTime(sp) / (1 + D.haste) }; castSfx(C.cast.dur); }
   else finishCast(sp, t);
 }
 function finishCast(sp, t) {
@@ -2120,6 +2196,8 @@ function finishCast(sp, t) {
   if (cost > 0 && Math.random() < D.clarity) { cost = 0; floatTxt(YOU, 'Clarity', 'free'); }
   else if (cost > 0 && pk(YOU, 2) && Math.random() < 0.1) { cost = 0; floatTxt(YOU, 'Halo', 'free'); }
   pay(cost);
+  stopCastSfx(); if (sp.id === 'ward') sfx('shield'); else if (!['heal', 'flash', 'prayer', 'purify'].includes(sp.id)) sfx('release');
+  heroAnim[YOU].release = 0.35;
   C.inCast = true; C.castEff = 0; C.castAmt = 0; C.healSrc = sp.id;
   ((CLASS_RUN[clsId()] || {})[sp.id] || RUN_SPELL[sp.id])(t);
   C.inCast = false; C.healSrc = null;
@@ -2402,7 +2480,7 @@ function bossPhase(b) {
 }
 function foeGold(f) {
   const sc = rewardScale(S.dun.current, C.stage) * perilRew() * (1 + D.greed);
-  const g = (f.boss ? 120 * sc : 7 * (MOBS[f.kind] ? MOBS[f.kind].hp : 1) * sc) * (f.elite ? 5 : f.add ? 0.5 : 1);
+  const g = (f.boss ? 120 * sc : 7 * (MOBS[f.kind] ? MOBS[f.kind].hp : 1) * sc) * (f.elite ? 5 : f.add ? 0.5 : 1) * dayGold();
   if (C.run) C.run.base.gold += g;
   const got = g * devMult() * (C.goldFrenzy > 0 ? 5 : 1);
   addGold(g * devMult());
@@ -2605,8 +2683,8 @@ function stageCleared() {
   const sc = rewardScale(d, s) * perilRew();
   const dm = devMult();
   const xpBase = (isBoss ? 34 : 9) * sc, mBase = (isBoss ? 4 : 1) * (1 + 0.5 * (C.peril || 0));
-  const xp = xpBase * dm;
-  const mats = Math.floor(mBase * dm + Math.random());
+  const xp = xpBase * dm * nightGain();
+  const mats = Math.floor(mBase * dm * nightGain() + Math.random());
   S.mats[d] = (S.mats[d] || 0) + mats; C.run.mats += mats;
   Object.assign(C.run.base, { xp: C.run.base.xp + xpBase * D.xpMult, mats: C.run.base.mats + mBase, items: C.run.base.items + (isBoss ? 1.25 : 0.25) });
   C.run.xp += xp * D.xpMult; C.run.stages++;
@@ -3417,7 +3495,7 @@ function drawHero(i, X, Y, t, castPose, rk = promoRank(i)) {
   }
   const helm = i === YOU ? S.equip.head : null;
   if (helm && helm.rarity >= 3) { P.fillStyle = RCOL[helm.rarity][0]; P.fillRect(X - 2, Y - bob + art.headTop, 5, 1); P.fillRect(X, Y - bob + art.headTop - 1, 1, 1); }
-  if (castPose && i === YOU) { P.fillStyle = fxCols()[2]; P.fillRect(X + art.tip[0] - 1, Y + art.tip[1] - 1 - bob, 3, 3); }
+  if (castPose && i === YOU) { const k = C.cast ? C.cast.el / C.cast.dur : 1, sz = 3 + Math.round(k * 2); P.fillStyle = fxCols()[2]; P.fillRect(X + art.tip[0] - (sz >> 1), Y + art.tip[1] - (sz >> 1) - bob, sz, sz); P.fillStyle = '#ffffff'; P.fillRect(X + art.tip[0], Y + art.tip[1] - bob, 1, 1); }
 }
 // Pets from promotions: Vess's hawk circles overhead and dives; Ilda's familiar orbits and shoots
 const famPos = () => { const p = HERO_POS[3]; return { x: p.x + Math.cos(sceneT * 2.5) * 10, y: p.y - 24 + Math.sin(sceneT * 2.5) * 4 }; };
@@ -4106,11 +4184,25 @@ function ambient(dt, kind) {
   cx.globalAlpha = 1;
 }
 
-function miniBar(x, y, w, frac, col) {
+// Incoming heals, WoW style: what the spell you're casting (or channelling) will restore on each ally when it lands
+function incomingHeals() {
+  const out = [0, 0, 0, 0, 0], c = C.cast; if (!c || C.phase !== 'fight') return out;
+  const id = c.sp.id, cl = clsId(), pips = C.pips || 0, h = D.heal;
+  if (c.chan) { if (id === 'heal' && cl === 'occultist' && front()) { const left = c.chan.ticks - c.n, who = C.party[c.t].alive ? c.t : null; if (who != null) out[who] = h * D.sp.heal.amt * 1.7 / 6 * left; } return out; }
+  let amt = 0;
+  if (id === 'heal') amt = h * D.sp.heal.amt * (cl === 'druid' ? 0.7 : 1);
+  else if (id === 'flash') amt = h * D.sp.flash.amt;
+  else if (id === 'purify') amt = h * D.sp.purify.amt;
+  else if (id === 'prayer' && cl !== 'druid') { const k = cl === 'priest' ? 1 + 0.25 * pips : cl === 'occultist' ? 0.45 + 0.35 * pips : 1; aliveIdx().forEach(i => { out[i] = h * D.sp.prayer.amt * k; }); }
+  if (amt && C.party[c.t] && C.party[c.t].alive) out[c.t] = amt;
+  return out.map((a, i) => { const m = C.party[i]; if (!a || !m) return 0; let v = a * (1 - healCut(m)) * (C.bossThorns ? 0.8 : 1); if (m.necro) v = Math.max(0, v - m.necro); return v; });
+}
+function miniBar(x, y, w, frac, col, inc = 0) {
   x = Math.round(x); y = Math.round(y);
   cx.fillStyle = '#0b0910'; cx.fillRect(x - 1, y - 1, w + 2, 4);
   cx.fillStyle = '#3a1d22'; cx.fillRect(x, y, w, 2);
   cx.fillStyle = col; cx.fillRect(x, y, Math.max(0, Math.round(w * frac)), 2);
+  if (inc > 0) { const a = Math.round(w * frac), b2 = Math.round(w * Math.min(1, frac + inc)); cx.fillStyle = '#c8ffe4'; cx.globalAlpha = 0.6 + 0.3 * Math.sin(sceneT * 10); cx.fillRect(x + a, y, Math.max(1, b2 - a), 2); cx.globalAlpha = 1; }
 }
 
 /* Lighting: each dungeon sits under a layer of darkness with light cut out around torches, heroes, enemies and spells */
@@ -4153,8 +4245,9 @@ function foreground(d) {
   }
   cx.globalAlpha = 1;
 }
+let INC = [0, 0, 0, 0, 0];
 function renderScene(dt) {
-  sceneT += dt;
+  sceneT += dt; INC = incomingHeals();
   const d = S.dun.current, dg = DUNGEONS[d];
   const fighting = C.phase === 'fight';
   if (bgFor !== d) { bgCache = buildBg(d); bgFor = d; AMB = []; }
@@ -4260,6 +4353,20 @@ function renderScene(dt) {
     const walk = C.phase === 'rest' ? (Math.sin(sceneT * 14 + i) > 0 ? -1 : 0) : 0;
     const dx = a.atk >= 0 ? Math.sin(Math.PI * a.atk / 0.32) * 12 : 0;
     const casting = i === YOU && (C.cast || a.cast > 0);
+    if (i === YOU && !reduced()) {
+      const fc = fxCols(), k = C.cast ? C.cast.el / C.cast.dur : 0, rel = Math.max(0, a.release || 0); a.release = rel - dt;
+      if (C.cast || rel > 0) {
+        // a rune circle turns under the healer and brightens as the cast fills; it flares when the spell goes off
+        const glow = C.cast ? 0.35 + 0.5 * k : rel / 0.35, rx = 15 + (rel > 0 ? (0.35 - rel) * 30 : 0), ry = rx * 0.32;
+        cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = glow * 0.35; cx.fillStyle = fc[0]; cx.beginPath(); cx.ellipse(p.x, p.y, rx, ry, 0, 0, Math.PI * 2); cx.fill();
+        cx.globalAlpha = glow; cx.fillStyle = fc[1];
+        for (let r2 = 0; r2 < 12; r2++) { const an = sceneT * 2.2 + r2 * Math.PI / 6; if (r2 % 3 !== 2) cx.fillRect(Math.round(p.x + Math.cos(an) * rx), Math.round(p.y + Math.sin(an) * ry), 2, 1); }
+        for (let r2 = 0; r2 < 6; r2++) { const an = -sceneT * 3 + r2 * Math.PI / 3; cx.fillRect(Math.round(p.x + Math.cos(an) * rx * 0.55), Math.round(p.y + Math.sin(an) * ry * 0.55), 1, 1); }
+        if (C.cast) { cx.globalAlpha = 0.12 + 0.25 * k; const cg = cx.createLinearGradient(0, p.y - 40, 0, p.y); cg.addColorStop(0, fc[0] + '00'); cg.addColorStop(1, fc[0]); cx.fillStyle = cg; cx.fillRect(p.x - 6, p.y - 40, 13, 40); }
+        cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+        if (C.cast && Math.random() < dt * 30) { const an = Math.random() * Math.PI * 2; FX.push({ t: 'p', x: p.x + Math.cos(an) * rx, y: p.y + Math.sin(an) * ry, vx: 0, vy: -rand(14, 30), g: 0, life: 0.5, max: 0.5, col: fc[1], s: 1 }); }
+      }
+    }
     if (C.buff.bless > 0 && Math.random() < dt * 4) FX.push({ t: 'p', x: p.x + rand(-6, 6), y: p.y - rand(4, 20), vx: 0, vy: -8, g: 0, life: 0.6, max: 0.6, col: '#ffd36b', s: 1 });
     if (C.plea && C.plea.i === i) {
       cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = 0.25 + 0.15 * Math.sin(sceneT * 10); cx.fillStyle = '#e4b75c';
@@ -4294,7 +4401,7 @@ function renderScene(dt) {
     }
     if (rank >= 4 && Math.random() < dt * 3) FX.push({ t: 'p', x: hx + rand(-8, 8), y: hy - rand(0, 6), vx: 0, vy: -rand(6, 12), g: 0, life: 0.8, max: 0.8, col: rc, s: 1 });
     if (C.plea && C.plea.i === i) pdraw('!', p.x, p.y - 42 + Math.round(Math.sin(sceneT * 8) * 2), '#ffd36b');
-    miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a');
+    miniBar(p.x - 7, p.y - 27, 14, m.hp / m.max, m.hp / m.max < 0.35 ? '#e08a52' : '#69c49a', INC[i] / m.max);
     if (rank) { cx.fillStyle = TIER_COL[rank]; for (let k = 0; k < rank; k++) cx.fillRect(p.x - rank * 1.5 + k * 3, p.y - 30, 2, 1); }
     if (m.shield > 0) {
       cx.globalAlpha = 0.55 + 0.15 * Math.sin(sceneT * 5); cx.strokeStyle = '#d3dbff'; cx.lineWidth = 1;
@@ -4439,7 +4546,7 @@ function buildArena() {
     f.className = 'frame'; f.type = 'button';
     f.style.setProperty('--rc', ROLE_COL[i]);
     f.innerHTML = `<div class="fr-top"><span class="fr-name">${portraitImg(i, 'fr')}${d.name}</span><span class="fr-role" title="${d.role}"><b class="lv"></b></span></div>
-      <div class="bar hp"><i class="trail"></i><i class="fill"></i><i class="shield"></i><span class="txt"></span></div>
+      <div class="bar hp"><i class="trail"></i><i class="fill"></i><i class="inc"></i><i class="shield"></i><span class="txt"></span></div>
       <div class="bar xp"><i class="fill xpf"></i></div>
       <div class="fr-fx"></div><div class="floats"></div>`;
     f.addEventListener('click', e => { if (ringJustOpened) { ringJustOpened = false; e.preventDefault(); return; } C.target = i; });
@@ -4455,7 +4562,7 @@ function buildArena() {
     f.addEventListener('mouseenter', () => { C.hover = i; });
     f.addEventListener('mouseleave', () => { if (C.hover === i) C.hover = null; });
     p.appendChild(f);
-    frameEls.push({ f, trail: f.querySelector('.hp .trail'), tv: 1, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
+    frameEls.push({ f, inc: f.querySelector('.hp .inc'), trail: f.querySelector('.hp .trail'), tv: 1, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
       floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '', por: f.querySelector('.portrait'), rk: promoRank(i) });
   });
   wireActionBar();
@@ -4532,7 +4639,10 @@ function buildSpellBar() {
     <div class="sbook">${allActions().map(id => `<button class="sbk ${picked === id ? 'picked' : ''}" type="button" draggable="true" data-sb="${id}">${img(actIcon(id), 0, 'sm')}${actName(id)}</button>`).join('')}</div>
     ${locked ? `<span class="label">${locked} more spell${locked === 1 ? '' : 's'} to learn from first dungeon clears</span>` : ''}`;
 }
-function useAction(id) { if (ACTS[id]) ACTS[id].use(); else if (known(id)) tryCast(SP[id]); }
+function useAction(id) {
+  if (ACTS[id]) ACTS[id].use(); else if (known(id)) tryCast(SP[id]);
+  const b = document.querySelector(`#spells [data-act="${id}"]`); if (b) { b.classList.remove('fired'); void b.offsetWidth; b.classList.add('fired'); }
+}
 function wireActionBar() {
   const bar = $('#spells'), book = $('#spellbook');
   bar.addEventListener('click', e => {
@@ -4660,6 +4770,7 @@ function renderArena() {
   if (C.buff.sanct > 0) tags += `<span class="tag buff">${SP.sanctuary.name} ${Math.ceil(C.buff.sanct)}s</span>`;
   if (C.tranq > 0) tags += `<span class="tag buff">Tranquility ${Math.ceil(C.tranq)}s</span>`;
   if (tankDown() && C.foes.some(f => f.alive)) tags += `<span class="tag danger">Bram is down: enemies hit ${Math.round((TANK_DOWN_DMG - 1) * 100)}% harder and faster</span>`;
+  { const di = dayInfo(); tags += `<span class="tag ${di.night ? 'nighttag' : 'daytag'}" title="${di.night ? 'Night: more experience and materials' : 'Day: more gold'}">${di.night ? '☾ Night' : '☀ Day'}</span>`; }
   if (C.treeForm > 0) tags += `<span class="tag buff">Tree of Life ${Math.ceil(C.treeForm)}s</span>`;
   if (C.unholy > 0) tags += `<span class="tag buff">${SP.sanctuary.name} ${Math.ceil(C.unholy)}s</span>`;
   if (C.buff.bless > 0) tags += `<span class="tag buff">${SP.blessing.name} ${Math.ceil(C.buff.bless)}s</span>`;
@@ -4675,7 +4786,8 @@ function renderArena() {
     const fe = frameEls[i], h = S.heroes[i];
     fe.fill.style.width = (100 * m.hp / m.max) + '%';
     // a pale chunk shows the health just lost, then drains away
-    const hv = Math.max(0, m.hp / m.max); fe.tv = hv >= fe.tv ? hv : Math.max(hv, fe.tv - 0.012); fe.trail.style.width = (100 * fe.tv) + '%';
+    const hv = Math.max(0, m.hp / m.max), iv = m.alive ? Math.min(1 - hv, (INC[i] || 0) / m.max) : 0;
+    fe.inc.style.left = (100 * hv) + '%'; fe.inc.style.width = (100 * iv) + '%'; fe.inc.classList.toggle('on', iv > 0.002); fe.tv = hv >= fe.tv ? hv : Math.max(hv, fe.tv - 0.012); fe.trail.style.width = (100 * fe.tv) + '%';
     fe.shield.style.width = Math.min(100, 100 * m.shield / m.max) + '%';
     fe.txt.textContent = m.alive ? `${fmt(m.hp)} / ${fmt(m.max)}` : 'Dead';
     fe.lv.textContent = 'Lv ' + h.lv;
@@ -4725,13 +4837,14 @@ const availableUpgrades = () => UPGRADES.filter(u => !has(u.id) && u.req()).sort
 const findItem = id => S.inv.find(x => x.id === id);
 function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
-  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + JSON.stringify(S.bounty || {}) + (S.gold >= rerollCost()) + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
+  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + tithesReady() + (S.bounty ? S.bounty.list.map(b => b.kind + b.d + b.goal + b.gold + (b.n >= b.goal)).join() : '') + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
     : tab === 'armory' ? itemsKey + lvl('market') + lvl('smithy') + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? clsId() + JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
     : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv() + confirmAscend + (S.echoes || 0) + JSON.stringify(S.echoUp || {}) + (S.cycle || 0) + pickCurses.join() + JSON.stringify(S.cosmo || {})
     : tab === 'party' ? clsId() + JSON.stringify(S.ctree) + stance() + lvl('barracks') + JSON.stringify(S.promo) + PARTY.map((_, k) => canPromote(k) && S.gold >= promoCost(k)).join('') + partySel + S.heroes.map(h => h.lv).join(',') + S.cequip.map(e => CSLOTS.map(c => e[c.id] ? e[c.id].id : '-').join('.')).join(',')
     : tab === 'chronicle' ? logVer + '' + confirmReset + saveUI + saveCode.length + JSON.stringify(S.ach || {}) + chronScope + (saveUI ? 'hold' : Math.floor(S.stats.played / 2)) : '');
-  if (!shopDirty && key === paneKey) return updatePane();
+  // the Town map only rebuilds when the town itself changes, so clicks on it never land on a canvas that's being replaced
+  if ((!shopDirty || tab === 'town') && key === paneKey) { shopDirty = false; return updatePane(); }
   shopDirty = false; paneKey = key;
   const st = pane.scrollTop;
   ({ town: renderTown, party: renderParty, talents: renderTalents, armory: renderArmory, dungeons: renderDungeons, chronicle: renderChronicle })[tab]();
@@ -5145,7 +5258,7 @@ function expeditionRate(hours) {
 }
 // The Acolyte farms a cleared dungeon while you're away (closed tab or another tab).
 function expedition(secs) {
-  const r = expeditionRate(Math.min(OFFLINE_CAP, secs) / 3600);
+  const r = expeditionRate(Math.min(offlineCap(), secs) / 3600);
   if (!r || r.runs < 0.05) return;
   addGoldIdle(r.gold);
   const mats = Math.floor(r.mats + Math.random()); S.mats[r.d] = (S.mats[r.d] || 0) + mats;
@@ -5155,7 +5268,7 @@ function expedition(secs) {
   for (let k = 0; k < n; k++) { if (!addToBag(genItem(ilvlFor(r.d, DUNGEONS[r.d].stages)), true)) items++; }
   recalc(); shopDirty = true;
   log(`<span class="g">Expedition:</span> the Acolyte led ${fmt(r.runs)} runs of <b>${DUNGEONS[r.d].name}</b> while you were away.`);
-  showOverlay('', `<div><h3>While you were away</h3><p>Your Acolyte led the party through <b>${DUNGEONS[r.d].name}</b> about ${r.runs < 10 ? r.runs.toFixed(1) : fmt(r.runs)} times over ${fmtTime(Math.min(OFFLINE_CAP, secs))}.</p>
+  showOverlay('', `<div><h3>While you were away</h3><p>Your Acolyte led the party through <b>${DUNGEONS[r.d].name}</b> about ${r.runs < 10 ? r.runs.toFixed(1) : fmt(r.runs)} times over ${fmtTime(Math.min(offlineCap(), secs))}.</p>
     <p class="num"><span style="color:var(--gold)">+${fmt(r.gold)} gold</span> · <span class="lvl">+${fmt(r.xp * D.xpMult)} exp</span> · +${mats} ${MATS[r.d]} · ${items} item${items === 1 ? '' : 's'} kept</p>
     ${ups.length ? `<p class="lvl">Level up: ${[...new Set(ups)].join(', ')}</p>` : ''}
     <div class="actions"><button class="btn primary" data-run="dismiss">Back to the fight</button></div></div>`);
@@ -5179,9 +5292,7 @@ function buildTownBg() {
   const c = document.createElement('canvas'); c.width = TW; c.height = TH;
   const x = c.getContext('2d'), R = (a, b, w, h, col) => { x.fillStyle = col; x.fillRect(a, b, w, h); }, H = k => hash(k * 3.17 + 11);
   // dusk sky, a low sun, far mountains and a castle on the ridge
-  const sky = x.createLinearGradient(0, 0, 0, 46); sky.addColorStop(0, '#2c2c58'); sky.addColorStop(0.55, '#8a5f78'); sky.addColorStop(1, '#e8a878');
-  x.fillStyle = sky; x.fillRect(0, 0, TW, 46);
-  x.fillStyle = '#ffd9a055'; x.beginPath(); x.arc(52, 34, 16, 0, Math.PI * 2); x.fill(); x.fillStyle = '#ffe2b0'; x.beginPath(); x.arc(52, 34, 8, 0, Math.PI * 2); x.fill();
+  // (the sky, sun and moon are painted live each frame by townSky, so the day can turn)
   for (let k = 0; k < TW; k += 2) R(k, 22 + Math.round(Math.sin(k / 23) * 5 + Math.sin(k / 9) * 2), 2, 30, '#58587e');
   R(236, 12, 30, 18, '#48486c'); R(232, 6, 6, 24, '#48486c'); R(262, 4, 6, 26, '#48486c'); R(246, 0, 8, 14, '#48486c');
   for (const tx of [232, 262, 246]) { R(tx - 1, tx === 246 ? 0 : 3, tx === 246 ? 10 : 8, 2, '#48486c'); R(tx + 2, 14, 1, 2, '#ffd36b'); }
@@ -5218,7 +5329,7 @@ let VILLAGERS = [], BIRDS = [];
 function townLife(x, dt) {
   const R = (a, b, w, h, col) => { x.fillStyle = col; x.fillRect(Math.round(a), Math.round(b), w, h); };
   CLOUDS.forEach(c => { c.x += dt * 3; if (c.x > TW + 40) c.x = -c.w - 10;
-    const cx0 = Math.round(c.x); x.fillStyle = '#ffe9d488';
+    const cx0 = Math.round(c.x); x.fillStyle = mixC('#ffe9d4', '#3a3a5a', dayInfo().dark) + '88';
     for (const [ox, oy, rw, rh] of [[0.2, 0, 0.22, 3], [0.45, -2, 0.28, 4], [0.75, 0, 0.2, 3], [0.5, 1, 0.5, 2.5]]) { x.beginPath(); x.ellipse(cx0 + c.w * ox, c.y + oy, c.w * rw, rh, 0, 0, Math.PI * 2); x.fill(); } });
   // windmill on the ridge
   const wx = 198, wy = 28; R(wx - 3, wy, 6, 12, '#d8cfbf'); R(wx - 4, wy - 2, 8, 3, '#8a4a3a');
@@ -5227,7 +5338,8 @@ function townLife(x, dt) {
   if (BIRDS.length < 3 && Math.random() < dt * 0.2) BIRDS.push({ x: -10, y: 8 + Math.random() * 24, sp: 14 + Math.random() * 10 });
   BIRDS = BIRDS.filter(b => { b.x += b.sp * dt; const f = (townT * 6 + b.y | 0) % 2; R(b.x - 2, b.y + f, 2, 1, '#2a2430'); R(b.x + 1, b.y + f, 2, 1, '#2a2430'); R(b.x, b.y + 1 - f, 1, 1, '#2a2430'); return b.x < TW + 10; });
   // villagers stroll the main street; a busier town has more of them
-  const want = 2 + Math.floor(TOWN.reduce((a, b) => a + (lvl(b.id) ? 1 : 0), 0) * 0.8);
+  const want = Math.max(1, Math.round((2 + Math.floor(TOWN.reduce((a, b) => a + (lvl(b.id) ? 1 : 0), 0) * 0.8) + Math.floor(prosperity() / 12)) * (1 - 0.6 * dayInfo().dark)));
+  if (VILLAGERS.length > want) VILLAGERS.length = want;
   while (VILLAGERS.length < want) VILLAGERS.push({ x: Math.random() * TW, y: 94 + Math.random() * 7, dir: Math.random() < 0.5 ? -1 : 1, sp: 6 + Math.random() * 8, col: pick(['#c9504a', '#3c5aa0', '#6a8a3a', '#8a5a9a', '#b8863a', '#4a4a5a']), hair: pick(['#3a2a1c', '#b8863a', '#1b1622', '#d8cfbf']), stop: 0 });
   VILLAGERS.forEach(v => {
     if (v.stop > 0) v.stop -= dt; else { v.x += v.dir * v.sp * dt; if (Math.random() < dt * 0.05) v.stop = 1 + Math.random() * 3; }
@@ -5333,14 +5445,52 @@ function plotAt(px, py) {
   for (const id in PLOTS) { const p = PLOTS[id]; if (px > p.x - 24 && px < p.x + 24 && py > p.y - p.top - 4 && py < p.y + 4) hit = id; }
   return hit;
 }
+// mix two #rrggbb colors
+const mixC = (a, b, k) => { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), ch = sh => Math.round(((pa >> sh) & 255) * (1 - k) + ((pb >> sh) & 255) * k); return '#' + ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1); };
+function townSky(x, di) {
+  const warm = di.name === 'Dusk' || di.name === 'Dawn' ? 1 - Math.abs(di.dark - 0.5) * 2 : 0;
+  const top = mixC('#5a8ad8', '#0a0c22', di.dark), mid = mixC(mixC('#9cc8ec', '#1c1f44', di.dark), '#8a5f78', warm), bot = mixC(mixC('#d8eef4', '#2c2c58', di.dark), '#f0a070', warm);
+  const g = x.createLinearGradient(0, 0, 0, 46); g.addColorStop(0, top); g.addColorStop(0.55, mid); g.addColorStop(1, bot); x.fillStyle = g; x.fillRect(0, 0, TW, 46);
+  if (di.dark > 0.3) for (let k = 0; k < 40; k++) { x.globalAlpha = (di.dark - 0.3) * (0.6 + 0.4 * Math.sin(townT * 2 + k * 3)); x.fillStyle = k % 7 ? '#e8ecff' : '#ffd36b'; x.fillRect(Math.floor(hash(k + 900) * TW), Math.floor(hash(k + 950) * 34), 1, 1); }
+  x.globalAlpha = 1;
+  // the sun crosses the sky by day, the moon by night
+  const arc = (f, r, col, glow) => { const sx = 20 + f * 280, sy = 40 - Math.sin(f * Math.PI) * 30; x.fillStyle = glow; x.beginPath(); x.arc(sx, sy, r * 2, 0, Math.PI * 2); x.fill(); x.fillStyle = col; x.beginPath(); x.arc(sx, sy, r, 0, Math.PI * 2); x.fill(); };
+  if (di.t < 0.5) arc(Math.min(1, di.t / 0.5), 7, warm > 0.2 ? '#ffc890' : '#fff4c8', '#ffe2a040');
+  else { const f = (di.t - 0.5) / 0.5; arc(f, 5, '#e8ecff', '#bfd0ff30'); x.fillStyle = top; x.beginPath(); x.arc(20 + f * 280 + 2, 40 - Math.sin(f * Math.PI) * 30 - 1, 4, 0, Math.PI * 2); x.fill(); }
+}
+const townNight = document.createElement('canvas'); townNight.width = 320; townNight.height = 176; const tnx = townNight.getContext('2d');
+function townLights(x, di) {
+  const p = prosperity(), lamps = [36, 112, 206, 292], wins = Object.keys(PLOTS).filter(id => lvl(id)).map(id => [PLOTS[id].x, PLOTS[id].y - PLOTS[id].top * 0.45]);
+  if (di.dark > 0.02) {
+    tnx.globalCompositeOperation = 'source-over'; tnx.clearRect(0, 0, TW, TH); tnx.globalAlpha = 0.55 * di.dark; tnx.fillStyle = '#0a0c26'; tnx.fillRect(0, 0, TW, TH); tnx.globalAlpha = 1;
+    tnx.globalCompositeOperation = 'destination-out';
+    const hole = (hx, hy, r, a) => { const g = tnx.createRadialGradient(hx, hy, 0, hx, hy, r); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, 'rgba(0,0,0,0)'); tnx.fillStyle = g; tnx.fillRect(hx - r, hy - r, r * 2, r * 2); };
+    lamps.forEach(lx => hole(lx, 80, 26, 0.9)); wins.forEach(([wx, wy]) => hole(wx, wy, 20, 0.7)); hole(160, 96, 20, 0.6);
+    if (p >= 72) for (let k = 0; k < 16; k++) hole(10 + k * 20, 88, 10, 0.5);
+    x.drawImage(townNight, 0, 0);
+    // warm windows and lamp glows
+    x.globalCompositeOperation = 'lighter';
+    wins.forEach(([wx, wy], k) => { x.globalAlpha = di.dark * (0.7 + 0.15 * Math.sin(townT * 1.5 + k)); x.fillStyle = '#ffcf6a'; x.fillRect(Math.round(wx) - 3, Math.round(wy), 2, 2); x.fillRect(Math.round(wx) + 2, Math.round(wy), 2, 2); });
+    x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+    if (Math.random() < 0.15 * di.dark) TFX.push({ x: rand(0, TW), y: rand(110, 165), vx: rand(-3, 3), vy: rand(-3, 1), life: 2.5, col: '#d6ff9a' });
+  }
+}
+function townDecor(x) {
+  const p = prosperity(), R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(a, b, w, h); };
+  if (p >= 30) [60, 140, 180, 260].forEach((bx, k) => { R(bx, 80, 1, 12, '#5a3d28'); const w = Math.round(Math.sin(townT * 3 + k)); R(bx + 1, 80 + w * 0, 5, 4, ['#c9504a', '#3c5aa0', '#e4b75c', '#6a8a3a'][k]); R(bx + 1, 84, 3, 1, ['#c9504a', '#3c5aa0', '#e4b75c', '#6a8a3a'][k]); });
+  if (p >= 72) for (let k = 0; k < 16; k++) { const bx = 10 + k * 20, by = 86 + Math.round(Math.sin(k * 0.6) * 2); R(bx, by, 2, 2, ['#ff8a7a', '#ffd36b', '#7ad6ff', '#9be06a'][k % 4]); if (k < 15) R(bx + 2, by + 1, 18, 1, '#2a243055'); }
+}
 function renderTownScene(dt) {
   const tc = $('#townCv'); if (!tc) return;
   townT += dt;
   const x = tc.getContext('2d'); x.imageSmoothingEnabled = false;
   if (!townBg) townBg = buildTownBg();
+  const di = dayInfo();
+  townSky(x, di);
   x.drawImage(townBg, 0, 0);
   // fountain in the plaza
-  x.fillStyle = '#6d6a7a'; x.fillRect(148, 99, 24, 8); x.fillStyle = '#8d8a9a'; x.fillRect(148, 99, 24, 2); x.fillStyle = '#5f8fd8'; x.fillRect(150, 101, 20, 4);
+  const gold = prosperity() >= 90;
+  x.fillStyle = gold ? '#a8803a' : '#6d6a7a'; x.fillRect(148, 99, 24, 8); x.fillStyle = gold ? '#ffd36b' : '#8d8a9a'; x.fillRect(148, 99, 24, 2); x.fillStyle = '#5f8fd8'; x.fillRect(150, 101, 20, 4);
   x.fillStyle = '#9fc4f0'; x.fillRect(152 + ((townT * 4 | 0) % 14), 102, 3, 1);
   x.fillStyle = '#b4bccc'; x.fillRect(158, 90, 4, 10); x.fillStyle = '#d8dce6'; x.fillRect(156, 89, 8, 2);
   const lifeLayer = () => townLife(x, dt);
@@ -5371,7 +5521,9 @@ function renderTownScene(dt) {
     }
   });
   P = prevP;
+  townDecor(x);
   lifeLayer();
+  townLights(x, di);
   TFX = TFX.filter(f => {
     f.life -= dt; if (f.life <= 0) return false;
     f.x += f.vx * dt; f.y += f.vy * dt;
@@ -5399,7 +5551,7 @@ function wireTown() {
   const at = e => { const rc = tc.getBoundingClientRect(); return plotAt((e.clientX - rc.left) / rc.width * TW, (e.clientY - rc.top) / rc.height * TH); };
   tc.addEventListener('mousemove', e => { townHover = at(e); tc.style.cursor = townHover ? 'pointer' : 'default'; });
   tc.addEventListener('mouseleave', () => { townHover = null; });
-  tc.addEventListener('click', e => { const id = at(e); if (id) { townSel = id; const d = $('#townDetail'); if (d) d.innerHTML = townDetailHtml(); updatePane(); } });
+  tc.addEventListener('pointerdown', e => { const id = at(e); if (id) { townSel = id; const d = $('#townDetail'); if (d) d.innerHTML = townDetailHtml(); updatePane(); } });
 }
 /* ---------- Bounty Board: three rotating goals that pay gold, materials and sometimes gear ---------- */
 const BOUNTY_KINDS = {
@@ -5421,7 +5573,7 @@ function newBounty() {
   b.gear = Math.random() < 0.2;
   return b;
 }
-function bountyState() { if (!S.bounty) S.bounty = { list: [] }; while (S.bounty.list.length < 3) S.bounty.list.push(newBounty()); return S.bounty; }
+function bountyState() { if (!S.bounty) S.bounty = { list: [] }; while (S.bounty.list.length < 3 + (prosFx().bounty || 0)) S.bounty.list.push(newBounty()); return S.bounty; }
 function bountyEvent(kind, n = 1, extra = {}) {
   if (!S.bounty) return;
   S.bounty.list.forEach(b => {
@@ -5447,9 +5599,21 @@ function bountyHtml() {
   return `<div class="section-h"><h3>Bounty Board</h3><span class="label">Finish one to claim it · reroll for ${fmt(rerollCost())} gold</span></div>
     <div class="bounties">${B.list.map((b, k) => { const done = b.n >= b.goal;
       return `<div class="bounty ${done ? 'done' : ''}"><b>${BOUNTY_KINDS[b.kind].txt(b)}</b>
-        <div class="bbar"><i style="width:${100 * b.n / b.goal}%"></i><span>${b.n} / ${b.goal}</span></div>
+        <div class="bbar" data-bbar="${k}"><i style="width:${100 * b.n / b.goal}%"></i><span>${b.n} / ${b.goal}</span></div>
         <span class="breward">${fmt(b.gold)} gold · ${b.mats} ${MATS[b.matD]}${b.gear ? ' · <em>an epic item</em>' : ''}</span>
         <div class="actions">${done ? `<button class="btn primary" data-bclaim="${k}">Claim</button>` : `<button class="btn small" data-breroll="${k}" ${S.gold < rerollCost() ? 'disabled' : ''}>Reroll</button>`}</div></div>`; }).join('')}</div>`;
+}
+function dayHtml() {
+  const di = dayInfo(), b = Math.round(dnBoost() * 100);
+  return `<span class="daypill ${di.night ? 'night' : 'day'}">${di.night ? '☾' : '☀'} ${di.name} · ${di.night ? `+${b}% experience and materials` : `+${b}% gold`} · ${di.night ? 'dawn' : 'dusk'} in ${Math.ceil(di.left / 60)}m</span>`;
+}
+function prosperHtml() {
+  const p = prosperity(), next = PROSPER.find(m => p < m.at), prev = [...PROSPER].reverse().find(m => p >= m.at), from = prev ? prev.at : 0, to = next ? next.at : p || 1;
+  const tr = tithesReady();
+  return `<div class="prosper"><div class="prosh"><div><span class="label">Prosperity</span><h4>${prosTitle()} <small>${p} building levels</small></h4></div><span data-daypill>${dayHtml()}</span></div>
+    <div class="pbar"><i style="width:${next ? 100 * (p - from) / (to - from) : 100}%"></i><span>${next ? `${next.at - p} more level${next.at - p > 1 ? 's' : ''} to ${next.name}: ${next.desc}` : 'Every milestone reached'}</span></div>
+    <ul class="milestones">${PROSPER.map(m => `<li class="${p >= m.at ? 'on' : ''}"><b>${m.at}</b> ${m.name}<span>${m.desc}</span></li>`).join('')}</ul>
+    ${prosFx().tithe ? `<div class="tithe"><span>${tr ? `<b>${tr}</b> tithe${tr > 1 ? 's' : ''} ready: ${fmt(titheAmount() * tr)} gold` : `Next tithe in ${fmtTime(TITHE_EVERY - ((Date.now() - S.titheAt) / 1000 % TITHE_EVERY))}`} · ${fmt(titheAmount())} gold every 2 hours, up to 2 stored</span><button class="btn ${tr ? 'primary' : ''}" data-act="tithe" ${tr ? '' : 'disabled'}>Collect</button></div>` : ''}</div>`;
 }
 function renderTown() {
   const ups = availableUpgrades();
@@ -5462,6 +5626,7 @@ function renderTown() {
     <div class="section-h"><h3>Town</h3><span class="label">Click a plot to build. Each level needs materials from a deeper dungeon</span></div>
     <div class="town"><canvas id="townCv" width="${TW}" height="${TH}" aria-label="Your town. Click a building or empty plot to see it."></canvas>
       <div class="tdetail" id="townDetail">${townDetailHtml()}</div></div>
+    ${prosperHtml()}
     ${bountyHtml()}
     <div class="section-h"><h3>Materials</h3><span class="label">Dropped by every stage; more with high Devotion</span></div>
     <div class="mats">${mats}</div>
@@ -5618,7 +5783,7 @@ function renderChronicle() {
     <div class="achs">${ACH.map(a => { const done = S.ach && S.ach[a.id], pg = !done && a.prog ? a.prog() : null;
       return `<div class="ach ${done ? 'done' : ''}"><span class="am">${done ? '✓' : '◇'}</span><b>${a.name}</b><span>${a.desc}</span><small>${a.rw}</small>${pg ? `<i class="ap"><i style="width:${Math.min(100, 100 * pg[0] / pg[1])}%"></i></i>` : ''}</div>`; }).join('')}</div>
     <div class="section-h"><h3>Records</h3></div>
-    <div class="statgrid">${rows.map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
+    <div class="recs">${rows.map(([k, v]) => `<div class="rec"><b class="num">${v}</b><span>${k}</span></div>`).join('')}</div>
     <div class="section-h"><h3>Battle log</h3></div>
     <ul class="log">${LOG.map(l => `<li>${l}</li>`).join('') || '<li>Nothing yet.</li>'}</ul>
     <div class="section-h"><h3>Save</h3><span class="label">Saved in this browser every 10s</span></div>
@@ -5632,6 +5797,10 @@ function renderChronicle() {
 
 function updatePane() {
   if (tab === 'town') {
+    // bounty progress and reroll prices update in place, so the town map isn't rebuilt mid-click
+    if (S.bounty) S.bounty.list.forEach((b, k) => { const el = pane.querySelector(`[data-bbar="${k}"]`); if (el) { el.firstElementChild.style.width = (100 * b.n / b.goal) + '%'; el.lastElementChild.textContent = `${b.n} / ${b.goal}`; } });
+    pane.querySelectorAll('[data-breroll]').forEach(btn => { btn.disabled = S.gold < rerollCost(); });
+    const dp = pane.querySelector('[data-daypill]'); if (dp && (townT * 2 | 0) % 2 === 0) dp.innerHTML = dayHtml();
     const b = TOWNB[townSel], L = lvl(b.id), el = pane.querySelector('[data-tcost]'), btn = pane.querySelector('[data-town]');
     if (el && btn && L < TOWN_MAX) {
       const c = townCost(b, L + 1), have = S.mats[c.d] || 0, reach = c.d <= S.dun.unlocked;
@@ -5773,6 +5942,7 @@ function act(a) {
   else if (a === 'import') { saveUI = saveUI === 'import' ? null : 'import'; }
   else if (a === 'copysave') { const ta = $('#saveText'); ta.select(); (navigator.clipboard ? navigator.clipboard.writeText(saveCode) : Promise.reject()).then(() => toast('Save code copied.'), () => { document.execCommand && document.execCommand('copy'); toast('Save code selected: copy it with Ctrl+C.'); }); }
   else if (a === 'loadsave') { const v = ($('#saveText') || {}).value || ''; importSave(v).catch(e => toast("Couldn't load that code: " + e.message + '.')); }
+  else if (a === 'tithe') collectTithes();
   else if (a === 'ascend') confirmAscend = true;
   else if (a === 'ascend-no') confirmAscend = false;
   else if (a === 'ascend-yes') ascend();
@@ -5786,6 +5956,7 @@ function act(a) {
 
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
   tab = t.dataset.tab; confirmSell = false; confirmReset = false;
+  pane.classList.remove('fresh'); void pane.offsetWidth; pane.classList.add('fresh');
   document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', x === t));
   shopDirty = true; renderPane();
 }));
@@ -5796,7 +5967,7 @@ $('#autoRetry').addEventListener('change', e => {
 
 document.addEventListener('keydown', e => {
   if (e.target.closest?.('input, textarea')) return;
-  if (e.key === 'Escape') { if (editBinds) { editBinds = false; picked = null; barKey = ''; } else if (C.cast) C.cast = null; return; }
+  if (e.key === 'Escape') { if (editBinds) { editBinds = false; picked = null; barKey = ''; } else if (C.cast) { C.cast = null; stopCastSfx(); } return; }
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (BIND_KEYS.includes(k) && S.binds[k] && usable(S.binds[k])) { e.preventDefault(); useAction(S.binds[k]); }
@@ -5906,11 +6077,34 @@ function noise(dur, vol, freq) {
   fl.type = 'lowpass'; fl.frequency.value = freq; g.gain.value = vol; src.buffer = buf;
   src.connect(fl); fl.connect(g); g.connect(master); src.start();
 }
+// A voice with an optional lowpass sweep and a sharp attack, for the richer sounds
+function syn(type, f, dur, vol, { slide = 0, delay = 0, lp = 0, lpEnd = 0, attack = 0.004 } = {}) {
+  const t0 = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, f + slide), t0 + dur);
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + attack); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+  let node = o; if (lp) { const fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.setValueAtTime(lp, t0); if (lpEnd) fl.frequency.exponentialRampToValueAtTime(lpEnd, t0 + dur); o.connect(fl); node = fl; }
+  node.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.03);
+}
+function hiss(dur, vol, freq, delay = 0, type = 'highpass') {
+  const n = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
+  for (let k = 0; k < n; k++) d[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / n, 2);
+  const src = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain(), t0 = AC.currentTime + delay;
+  fl.type = type; fl.frequency.value = freq; g.gain.value = vol; src.buffer = buf; src.connect(fl); fl.connect(g); g.connect(master); src.start(t0);
+}
+// Heals sound like their class: a Priest's bell, a Druid's wooden pluck, an Occultist's dark swell. Each lands with a bright snap on top.
+const HEAL_VOICE = {
+  priest: (k = 1) => { syn('sine', 880, 0.42, 0.15 * k, { slide: 30 }); syn('sine', 1320, 0.32, 0.07 * k); syn('sine', 2640, 0.18, 0.03 * k); hiss(0.07, 0.05 * k, 6500); },
+  druid: (k = 1) => { syn('triangle', 660, 0.3, 0.18 * k, { lp: 3200, lpEnd: 700 }); syn('sine', 990, 0.24, 0.07 * k, { delay: 0.02 }); hiss(0.06, 0.05 * k, 3000, 0, 'bandpass'); },
+  occultist: (k = 1) => { syn('sawtooth', 330, 0.36, 0.08 * k, { slide: -60, lp: 1400, lpEnd: 300 }); syn('sine', 660, 0.3, 0.08 * k, { slide: -40 }); hiss(0.12, 0.04 * k, 900, 0, 'lowpass'); },
+};
 const SFX = {
-  heal: () => tone(520, 0.2, 'sine', 0.16, 240),
-  crit: () => { tone(660, 0.14, 'triangle', 0.18); tone(990, 0.22, 'triangle', 0.16, 0, 0.06); },
+  heal: () => { HEAL_VOICE[clsId()](); syn('square', 1760, 0.05, 0.025, { lp: 5000 }); },
+  crit: () => { HEAL_VOICE[clsId()](1.2); [1320, 1760, 2640].forEach((f, k) => syn('sine', f, 0.22, 0.07, { delay: 0.05 + k * 0.045 })); hiss(0.18, 0.05, 8000, 0.05); },
+  tick: () => syn('sine', clsId() === 'occultist' ? 520 : clsId() === 'druid' ? 784 : 1046, 0.09, 0.035),
+  shield: () => { syn('sine', 1500, 0.3, 0.07); syn('sine', 2250, 0.22, 0.04, { delay: 0.01 }); hiss(0.1, 0.04, 7000); },
+  release: () => { syn('triangle', 420, 0.12, 0.06, { slide: 500 }); hiss(0.08, 0.03, 4000); },
   coin: () => tone(1400 + Math.random() * 300, 0.06, 'square', 0.04, 300),
-  hit: () => noise(0.07, 0.12, 900),
+  hit: () => { syn('sine', 150, 0.12, 0.16, { slide: -90 }); hiss(0.07, 0.1, 1200, 0, 'bandpass'); },
   warn: () => { tone(150, 0.3, 'sawtooth', 0.1, -30); tone(150, 0.3, 'sawtooth', 0.08, -30, 0.32); },
   level: () => [523, 659, 784, 1046].forEach((f, k) => tone(f, 0.16, 'triangle', 0.14, 0, k * 0.07)),
   death: () => tone(320, 0.6, 'sawtooth', 0.1, -220),
@@ -5919,13 +6113,25 @@ const SFX = {
   oom: () => tone(240, 0.12, 'sine', 0.08, -60),
   buy: () => { tone(880, 0.08, 'square', 0.05); tone(1320, 0.12, 'square', 0.05, 0, 0.06); },
 };
-const SFX_GAP = { coin: 50, hit: 90, heal: 60 };
+const SFX_GAP = { coin: 50, hit: 90, heal: 60, tick: 160, shield: 120 };
 function sfx(n) {
   if (S.mute || document.hidden || DEV.speed > 1) return;
   const now = performance.now(); if (sfxLast[n] && now - sfxLast[n] < (SFX_GAP[n] || 40)) return; sfxLast[n] = now;
   if (!audio()) return; try { SFX[n](); } catch (e) {}
 }
 ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { audio(); if (AC && AC.state === 'suspended') AC.resume(); }, { capture: true }));
+let castVoice = null;
+function castSfx(dur) {
+  if (S.mute || document.hidden || DEV.speed > 1 || !audio()) return;
+  try {
+    if (castVoice) { castVoice.g.gain.cancelScheduledValues(AC.currentTime); castVoice.g.gain.setValueAtTime(0, AC.currentTime); }
+    const t0 = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(), base = { priest: 392, druid: 330, occultist: 196 }[clsId()];
+    o.type = 'triangle'; o.frequency.setValueAtTime(base, t0); o.frequency.exponentialRampToValueAtTime(base * 2, t0 + dur);
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.035, t0 + Math.min(0.3, dur)); g.gain.linearRampToValueAtTime(0.05, t0 + dur); g.gain.linearRampToValueAtTime(0, t0 + dur + 0.05);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.1); castVoice = { o, g };
+  } catch (e) {}
+}
+function stopCastSfx() { if (castVoice && AC) { try { castVoice.g.gain.cancelScheduledValues(AC.currentTime); castVoice.g.gain.setValueAtTime(0, AC.currentTime); } catch (e) {} castVoice = null; } }
 function syncMute() { const mb = $('#musicBtn'); mb.setAttribute('aria-pressed', S.music !== false); mb.classList.toggle('off', S.music === false); const b = $('#muteBtn'); b.textContent = S.mute ? '🔇' : '🔊'; b.setAttribute('aria-pressed', !S.mute); $('#volume').value = Math.round((S.vol ?? 0.6) * 100); }
 $('#musicBtn').addEventListener('click', () => { S.music = S.music === false; audio(); syncMute(); });
 $('#muteBtn').addEventListener('click', () => { S.mute = !S.mute; audio(); syncMute(); });
@@ -6017,7 +6223,7 @@ function musicTick() {
 }
 setInterval(() => { try { musicTick(); } catch (e) {} }, 60);
 let toastT = 0;
-function toast(msg) { msg = resWords(msg); const t = $('#toast'); t.textContent = msg; t.hidden = false; toastT = 2.8; }
+function toast(msg) { msg = resWords(msg); const t = $('#toast'); t.textContent = msg; t.hidden = false; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = ''; toastT = 2.8; }
 
 /* =========================================================
    Save / load
@@ -6093,7 +6299,8 @@ function frame(now) {
   renderScene(dt * DEV.speed);
   renderArena();
   if (tab === 'town') renderTownScene(dt);
-  $('#gold').textContent = fmt(Math.floor(S.gold));
+  const gtxt = fmt(Math.floor(S.gold)), ge = $('#gold');
+  if (ge.textContent !== gtxt) { if (S.gold > (ge._last || 0) && performance.now() - (ge._bt || 0) > 400) { ge._bt = performance.now(); ge.classList.remove('bump'); void ge.offsetWidth; ge.classList.add('bump'); } ge._last = S.gold; ge.textContent = gtxt; }
   $('#tpts').textContent = skillPoints();
   $('#pilvl').textContent = partyIlvl().toFixed(1);
   paneT -= real; if (paneT <= 0) { paneT = 0.25; renderPane(); }

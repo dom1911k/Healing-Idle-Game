@@ -83,6 +83,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 @keyframes qpop{from{transform:translate(-50%,-50%) scale(.4);opacity:0}}
 .frame{-webkit-touch-callout:none;user-select:none;touch-action:manipulation}
 .tag.daytag{color:#ffd36b;border-color:#a8803a}.tag.nighttag{color:#bfd0ff;border-color:#5a6aa8}
+.gearwarn{font-size:.62rem;font-family:var(--mono);padding:1px 5px;border-radius:4px;cursor:pointer;white-space:nowrap;margin-left:auto;margin-right:4px}.gearwarn.up{color:#0b0910;background:#72d27e}.gearwarn.old{color:#0b0910;background:#e7c27a;animation:tagpulse 1s infinite alternate}.gearwarn:hover{filter:brightness(1.2)}
+.tag.bagfull{color:#e7c27a;border-color:#a8803a}
 .tag.danger{color:#fff;background:#a8303a;border-color:#e0605a;animation:tagpulse 1s infinite alternate}
 @keyframes tagpulse{from{opacity:1}to{opacity:.6}}
 .tag.timer{color:var(--muted);border-color:var(--line)}
@@ -299,10 +301,25 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .prosper{border:1px solid var(--line);border-radius:10px;padding:12px;background:linear-gradient(135deg,#2a2236,#1e1a28);display:flex;flex-direction:column;gap:9px}
 .prosh{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.prosh h4{margin:2px 0 0;font-family:var(--display);font-size:1.25rem;color:var(--gold)}.prosh small{font-size:.75rem;color:var(--muted);font-family:var(--mono);margin-left:6px}
 .pbar{position:relative;height:18px;border-radius:9px;background:#14121a;overflow:hidden;border:1px solid var(--line)}.pbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#a8803a,#ffd36b);transition:width .4s}.pbar span{position:relative;display:block;text-align:center;font-size:.74rem;line-height:18px;text-shadow:0 1px 2px #000}
+.sights{font-size:.78rem;color:var(--muted);margin:6px 0}.sights b{color:var(--gold);margin-right:4px}.sights span{color:var(--ink)}
 .milestones{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}.milestones li{font-size:.76rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 7px;opacity:.65}.milestones li.on{opacity:1;color:var(--ink);border-color:#a8803a;background:#e4b75c12}.milestones b{color:var(--gold);font-family:var(--mono);margin-right:4px}.milestones span{display:block}
 .tithe{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.84rem;border-top:1px dashed var(--line);padding-top:9px}
 .daypill{display:inline-block;font-size:.76rem;padding:4px 10px;border-radius:999px;border:1px solid}.daypill.day{color:#ffd36b;border-color:#a8803a;background:#ffd36b14}.daypill.night{color:#bfd0ff;border-color:#5a6aa8;background:#7a8aff14}
 .bsel{display:flex;flex-wrap:wrap;gap:6px}.bsel b{font-family:var(--mono);color:var(--gold);margin-left:3px}
+.timeline{margin:8px 0;text-align:left}.timeline svg{width:100%;height:96px;display:block;background:#14121a;border:1px solid var(--line);border-radius:6px}.timeline.big svg{height:150px}
+.tl-dmg{fill:#e0605a55;stroke:#e0605a;stroke-width:1}.tl-heal{fill:none;stroke:#69c49a;stroke-width:1.6}.tl-over{fill:none;stroke:#bff5dd;stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+.tl-stage{stroke:#ffffff22;stroke-width:1}.tl-lab{fill:#9a93a8;font-size:9px;font-family:var(--mono)}.tl-death line{stroke:#ff5a4a;stroke-width:1.5}.tl-death text{fill:#ff8a7a;font-size:9px;font-family:var(--mono)}.tl-boss path{fill:#ff9f43}
+.tl-key{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.72rem;font-family:var(--mono);margin-bottom:4px}.k-dmg{color:#ff8a7a}.k-heal{color:#69c49a}.k-over{color:#bff5dd}.k-death{color:#ff5a4a}.k-boss{color:#ff9f43}
+.tl-axis{display:flex;justify-content:space-between;font-size:.66rem;color:var(--muted);font-family:var(--mono)}
+.away{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:#0b0910cc;backdrop-filter:blur(3px);padding:16px}.away[hidden]{display:none}
+.awaycard{width:min(560px,100%);max-height:90vh;overflow:auto;background:linear-gradient(160deg,#2e2640,#1c1826);border:1px solid #6a5f88;border-radius:14px;padding:20px 22px;box-shadow:0 20px 60px #000c;animation:popin .3s cubic-bezier(.2,.9,.3,1.15)}
+.awaycard h2{margin:2px 0 6px;font-family:var(--display);color:var(--gold);font-size:1.6rem}
+.awaygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:12px 0}
+.aw{border:1px solid var(--line);border-radius:10px;padding:10px;background:#14121a;display:flex;flex-direction:column;gap:2px;animation:panein .4s ease-out backwards}.aw:nth-child(2){animation-delay:.06s}.aw:nth-child(3){animation-delay:.12s}.aw:nth-child(4){animation-delay:.18s}.aw:nth-child(5){animation-delay:.24s}
+.aw b{font-family:var(--mono);font-size:1.15rem}.aw span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.aw.gold b,.aw.tithe b{color:var(--gold)}.aw.xp b{color:var(--xp)}.aw.mat b{color:var(--mc)}.aw.items b{color:#c48bfb}
+.awayitems{list-style:none;margin:0 0 10px;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.84rem}.awayitems li{display:flex;align-items:center;gap:6px}.awayitems em{font-style:normal;color:#72d27e;font-size:.72rem;font-family:var(--mono)}.awayitems .more{color:var(--muted)}
+.btn.big{padding:9px 20px;font-size:1rem}
 .actsep{font-family:var(--display);font-size:1.05rem;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 0 4px;margin-top:6px;letter-spacing:.04em}.actsep b{color:var(--gold);margin-right:8px}.actsep.act2 b{color:#c48bfb}
 .dcard{position:relative;border-radius:10px;overflow:visible;background:var(--surface-2);border:1px solid var(--line)}
 .dcard+.dcard::before{content:'';position:absolute;left:34px;top:-19px;height:18px;border-left:2px dashed #5a5070}
@@ -641,6 +658,7 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
   </main>
 </div>
 <div class="toast" id="toast" hidden></div>
+<div class="away" id="away" hidden></div>
 
 <script>
 (() => {
@@ -1580,8 +1598,10 @@ const berserkAt = () => modIs('tide') ? 70 : 120;
 const HP_STEP = 3.5, DMG_STEP = 3.0; // how much tougher each dungeon is
 // Act II dungeons get an extra step of toughness each, so the second act takes real farming
 const actK = d => Math.pow(1.7, Math.max(0, d - 7));
-const hpScale = (d, s) => Math.pow(HP_STEP, d) * actK(d) * (1 + 0.12 * (s - 1));
-const dmgScale = (d, s) => Math.pow(DMG_STEP, d) * actK(d) * (1 + 0.1 * (s - 1));
+// deeper dungeons get a little extra on top, so the party-wide gear baseline doesn't rush the mid game
+const deepHp = d => 1 + 0.09 * d, deepDmg = d => 1 + 0.04 * d;
+const hpScale = (d, s) => Math.pow(HP_STEP, d) * actK(d) * deepHp(d) * (1 + 0.12 * (s - 1));
+const dmgScale = (d, s) => Math.pow(DMG_STEP, d) * actK(d) * deepDmg(d) * (1 + 0.1 * (s - 1));
 // Peril: replay a cleared dungeon at higher difficulty for more rewards and materials.
 // Capped so its rewards stay below those of your deepest unlocked dungeon.
 const PERIL_HP = 1.6, PERIL_DMG = 1.5, PERIL_REW = 1.3, PERIL_MAX = 10;
@@ -1613,7 +1633,7 @@ function makeCs(i, over) {
   const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
   // a baseline from the party's item level, so a missing or outdated piece costs some power instead of nearly all of it
   // (and your healer, who has no companion gear, keeps up in health and damage)
-  const pil = Math.max(1, partyIlvl()); ge.atk = Math.max(ge.atk, (i === YOU ? 40 : 15) * g(pil)); ge.hpp = Math.max(ge.hpp, (i === YOU ? 30 : 9) * g(pil));
+  const pil = Math.max(1, partyIlvl()); ge.atk = Math.max(ge.atk, (i === YOU ? 25 : 8) * g(pil)); ge.hpp = Math.max(ge.hpp, (i === YOU ? 22 : 6) * g(pil));
   const o = { ...c, dmg: p.dmg * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
     spd: gf('spd') + ge.spd / 100 + (i === YOU ? 0 : D.partySpd || 0), crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow'),
@@ -1843,14 +1863,28 @@ function autoEquip() {
 const sellValue = it => Math.round(5 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * (1 + 0.5 * (it.up || 0)));
 const enchantCost = it => Math.round(20 * Math.pow(1.2, it.ilvl - 1) * RARITY[it.rarity].sell * Math.pow(1.6, it.up || 0) * (1 - 0.08 * lvl('smithy')));
 // drop: true for loot from fights, expeditions and pleas (the loot filter and auto-equip apply)
+/* Gear warnings: a hero whose gear lags the dungeons you're clearing, or who has an upgrade waiting in the bag */
+const bagFull = () => S.inv.length >= bagCap();
+const gearRef = () => ilvlFor(Math.max(0, S.dun.clears.reduce((a, c, d) => c > 0 ? d : a, 0)), 1);
+function gearState(i) {
+  const slots = i === YOU ? SLOTS.map(sl => S.equip[sl.id]) : CSLOTS.map(cs => S.cequip[i][cs.id]);
+  const up = S.inv.some(it => isUpgrade(it) && (i === YOU ? !isComp(it) : it.who === i));
+  const ref = gearRef(), lag = slots.filter(it => !it || it.ilvl + (it.up || 0) < ref - 8).length;
+  return { up, lag, empty: slots.filter(it => !it).length };
+}
+let bagWarnT = 0;
+function bagWarn() {
+  const now = performance.now(); if (now - bagWarnT < 60000) return; bagWarnT = now;
+  toast(`Your bag is full (${S.inv.length}/${bagCap()}). New drops now replace your weakest items: sell or salvage in the Armory.`);
+}
 function addToBag(it, drop) {
   const up = isUpgrade(it);
   if (drop && !up && it.rarity < (S.lootFilter || 0)) { const v = sellValue(it); addGoldIdle(v); S.stats.autoSold = (S.stats.autoSold || 0) + 1; return `auto-sold for ${fmt(v)} gold`; }
   if (S.inv.length >= bagCap()) {
     // make room by selling the worst item that isn't an upgrade
     const junk = S.inv.filter(x => !isUpgrade(x)).sort((a, b) => score(a) - score(b))[0];
-    if (!junk || score(junk) >= score(it)) { const v = sellValue(it); addGoldIdle(v); return `bag full, sold for ${fmt(v)} gold`; }
-    S.inv.splice(S.inv.indexOf(junk), 1); addGoldIdle(sellValue(junk));
+    if (!junk || score(junk) >= score(it)) { const v = sellValue(it); addGoldIdle(v); bagWarn(); return `bag full, sold for ${fmt(v)} gold`; }
+    S.inv.splice(S.inv.indexOf(junk), 1); addGoldIdle(sellValue(junk)); bagWarn();
   }
   S.inv.push(it);
   if (drop && up && S.autoGear) { autoEquip(); return 'equipped'; }
@@ -1877,9 +1911,9 @@ function makeFoes(d, s) {
   const dg = DUNGEONS[d];
   if (s === dg.stages) {
     const b = BOSSES[d];
-    const hp = Math.round(1500 * Math.pow(HP_STEP, d) * actK(d) * (1 + 0.06 * (s - 1)) * perilHp());
+    const hp = Math.round(1500 * Math.pow(HP_STEP, d) * actK(d) * deepHp(d) * (1 + 0.06 * (s - 1)) * perilHp());
     return [{ boss: true, name: b.name, title: b.title, kind: b.kind, c: b.c, abil: b.abil, max: hp, hp,
-      dmg: 38 * Math.pow(DMG_STEP, d) * actK(d) * (1 + 0.05 * (s - 1)) * perilDmg(), atk: 1.6, p2: false, d, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
+      dmg: 38 * Math.pow(DMG_STEP, d) * actK(d) * deepDmg(d) * (1 + 0.05 * (s - 1)) * perilDmg(), atk: 1.6, p2: false, d, atkT: 2.4, abilT: 5, cast: null, frenzy: 0,
       x: BOSS_SLOT.x, y: BOSS_SLOT.y, alive: true, enter: 0.7, lunge: -1, flash: 0, die: 0, h: 60, seed: 0 }];
   }
   const n = clamp(2 + Math.floor((s - 1) / 2) + (Math.random() < 0.3 ? 1 : 0), 2, 4) + (curse('swarm') ? 1 : 0);
@@ -1923,7 +1957,7 @@ function enterDungeon(d) {
   C.mana = D.maxMana * (modIs('fatigue') ? 0.6 : 1);
   C.cds = {}; C.medi = null; C.abT = {}; C.pips = 0; C.treeForm = 0; C.unholy = 0; C.slamT = 0; C.peril = perilOf(d); C.angelUsed = false;
   C.meter = { d: PARTY.map(() => 0), t: 0 };
-  C.rstats = { spell: {}, taken: 0, deaths: 0, absorbed: 0, d };
+  C.rstats = { spell: {}, taken: 0, deaths: 0, absorbed: 0, d }; C.tl = { b: [], ev: [] };
   C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden') + (prosFx().potion || 0); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
   C.draughts = perk('garden', 7) ? 2 : perk('garden', 3) ? 1 : 0; C.bell = perk('chapel', 3);
   S.stats.runs++;
@@ -1931,7 +1965,7 @@ function enterDungeon(d) {
   shopDirty = true;
 }
 function startStage() {
-  C.foes = makeFoes(S.dun.current, C.stage);
+  C.foes = makeFoes(S.dun.current, C.stage); tlEvent('stage', { s: C.stage, of: DUNGEONS[S.dun.current].stages });
   C.time = 0; C.phase = 'fight'; C.cast = null; C.gcd = 0; C.heatT = 4; C.stageDeaths0 = C.rstats ? C.rstats.deaths || 0 : 0;
   C.bossIntro = C.foes.some(f => f.boss) ? 2.4 : 0;
   C.gsUsed = false; C.tranq = 0; C.vampPool = 0; C.regenT = 1; C.party.forEach(m => { m.bark = 0; });
@@ -1985,7 +2019,7 @@ function hit(i, amt) {
       if (D.boneShatter) { const p = HERO_POS[i]; burst(p.x, p.y - 10, '#e8e2d4', 20, 18); fxLabel(i, 'Shatter!', '#e8e2d4'); liveFoes().forEach(f => dealFoe(f, ws * D.boneShatter, '', YOU)); } if (D.sp.ward.mend) { C.healSrc = 'ward'; heal(i, ws * D.sp.ward.mend); C.healSrc = null; } }
   }
   if (amt <= 0) return;
-  trackStat('taken', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
+  trackStat('taken', Math.min(amt, m.hp)); tlAdd('dmg', Math.min(amt, m.hp)); if (i === 0 || amt > m.max * 0.15) sfx('hit');
   m.hp -= amt; heroAnim[i].kb = 0.14;
   if (m.hp > 0 && D.gspirit && !C.gsUsed && m.hp / m.max < 0.15) { C.gsUsed = true; heal(i, m.max * 0.4, 0, true); fxLabel(i, 'Guardian Spirit', '#86dcb8'); }
   floatTxt(i, '-' + fmt(amt), 'dmg', amt);
@@ -2000,7 +2034,7 @@ function hit(i, amt) {
     heroAnim[i].fall = 0.55;
     log(`<b>${PARTY[i].name}</b> has fallen.`); sfx('death');
     if (i === 0 && C.foes.some(f => f.alive)) { fxLabel(0, 'The enemies run wild!', '#e0605a'); C.phaseFlash = 0.6; log('<span class="x">With Bram down, the enemies hit harder and faster.</span>'); }
-    trackStat('deaths'); if (C.rstats) (C.rstats.deathLog = C.rstats.deathLog || []).push({ i, by: C.hitLabel || 'enemy attacks' }); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
+    tlEvent('death', { i, by: C.hitLabel || 'enemy attacks' }); trackStat('deaths'); if (C.rstats) (C.rstats.deathLog = C.rstats.deathLog || []).push({ i, by: C.hitLabel || 'enemy attacks' }); const dd = S.stats.deathsBy = S.stats.deathsBy || []; dd[S.dun.current] = (dd[S.dun.current] || 0) + 1;
     burst(HERO_POS[i].x, HERO_POS[i].y - 10, '#9a93a8', 12);
   }
 }
@@ -2021,7 +2055,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
   if (!npc && D.lowWard && m.hp / m.max < 0.4 && eff > 0) m.shield = Math.min(m.max * 0.3, m.shield + eff * 0.2);
   if (!npc && wasLow && eff > 0) { S.stats.clutch = (S.stats.clutch || 0) + 1; bountyEvent('clutch'); }
   m.hp += eff;
-  S.stats.healed += eff; S.stats.overheal += amt - eff;
+  S.stats.healed += eff; S.stats.overheal += amt - eff; tlAdd('heal', eff); tlAdd('over', amt - eff);
   trackHeal(npc ? 'acolyte' : C.healSrc || 'other', eff, amt - eff);
   if (eff > 0 && !npc) {
     C.devQuiet = 0;
@@ -2294,7 +2328,7 @@ function foeAct(e, dt) {
     if (e.cast.el >= e.cast.dur) {
       const c = e.cast; e.cast = null;
       if (e.boss) { const A = ABIL[c.id]; let t = c.t; if (A.pick && (t == null || !C.party[t] || !C.party[t].alive)) t = A.pick(e);
-        if (A.pick && t != null && t !== 0 && pk(0, 2) && C.party[0].alive && Math.random() < 0.35) { t = 0; floatTxt(0, 'Intercept!', 'abs'); fxLabel(0, 'Intercept!', '#7ba3ee'); } C.hitLabel = A.name; A.run(e, t); C.hitLabel = null; }
+        if (A.pick && t != null && t !== 0 && pk(0, 2) && C.party[0].alive && Math.random() < 0.35) { t = 0; floatTxt(0, 'Intercept!', 'abs'); fxLabel(0, 'Intercept!', '#7ba3ee'); } C.hitLabel = A.name; tlEvent('boss', { name: A.name }); A.run(e, t); C.hitLabel = null; }
       else {
         const t = randomAlive(); if (t == null) return;
         if (e.spell.dot) { afflict(t, 'hex', e.dmg * 0.3, 6, { healCut: 0.3 }); fxProj(e, t, e.spell.col, 2); }
@@ -2778,13 +2812,35 @@ function wipe() {
   log(`The party fell on stage ${C.stage} of <b>${dg.name}</b>.`);
   endRun('wipe', `<h3>The party has fallen</h3><p>Stage ${C.stage} of ${dg.stages}. What happened:</p>${wipeReport()}`);
 }
+/* Combat timeline: damage taken, healing and overhealing in 2-second buckets, plus deaths, boss checks and stage starts */
+const TL_STEP = 2;
+let lastTL = null;
+function tlAdd(k, v) { const tl = C.tl; if (!tl || !C.run || !(v > 0)) return; const b = Math.floor(C.run.t / TL_STEP); while (tl.b.length <= b) tl.b.push({ dmg: 0, heal: 0, over: 0 }); tl.b[b][k] += v; }
+function tlEvent(kind, data) { if (C.tl && C.run) C.tl.ev.push({ kind, t: C.run.t, ...data }); }
+function timelineHtml(tl, big) {
+  if (!tl || tl.b.length < 2) return '';
+  const W = 600, H = big ? 150 : 96, n = tl.b.length, top = 14, bot = H - 14, max = Math.max(1, ...tl.b.map(x => Math.max(x.dmg, x.heal + x.over)));
+  const X = k => (k + 0.5) / n * W, Y = v => bot - v / max * (bot - top);
+  const line = key => tl.b.map((x, k) => `${k ? 'L' : 'M'}${X(k).toFixed(1)},${Y(key(x)).toFixed(1)}`).join(' ');
+  const area = `M${X(0).toFixed(1)},${bot} ` + tl.b.map((x, k) => `L${X(k).toFixed(1)},${Y(x.dmg).toFixed(1)}`).join(' ') + ` L${X(n - 1).toFixed(1)},${bot} Z`;
+  const tx = t => (t / TL_STEP) / n * W;
+  const ev = tl.ev.map(e => e.kind === 'stage' ? `<line x1="${tx(e.t)}" x2="${tx(e.t)}" y1="${top - 4}" y2="${bot}" class="tl-stage"/><text x="${tx(e.t) + 2}" y="${top - 5}" class="tl-lab">${e.s === e.of ? 'Boss' : 'S' + e.s}</text>`
+    : e.kind === 'death' ? `<g class="tl-death"><title>${esc(PARTY[e.i].name)} fell to ${esc(e.by)} at ${fmtTime(e.t)}</title><line x1="${tx(e.t)}" x2="${tx(e.t)}" y1="${top}" y2="${bot}"/><text x="${tx(e.t)}" y="${bot + 11}" text-anchor="middle">✕ ${esc(PARTY[e.i].name)}</text></g>`
+    : `<g class="tl-boss"><title>${esc(e.name)} at ${fmtTime(e.t)}</title><path d="M${tx(e.t) - 3},${top} L${tx(e.t) + 3},${top} L${tx(e.t)},${top + 5} Z"/></g>`).join('');
+  const sum = tl.b.reduce((a, x) => ({ dmg: a.dmg + x.dmg, heal: a.heal + x.heal, over: a.over + x.over }), { dmg: 0, heal: 0, over: 0 }), deaths = tl.ev.filter(e => e.kind === 'death').length;
+  return `<div class="timeline ${big ? 'big' : ''}"><div class="tl-key"><span class="k-dmg">Damage taken ${fmt(sum.dmg)}</span><span class="k-heal">Healing ${fmt(sum.heal)}</span><span class="k-over">Overheal ${fmt(sum.over)} (${Math.round(100 * sum.over / Math.max(1, sum.heal + sum.over))}%)</span>${deaths ? `<span class="k-death">${deaths} death${deaths > 1 ? 's' : ''}</span>` : ''}<span class="k-boss">▼ boss ability</span></div>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Combat timeline"><path d="${area}" class="tl-dmg"/><path d="${line(x => x.heal + x.over)}" class="tl-over"/><path d="${line(x => x.heal)}" class="tl-heal"/>${ev}</svg>
+    <div class="tl-axis"><span>0:00</span><span>${fmtTime(n * TL_STEP)}</span></div></div>`;
+}
 function endRun(cls, head) {
+  lastTL = C.tl;
   const r = C.run, delay = cls === 'wipe' ? 0 : 1.3; // let the boss's coin shower land before the summary
   C.phase = 'done'; C.phaseT = 4.5 + delay;
   const body = `${head}
     <p class="num"><span style="color:var(--gold)">+${fmt(r.gold)} gold</span> · <span class="lvl">+${fmt(r.xp)} exp</span> · +${r.mats} ${MATS[r.d]} · ${r.stages} stage${r.stages === 1 ? '' : 's'} cleared</p>
     ${r.ups.length ? `<p class="lvl">Level up: ${[...new Set(r.ups)].join(', ')}</p>` : ''}
     ${r.items.length ? `<p>${r.items.join('<br>')}</p>` : ''}${r.mastered.map(m => `<p style="color:var(--gold)">${m}</p>`).join('')}
+    ${timelineHtml(C.tl)}
     ${picksLeft() && !head.includes('spellpick') ? pickHtml() : ''}
     ${S.autoRetry ? `<p class="label">${picksLeft() ? 'Choose a spell to keep going.' : 'Starting again…'}</p>` : '<div class="actions"><button class="btn primary" data-run="again">Run again</button></div>'}`;
   const run = C.run;
@@ -2792,6 +2848,7 @@ function endRun(cls, head) {
   shopDirty = true; save();
 }
 function showOverlay(cls, html) { const o = $('#overlay'); o.className = 'overlay ' + cls; o.innerHTML = html; o.hidden = false; }
+$('#away').addEventListener('click', e => { if (e.target.closest('[data-away="claim"]')) claimAway(); });
 $('#overlay').addEventListener('click', e => {
   if (e.target.closest('[data-run="again"]')) enterDungeon(S.dun.current);
   if (e.target.closest('[data-run="dismiss"]')) $('#overlay').hidden = true;
@@ -4567,7 +4624,7 @@ function buildArena() {
     const f = document.createElement('button');
     f.className = 'frame'; f.type = 'button';
     f.style.setProperty('--rc', ROLE_COL[i]);
-    f.innerHTML = `<div class="fr-top"><span class="fr-name">${portraitImg(i, 'fr')}${d.name}</span><span class="fr-role" title="${d.role}"><b class="lv"></b></span></div>
+    f.innerHTML = `<div class="fr-top"><span class="fr-name">${portraitImg(i, 'fr')}${d.name}</span><span class="gearwarn" hidden></span><span class="fr-role" title="${d.role}"><b class="lv"></b></span></div>
       <div class="bar hp"><i class="trail"></i><i class="fill"></i><i class="inc"></i><i class="shield"></i><span class="txt"></span></div>
       <div class="bar xp"><i class="fill xpf"></i></div>
       <div class="fr-fx"></div><div class="floats"></div>`;
@@ -4584,7 +4641,9 @@ function buildArena() {
     f.addEventListener('mouseenter', () => { C.hover = i; });
     f.addEventListener('mouseleave', () => { if (C.hover === i) C.hover = null; });
     p.appendChild(f);
-    frameEls.push({ f, inc: f.querySelector('.hp .inc'), trail: f.querySelector('.hp .trail'), tv: 1, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
+    const gw = f.querySelector('.gearwarn');
+    gw.addEventListener('click', e => { e.stopPropagation(); if (gw.dataset.kind === 'up') { const n = autoEquip(); toast(n ? `Equipped ${n} upgrade${n > 1 ? 's' : ''}.` : 'Nothing better to equip.'); } else { $('[data-tab="armory"]').click(); } });
+    frameEls.push({ f, gw, gwT: 0, inc: f.querySelector('.hp .inc'), trail: f.querySelector('.hp .trail'), tv: 1, fill: f.querySelector('.hp .fill'), shield: f.querySelector('.shield'), txt: f.querySelector('.txt'), fx: f.querySelector('.fr-fx'),
       floats: f.querySelector('.floats'), lv: f.querySelector('.lv'), xpf: f.querySelector('.xpf'), fxKey: '', por: f.querySelector('.portrait'), rk: promoRank(i) });
   });
   wireActionBar();
@@ -4793,6 +4852,7 @@ function renderArena() {
   if (C.tranq > 0) tags += `<span class="tag buff">Tranquility ${Math.ceil(C.tranq)}s</span>`;
   if (tankDown() && C.foes.some(f => f.alive)) tags += `<span class="tag danger">Bram is down: enemies hit ${Math.round((TANK_DOWN_DMG - 1) * 100)}% harder and faster</span>`;
   { const di = dayInfo(); tags += `<span class="tag ${di.night ? 'nighttag' : 'daytag'}" title="${di.night ? 'Night: more experience and materials' : 'Day: more gold'}">${di.night ? '☾ Night' : '☀ Day'}</span>`; }
+  if (bagFull()) tags += `<span class="tag bagfull" title="New drops replace your weakest items until you make room in the Armory">Bag full ${S.inv.length}/${bagCap()}</span>`;
   if (C.treeForm > 0) tags += `<span class="tag buff">Tree of Life ${Math.ceil(C.treeForm)}s</span>`;
   if (C.unholy > 0) tags += `<span class="tag buff">${SP.sanctuary.name} ${Math.ceil(C.unholy)}s</span>`;
   if (C.buff.bless > 0) tags += `<span class="tag buff">${SP.blessing.name} ${Math.ceil(C.buff.bless)}s</span>`;
@@ -4818,6 +4878,10 @@ function renderArena() {
     if (fe.rk !== promoRank(i) + (i === YOU ? clsId() : '')) { fe.rk = promoRank(i) + (i === YOU ? clsId() : ''); fe.por.src = portrait(i); fe.f.style.setProperty('--tc', TIER_COL[fe.rk]); }
     fe.f.classList.toggle('sel', C.target === i);
     fe.f.classList.toggle('low', m.alive && m.hp / m.max < 0.35);
+    if ((fe.gwT -= 1) <= 0) { fe.gwT = 30; const gs = gearState(i), kind = gs.up ? 'up' : gs.lag ? 'old' : '';
+      if (fe.gw.dataset.kind !== kind) { fe.gw.dataset.kind = kind; fe.gw.hidden = !kind; fe.gw.className = 'gearwarn ' + kind;
+        fe.gw.textContent = kind === 'up' ? '▲ Upgrade' : kind === 'old' ? '⚠ Old gear' : '';
+        fe.gw.title = kind === 'up' ? 'A better item is in your bag: click to equip the best gear' : `${gs.empty ? gs.empty + ' empty slot' + (gs.empty > 1 ? 's' : '') + ' or ' : ''}gear well below what you're farming: click to open the Armory`; } }
     fe.f.classList.toggle('plea', !!C.plea && C.plea.i === i);
     fe.f.classList.toggle('danger', C.phase === 'fight' && C.foes.some(f => f.alive && f.boss && f.cast && (f.cast.all || f.cast.t === i)));
     const hk = {}; m.hots.forEach(h => { const kk = h.kind || 'renew'; hk[kk] = (hk[kk] || 0) + 1; });
@@ -5279,22 +5343,48 @@ function expeditionRate(hours) {
   const rec = S.dun.rec[d], runs = hours * 3600 / Math.max(60, rec.t) * D.aco.eff;
   return { d, runs, gold: rec.gold * runs, xp: rec.xp * runs, mats: rec.mats * runs, items: rec.items * runs };
 }
-// The Acolyte farms a cleared dungeon while you're away (closed tab or another tab).
+// The Acolyte farms a cleared dungeon while you're away (closed tab or another tab). Rewards wait in a summary until you claim them.
 function expedition(secs) {
-  const r = expeditionRate(Math.min(offlineCap(), secs) / 3600);
-  if (!r || r.runs < 0.05) return;
-  addGoldIdle(r.gold);
-  const mats = Math.floor(r.mats + Math.random()); S.mats[r.d] = (S.mats[r.d] || 0) + mats;
-  const ups = gainXp(r.xp);
-  let items = 0;
-  const n = Math.min(30, Math.floor(r.items + Math.random()));
-  for (let k = 0; k < n; k++) { if (!addToBag(genItem(ilvlFor(r.d, DUNGEONS[r.d].stages)), true)) items++; }
-  recalc(); shopDirty = true;
-  log(`<span class="g">Expedition:</span> the Acolyte led ${fmt(r.runs)} runs of <b>${DUNGEONS[r.d].name}</b> while you were away.`);
-  showOverlay('', `<div><h3>While you were away</h3><p>Your Acolyte led the party through <b>${DUNGEONS[r.d].name}</b> about ${r.runs < 10 ? r.runs.toFixed(1) : fmt(r.runs)} times over ${fmtTime(Math.min(offlineCap(), secs))}.</p>
-    <p class="num"><span style="color:var(--gold)">+${fmt(r.gold)} gold</span> · <span class="lvl">+${fmt(r.xp * D.xpMult)} exp</span> · +${mats} ${MATS[r.d]} · ${items} item${items === 1 ? '' : 's'} kept</p>
-    ${ups.length ? `<p class="lvl">Level up: ${[...new Set(ups)].join(', ')}</p>` : ''}
-    <div class="actions"><button class="btn primary" data-run="dismiss">Back to the fight</button></div></div>`);
+  const capped = Math.min(offlineCap(), secs), r = expeditionRate(capped / 3600);
+  const P = S.pendingAway = S.pendingAway || { secs: 0, gold: 0, xp: 0, mats: {}, items: [], runs: 0, d: null };
+  P.secs += secs;
+  if (r && r.runs >= 0.05) {
+    P.gold += r.gold; P.xp += r.xp; P.runs += r.runs; P.d = r.d;
+    const mats = Math.floor(r.mats + Math.random()); P.mats[r.d] = (P.mats[r.d] || 0) + mats;
+    const n = Math.min(30 - P.items.length, Math.floor(r.items + Math.random()));
+    for (let k = 0; k < n; k++) P.items.push(genItem(ilvlFor(r.d, DUNGEONS[r.d].stages)));
+  }
+  showAway();
+}
+function showAway() {
+  const P = S.pendingAway; if (!P) return;
+  const tr = tithesReady(), items = P.items.slice().sort((a, b) => b.rarity - a.rarity), ups = items.filter(isUpgrade).length;
+  const mats = Object.entries(P.mats).filter(([, n]) => n > 0);
+  const nothing = !P.gold && !P.items.length && !tr;
+  $('#away').innerHTML = `<div class="awaycard" role="dialog" aria-label="While you were away">
+    <span class="label">Welcome back</span><h2>While you were away</h2>
+    <p class="sub">${fmtTime(P.secs)} away${P.secs > offlineCap() ? ` (expeditions count up to ${fmtTime(offlineCap())})` : ''}${P.d != null ? ` · your Acolyte led the party through <b>${DUNGEONS[P.d].name}</b> about ${P.runs < 10 ? P.runs.toFixed(1) : fmt(P.runs)} times` : ''}.</p>
+    ${nothing ? `<p>${D.aco ? 'Clear a dungeon so your Acolyte has somewhere to farm while you are away.' : 'Build the <b>Acolyte Cloister</b> in the Town and your Acolyte will farm for you while you are away.'}</p>` : `
+    <div class="awaygrid">
+      ${P.gold ? `<div class="aw gold"><b>+${fmt(P.gold)}</b><span>gold</span></div>` : ''}
+      ${P.xp ? `<div class="aw xp"><b>+${fmt(P.xp * D.xpMult)}</b><span>experience</span></div>` : ''}
+      ${mats.map(([d, n]) => `<div class="aw mat" style="--mc:${DUNGEONS[d].bg[5]}"><b>+${fmt(n)}</b><span>${MATS[d]}</span></div>`).join('')}
+      ${tr ? `<div class="aw tithe"><b>+${fmt(titheAmount() * tr)}</b><span>gold in tithes</span></div>` : ''}
+      ${items.length ? `<div class="aw items"><b>${items.length}</b><span>item${items.length > 1 ? 's' : ''}${ups ? ` · ${ups} upgrade${ups > 1 ? 's' : ''}` : ''}</span></div>` : ''}
+    </div>
+    ${items.length ? `<ul class="awayitems">${items.slice(0, 6).map(it => `<li>${img(itemIcon(it), it.rarity, 'sm')}<b class="${nameCls(it)}">${esc(it.name)}</b>${isUpgrade(it) ? '<em>▲ upgrade</em>' : ''}</li>`).join('')}${items.length > 6 ? `<li class="more">and ${items.length - 6} more</li>` : ''}</ul>` : ''}`}
+    <div class="actions"><button class="btn primary big" data-away="claim">${nothing ? 'Continue' : 'Claim all'}</button></div></div>`;
+  $('#away').hidden = false;
+}
+function claimAway() {
+  const P = S.pendingAway; if (!P) { $('#away').hidden = true; return; }
+  addGoldIdle(P.gold); for (const d in P.mats) S.mats[d] = (S.mats[d] || 0) + P.mats[d];
+  const ups = P.xp ? gainXp(P.xp) : []; let sold = 0; P.items.forEach(it => { if (addToBag(it, true)) sold++; });
+  if (tithesReady()) collectTithes();
+  delete S.pendingAway; $('#away').hidden = true; recalc(); shopDirty = true; sfx('ach');
+  if (P.gold || P.items.length) log(`<span class="g">Expedition:</span> claimed ${fmt(P.gold)} gold${P.items.length ? ` and ${P.items.length} items` : ''}.`);
+  toast(ups.length ? `Claimed! Level up: ${[...new Set(ups)].join(', ')}.` : 'Rewards claimed.');
+  if (S.autoGear) autoEquip();
 }
 /* ---------- Town scene: a little pixel-art town; buildings appear the first time you build them ---------- */
 const TW = 320, TH = 176;
@@ -5361,16 +5451,18 @@ function townLife(x, dt) {
   if (BIRDS.length < 3 && Math.random() < dt * 0.2) BIRDS.push({ x: -10, y: 8 + Math.random() * 24, sp: 14 + Math.random() * 10 });
   BIRDS = BIRDS.filter(b => { b.x += b.sp * dt; const f = (townT * 6 + b.y | 0) % 2; R(b.x - 2, b.y + f, 2, 1, '#2a2430'); R(b.x + 1, b.y + f, 2, 1, '#2a2430'); R(b.x, b.y + 1 - f, 1, 1, '#2a2430'); return b.x < TW + 10; });
   // villagers stroll the main street; a busier town has more of them
-  const want = Math.max(1, Math.round((2 + Math.floor(TOWN.reduce((a, b) => a + (lvl(b.id) ? 1 : 0), 0) * 0.8) + Math.floor(prosperity() / 12)) * (1 - 0.6 * dayInfo().dark)));
+  const want = Math.max(1, Math.round(Math.min(28, 2 + TOWN.reduce((a, b) => a + (lvl(b.id) ? 1 : 0), 0) * 0.8 + prosperity() / 5) * (1 - 0.6 * dayInfo().dark)));
   if (VILLAGERS.length > want) VILLAGERS.length = want;
-  while (VILLAGERS.length < want) VILLAGERS.push({ x: Math.random() * TW, y: 94 + Math.random() * 7, dir: Math.random() < 0.5 ? -1 : 1, sp: 6 + Math.random() * 8, col: pick(['#c9504a', '#3c5aa0', '#6a8a3a', '#8a5a9a', '#b8863a', '#4a4a5a']), hair: pick(['#3a2a1c', '#b8863a', '#1b1622', '#d8cfbf']), stop: 0 });
+  while (VILLAGERS.length < want) VILLAGERS.push({ x: Math.random() * TW, y: 94 + Math.random() * 7, dir: Math.random() < 0.5 ? -1 : 1, sp: 6 + Math.random() * 8, col: pick(['#c9504a', '#3c5aa0', '#6a8a3a', '#8a5a9a', '#b8863a', '#4a4a5a']), hair: pick(['#3a2a1c', '#b8863a', '#1b1622', '#d8cfbf', '#c9504a']), stop: 0, lane: VILLAGERS.length % 4 === 3, kid: Math.random() < 0.15, bag: Math.random() < 0.3 ? pick(['#b8863a', '#9be06a', '#ff8a7a']) : null, hat: Math.random() < 0.25 ? pick(['#7a5434', '#3c5aa0', '#e4b75c']) : null });
   VILLAGERS.forEach(v => {
-    if (v.stop > 0) v.stop -= dt; else { v.x += v.dir * v.sp * dt; if (Math.random() < dt * 0.05) v.stop = 1 + Math.random() * 3; }
-    if (v.x < 4) v.dir = 1; if (v.x > TW - 4) v.dir = -1;
+    if (v.lane) { if (v.y < 104 || v.y > 168) v.y = 104 + Math.random() * 60; v.x = 158 + (v.dir > 0 ? 3 : 0); if (v.stop > 0) v.stop -= dt; else { v.y += v.dir * v.sp * 0.6 * dt; if (Math.random() < dt * 0.05) v.stop = 1 + Math.random() * 2; } if (v.y < 106) v.dir = 1; if (v.y > 164) v.dir = -1; }
+    else { if (v.stop > 0) v.stop -= dt; else { v.x += v.dir * v.sp * dt; if (Math.random() < dt * 0.05) v.stop = 1 + Math.random() * 3; }
+    if (v.x < 4) v.dir = 1; if (v.x > TW - 4) v.dir = -1; }
     const st = v.stop > 0 ? 0 : (townT * 6 + v.x | 0) % 2;
     R(v.x - 2, v.y + 7, 5, 1, '#00000033');
     R(v.x - 1, v.y + 5, 1, 2 - st, '#3a2a1c'); R(v.x + 1, v.y + 5, 1, 1 + st, '#3a2a1c');
-    R(v.x - 1, v.y + 1, 3, 4, v.col); R(v.x - 1, v.y - 2, 3, 3, '#efc29a'); R(v.x - 1, v.y - 2, 3, 1, v.hair);
+    const k = v.kid ? 1 : 0; R(v.x - 1, v.y + 1 + k, 3, 4 - k, v.col); R(v.x - 1, v.y - 2 + k * 2, 3, 3, '#efc29a'); R(v.x - 1, v.y - 2 + k * 2, 3, 1, v.hair);
+    if (v.hat && !k) R(v.x - 2, v.y - 3, 5, 1, v.hat); if (v.bag && !k) R(v.x + (v.dir > 0 ? 2 : -2), v.y + 2, 2, 2, v.bag);
   });
   // lamp glow at dusk
   x.globalCompositeOperation = 'lighter';
@@ -5513,6 +5605,93 @@ function townDecor(x) {
   if (p >= 30) [60, 140, 180, 260].forEach((bx, k) => { R(bx, 80, 1, 12, '#5a3d28'); const w = Math.round(Math.sin(townT * 3 + k)); R(bx + 1, 80 + w * 0, 5, 4, ['#c9504a', '#3c5aa0', '#e4b75c', '#6a8a3a'][k]); R(bx + 1, 84, 3, 1, ['#c9504a', '#3c5aa0', '#e4b75c', '#6a8a3a'][k]); });
   if (p >= 72) for (let k = 0; k < 16; k++) { const bx = 10 + k * 20, by = 86 + Math.round(Math.sin(k * 0.6) * 2); R(bx, by, 2, 2, ['#ff8a7a', '#ffd36b', '#7ad6ff', '#9be06a'][k % 4]); if (k < 15) R(bx + 2, by + 1, 18, 1, '#2a243055'); }
 }
+/* The town flourishes: new sights appear as prosperity grows, in the order they are listed. */
+const FLOURISH = [
+  { at: 2,  name: 'Flower beds along the lane' },
+  { at: 5,  name: 'Chickens by the infirmary' },
+  { at: 8,  name: 'A washing line' },
+  { at: 12, name: 'Market stalls on the street' },
+  { at: 16, name: 'Wheat fields' },
+  { at: 20, name: 'A merchant cart' },
+  { at: 25, name: 'Ducks on the pond' },
+  { at: 30, name: 'Banners and bunting' },
+  { at: 36, name: 'A bard at the fountain' },
+  { at: 42, name: 'Children at play' },
+  { at: 50, name: 'The city watch' },
+  { at: 56, name: 'A hot-air balloon' },
+  { at: 64, name: 'Blossom in the orchard' },
+  { at: 72, name: 'Festival lights and fireworks' },
+  { at: 80, name: 'Sky lanterns at night' },
+  { at: 90, name: 'A golden fountain and a rainbow' },
+];
+const sights = () => FLOURISH.filter(f => prosperity() >= f.at).length;
+let DUCKS = [], CART = null, KIDS = [], GUARDS = [], BALLOON = null, FIREWORKS = [], LANTERNS = [];
+// ground layer: drawn after the background and before the buildings
+function townGround(x, dt, p, di) {
+  const R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(Math.round(a), Math.round(b), w, h); }, H = k => hash(k * 5.3 + 77), day = 1 - di.dark;
+  // cloud shadows drift over the grass by day
+  if (day > 0.2) { x.fillStyle = `rgba(20,30,40,${0.08 * day})`; CLOUDS.forEach(c => { x.beginPath(); x.ellipse(c.x + c.w / 2 - 20, 120 + c.y * 3, c.w * 0.9, 7, 0, 0, Math.PI * 2); x.fill(); }); }
+  // the pond shimmers
+  for (let k = 0; k < 5; k++) { const f = (townT * 0.4 + k / 5) % 1; x.globalAlpha = Math.sin(f * Math.PI) * 0.8; R(10 + H(k) * 22, 157 + k % 3 * 2, 3 + k % 2, 1, '#cfe6ff'); } x.globalAlpha = 1;
+  if (p >= 2) for (let k = 0; k < 18; k++) { const yy = 108 + k * 3.4, col = ['#ff9ac0', '#ffd36b', '#b8a0ff', '#f3ead8', '#ff8a7a'][k % 5]; R(150, yy, 2, 2, '#3f7a44'); R(150 + (k % 2), yy - 1, 1, 1, col); R(169, yy + 1, 2, 2, '#3f7a44'); R(169 + ((k + 1) % 2), yy, 1, 1, col); }
+  if (p >= 5) for (let k = 0; k < 3; k++) { const cx0 = 76 + k * 8 + Math.sin(townT * 0.5 + k * 2) * 3, cy = 136 + (k % 2) * 3, peck = (townT * 2 + k) % 2 < 0.3 ? 1 : 0;
+    R(cx0 - 2, cy + 3, 5, 1, '#00000033'); R(cx0 - 2, cy, 4, 3, k === 1 ? '#b8863a' : '#f3ead8'); R(cx0 + 1, cy - 1 + peck, 2, 2, k === 1 ? '#b8863a' : '#f3ead8'); R(cx0 + 3, cy + peck, 1, 1, '#e4b75c'); R(cx0 + 1, cy - 2 + peck, 1, 1, '#c9504a'); }
+  if (p >= 8) { R(74, 108, 1, 10, '#5a3d28'); R(98, 108, 1, 10, '#5a3d28'); R(74, 109, 25, 1, '#d8cfbf88');
+    ['#c9504a', '#f3ead8', '#3c5aa0', '#e4b75c'].forEach((c, k) => { const sw = Math.round(Math.sin(townT * 2 + k) * 0.8); R(77 + k * 5 + sw, 110, 4, 4 + (k % 2), c); }); }
+  if (p >= 12) { const stall = (sx, sy, a, b, goods) => { R(sx - 9, sy + 9, 19, 2, '#00000033'); R(sx - 8, sy + 3, 1, 7, '#5a3d28'); R(sx + 8, sy + 3, 1, 7, '#5a3d28'); R(sx - 8, sy + 6, 17, 3, '#7a5434');
+      for (let k = 0; k < 6; k++) R(sx - 9 + k * 3, sy, 3, 3, k % 2 ? a : b); R(sx - 9, sy + 3, 19, 1, '#00000033'); goods.forEach((g, k) => R(sx - 6 + k * 3, sy + 5, 2, 1, g)); };
+    stall(104, 80, '#c9504a', '#f3ead8', ['#ff8a7a', '#9be06a', '#ffd36b', '#ff8a7a', '#9be06a']);
+    stall(122, 106, '#3c5aa0', '#f3ead8', ['#d8cfbf', '#b8a0ff', '#e4b75c', '#d8cfbf', '#7ad6ff']);
+    if (p >= 30) stall(214, 80, '#6a8a3a', '#ffd36b', ['#c9504a', '#e4b75c', '#f3ead8', '#c9504a', '#e4b75c']); }
+  if (p >= 16) { for (let row = 0; row < 5; row++) for (let k = 0; k < 16; k++) { const wx = 232 + k * 4, wy = 150 + row * 4, sw = Math.round(Math.sin(townT * 1.6 + k * 0.4 + row) * 0.7);
+      R(wx, wy + 1, 3, 2, '#7a6a2a'); R(wx + sw, wy - 1, 2, 2, mixC('#c8b048', '#e8d070', H(k + row * 16))); }
+    R(298, 146, 1, 12, '#5a3d28'); R(295, 149, 7, 1, '#5a3d28'); R(296, 147, 5, 3, '#8a6a44'); R(297, 144, 3, 3, '#d8b070'); R(296, 144, 5, 1, '#5a3d28'); }
+  if (p >= 25) { if (DUCKS.length < 3) DUCKS.push({ a: Math.random() * 6, sp: 0.2 + Math.random() * 0.2 });
+    DUCKS.forEach((d, k) => { d.a += d.sp * dt; const dx = 24 + Math.cos(d.a) * 13, dy = 161 + Math.sin(d.a) * 4, f = Math.sin(d.a) > 0 ? 1 : -1;
+      R(dx - 2, dy, 4, 2, k ? '#d8cfbf' : '#8a6a44'); R(dx + f * 2, dy - 2, 2, 2, k ? '#d8cfbf' : '#3a7a52'); R(dx + f * 3 + (f < 0 ? -1 : 0), dy - 1, 1, 1, '#e4b75c'); R(dx - 3, dy + 2, 7, 1, '#cfe6ff66'); }); }
+  if (p >= 56) { if (!BALLOON) BALLOON = { x: -20, y: 14 + Math.random() * 10 }; BALLOON.x += dt * 4; if (BALLOON.x > TW + 30) BALLOON = null;
+    else { const bx = BALLOON.x, by = BALLOON.y + Math.sin(townT * 0.7) * 2; x.fillStyle = '#c9504a'; x.beginPath(); x.ellipse(bx, by, 6, 7, 0, 0, Math.PI * 2); x.fill();
+      R(bx - 2, by - 7, 4, 13, '#e4b75c'); R(bx - 6, by - 1, 12, 2, '#f3ead8'); R(bx - 2, by + 9, 4, 3, '#7a5434'); R(bx - 2, by + 6, 1, 3, '#3a2a1c'); R(bx + 1, by + 6, 1, 3, '#3a2a1c'); } }
+}
+// people and creatures on top of the buildings' line
+function townCrowd(x, dt, p, di) {
+  const R = (a, b, w, h, c) => { x.fillStyle = c; x.fillRect(Math.round(a), Math.round(b), w, h); }, dark = di.dark;
+  const person = (vx, vy, col, hair, st, sm) => { const s = sm ? 1 : 0; R(vx - 2, vy + 7, 5, 1, '#00000033'); R(vx - 1, vy + 5, 1, 2 - st, '#3a2a1c'); R(vx + 1, vy + 5, 1, 1 + st, '#3a2a1c'); R(vx - 1, vy + 1 + s, 3, 4 - s, col); R(vx - 1, vy - 2 + s * 2, 3, 3, '#efc29a'); R(vx - 1, vy - 2 + s * 2, 3, 1, hair); };
+  // merchants behind their stalls
+  if (p >= 12) { person(104, 82, '#8a5a9a', '#3a2a1c', 0); person(122, 108, '#b8863a', '#d8cfbf', 0); if (p >= 30) person(214, 82, '#4a4a5a', '#b8863a', 0); }
+  if (p >= 16 && dark < 0.5) { const fx0 = 240 + ((townT * 3) % 50); person(fx0, 156, '#6a8a3a', '#e4b75c', (townT * 4 | 0) % 2); R(fx0 + 2, 154, 1, 6, '#8a6a44'); }
+  if (p >= 20) { if (!CART && Math.random() < dt * 0.06) CART = Math.random() < 0.5 ? { x: -30, dir: 1 } : { x: TW + 30, dir: -1 };
+    if (CART) { CART.x += CART.dir * 12 * dt; const cx0 = CART.x, cy = 94, d = CART.dir, leg = (townT * 8 | 0) % 2;
+      R(cx0 - 14, cy + 9, 30, 1, '#00000033'); R(cx0 + d * 9 - 4, cy + 1, 9, 4, '#8a6a44'); R(cx0 + d * 14 - 1, cy - 1, 3, 3, '#8a6a44'); R(cx0 + d * 9 - 3, cy + 5, 1, 4 - leg, '#5a3d28'); R(cx0 + d * 9 + 3, cy + 5, 1, 3 + leg, '#5a3d28');
+      R(cx0 - 9, cy - 2, 14, 7, '#7a5434'); R(cx0 - 9, cy - 4, 14, 2, '#e4b75c'); R(cx0 - 7, cy - 6, 4, 2, '#9be06a'); R(cx0 - 2, cy - 6, 4, 2, '#ff8a7a'); R(cx0 - 6, cy + 5, 3, 3, '#3a2a1c'); R(cx0 + 2, cy + 5, 3, 3, '#3a2a1c');
+      person(cx0 + d * 3, cy - 6, '#3c5aa0', '#3a2a1c', 0, 1);
+      if (CART.x > TW + 40 || CART.x < -40) CART = null; } }
+  if (p >= 36) { person(138, 98, '#c9504a', '#3a2a1c', 0); R(139, 100, 3, 2, '#b8863a'); R(142, 99, 3, 1, '#7a5434');
+    if (dark < 0.9 && Math.random() < dt * 1.2) TFX.push({ x: 140, y: 95, vx: rand(-3, 3), vy: -rand(5, 9), life: 2, col: pick(['#ffd36b', '#f3ead8', '#b8a0ff']), note: 1 }); }
+  if (p >= 42 && dark < 0.6) { while (KIDS.length < 3) KIDS.push({ a: Math.random() * 6, sp: 1.2 + Math.random() * 0.4, col: pick(['#ff8a7a', '#7ad6ff', '#9be06a', '#ffd36b']) });
+    KIDS.forEach(k => { k.a += k.sp * dt; const kx = 160 + Math.cos(k.a) * 30, ky = 104 + Math.sin(k.a) * 6, st = (townT * 10 | 0) % 2; R(kx - 1, ky + 6, 3, 1, '#00000033'); R(kx - 1, ky + 4, 1, 2 - st, '#3a2a1c'); R(kx + 1, ky + 4, 1, 1 + st, '#3a2a1c'); R(kx - 1, ky + 1, 3, 3, k.col); R(kx - 1, ky - 1, 3, 2, '#efc29a'); }); }
+  if (p >= 50) { while (GUARDS.length < 2) GUARDS.push({ x: 236 + GUARDS.length * 40, dir: GUARDS.length ? -1 : 1 });
+    GUARDS.forEach(g => { g.x += g.dir * 5 * dt; if (g.x < 232) g.dir = 1; if (g.x > 312) g.dir = -1; const st = (townT * 5 | 0) % 2, gy = 136;
+      R(g.x - 2, gy + 7, 5, 1, '#00000033'); R(g.x - 1, gy + 5, 1, 2 - st, '#2a2430'); R(g.x + 1, gy + 5, 1, 1 + st, '#2a2430'); R(g.x - 1, gy + 1, 3, 4, '#8d8a9a'); R(g.x - 1, gy + 2, 3, 1, '#c9504a'); R(g.x - 1, gy - 2, 3, 3, '#efc29a'); R(g.x - 1, gy - 3, 3, 2, '#b4bccc');
+      R(g.x + g.dir * 2, gy - 6, 1, 12, '#7a5434'); R(g.x + g.dir * 2, gy - 7, 1, 1, '#d8dce6'); }); }
+  if (p >= 64 && dark < 0.7 && Math.random() < dt * 3) TFX.push({ x: rand(0, TW), y: rand(40, 90), vx: rand(4, 9), vy: rand(2, 5), life: 4, col: pick(['#ffc0d8', '#ff9ac0', '#fff0f6']) });
+}
+// sky shows: sun shafts by day, fireworks and sky lanterns by night, a rainbow over the golden fountain
+function townShow(x, dt, p, di) {
+  const day = 1 - di.dark;
+  x.globalCompositeOperation = 'lighter';
+  if (day > 0.3) { x.globalAlpha = 0.05 * day; x.fillStyle = '#fff4c8'; for (let k = 0; k < 4; k++) { const off = k * 70 + Math.sin(townT * 0.2 + k) * 10; x.beginPath(); x.moveTo(off + 40, 0); x.lineTo(off + 56, 0); x.lineTo(off + 6, TH); x.lineTo(off - 22, TH); x.fill(); } x.globalAlpha = 1; }
+  if (p >= 72 && di.dark > 0.6) {
+    if (Math.random() < dt * 0.5) FIREWORKS.push({ x: rand(30, 290), y: TH, ty: rand(10, 40), col: pick(['#ff8a7a', '#ffd36b', '#7ad6ff', '#9be06a', '#ffc0d8']), boom: false });
+    FIREWORKS = FIREWORKS.filter(f => { if (!f.boom) { f.y -= 90 * dt; x.fillStyle = '#ffe9c0'; x.fillRect(Math.round(f.x), Math.round(f.y), 1, 2);
+        if (f.y <= f.ty) { f.boom = true; for (let k = 0; k < 18; k++) { const an = k / 18 * Math.PI * 2; TFX.push({ x: f.x, y: f.y, vx: Math.cos(an) * 22, vy: Math.sin(an) * 22, life: 1.2, col: f.col, drag: 1 }); } return false; } return true; } return false; }); }
+  if (p >= 80 && di.dark > 0.5) { if (LANTERNS.length < 8 && Math.random() < dt * 0.6) LANTERNS.push({ x: rand(20, 300), y: rand(110, 170), sw: Math.random() * 6 });
+    LANTERNS = LANTERNS.filter(l => { l.y -= 5 * dt; const lx = l.x + Math.sin(townT + l.sw) * 3; const g = x.createRadialGradient(lx, l.y, 0, lx, l.y, 6); g.addColorStop(0, '#ffb04a66'); g.addColorStop(1, '#ffb04a00'); x.fillStyle = g; x.fillRect(lx - 6, l.y - 6, 12, 12); x.fillStyle = '#ffcf6a'; x.fillRect(Math.round(lx) - 1, Math.round(l.y) - 1, 2, 3); return l.y > -8; }); }
+  else LANTERNS = [];
+  if (p >= 90 && day > 0.4) { x.globalAlpha = 0.18 * day; ['#ff8a7a', '#ffd36b', '#9be06a', '#7ad6ff', '#b8a0ff'].forEach((c, k) => { x.strokeStyle = c; x.lineWidth = 1; x.beginPath(); x.arc(160, 100, 22 - k, Math.PI * 1.05, Math.PI * 1.95); x.stroke(); }); x.globalAlpha = 1;
+    if (Math.random() < dt * 4) TFX.push({ x: 160 + rand(-10, 10), y: 92 + rand(-4, 6), vx: 0, vy: -2, life: 0.8, col: '#fff4c8' }); }
+  x.globalCompositeOperation = 'source-over';
+}
 function renderTownScene(dt) {
   const tc = $('#townCv'); if (!tc) return;
   townT += dt;
@@ -5526,6 +5705,7 @@ function renderTownScene(dt) {
   x.fillStyle = gold ? '#a8803a' : '#6d6a7a'; x.fillRect(148, 99, 24, 8); x.fillStyle = gold ? '#ffd36b' : '#8d8a9a'; x.fillRect(148, 99, 24, 2); x.fillStyle = '#5f8fd8'; x.fillRect(150, 101, 20, 4);
   x.fillStyle = '#9fc4f0'; x.fillRect(152 + ((townT * 4 | 0) % 14), 102, 3, 1);
   x.fillStyle = '#b4bccc'; x.fillRect(158, 90, 4, 10); x.fillStyle = '#d8dce6'; x.fillRect(156, 89, 8, 2);
+  const pr = prosperity(); townGround(x, dt, pr, di);
   const lifeLayer = () => townLife(x, dt);
   for (let k = 0; k < 4; k++) { const f = (townT * 2 + k / 4) % 1; x.fillStyle = '#bfe0ff'; x.fillRect(Math.round(160 + (k - 1.5) * 4 * f), Math.round(92 - 6 * Math.sin(f * Math.PI)), 1, 1); }
   const prevP = P; P = x;
@@ -5556,11 +5736,14 @@ function renderTownScene(dt) {
   P = prevP;
   townDecor(x);
   lifeLayer();
+  townCrowd(x, dt, pr, di);
   townLights(x, di);
+  townShow(x, dt, pr, di);
   TFX = TFX.filter(f => {
     f.life -= dt; if (f.life <= 0) return false;
+    if (f.drag) { f.vx *= 1 - dt * 1.8; f.vy = f.vy * (1 - dt * 1.8) + 14 * dt; }
     f.x += f.vx * dt; f.y += f.vy * dt;
-    x.globalAlpha = Math.min(1, f.life); x.fillStyle = f.col; x.fillRect(Math.round(f.x), Math.round(f.y), 1, 1); x.globalAlpha = 1;
+    x.globalAlpha = Math.min(1, f.life); x.fillStyle = f.col; x.fillRect(Math.round(f.x), Math.round(f.y), 1, f.note ? 3 : 1); if (f.note) x.fillRect(Math.round(f.x) - 1, Math.round(f.y) + 2, 2, 1); x.globalAlpha = 1;
     return true;
   });
   const lid = townHover || townSel;
@@ -5645,6 +5828,7 @@ function prosperHtml() {
   const tr = tithesReady();
   return `<div class="prosper"><div class="prosh"><div><span class="label">Prosperity</span><h4>${prosTitle()} <small>${p} building levels</small></h4></div><span data-daypill>${dayHtml()}</span></div>
     <div class="pbar"><i style="width:${next ? 100 * (p - from) / (to - from) : 100}%"></i><span>${next ? `${next.at - p} more level${next.at - p > 1 ? 's' : ''} to ${next.name}: ${next.desc}` : 'Every milestone reached'}</span></div>
+    ${(() => { const n = sights(), nx = FLOURISH[n]; return `<p class="sights"><b>Town life</b> ${n} of ${FLOURISH.length} sights${n ? `: ${FLOURISH.slice(Math.max(0, n - 3), n).map(f => f.name.toLowerCase()).join(', ')}${n > 3 ? ' and more' : ''}` : ''}${nx ? ` · <span>next at ${nx.at}: ${nx.name.toLowerCase()}</span>` : ''}</p>`; })()}
     <ul class="milestones">${PROSPER.map(m => `<li class="${p >= m.at ? 'on' : ''}"><b>${m.at}</b> ${m.name}<span>${m.desc}</span></li>`).join('')}</ul>
     ${prosFx().tithe ? `<div class="tithe"><span>${tr ? `<b>${tr}</b> tithe${tr > 1 ? 's' : ''} ready: ${fmt(titheAmount() * tr)} gold` : `Next tithe in ${fmtTime(TITHE_EVERY - ((Date.now() - S.titheAt) / 1000 % TITHE_EVERY))}`} · ${fmt(titheAmount())} gold every 2 hours, up to 2 stored</span><button class="btn ${tr ? 'primary' : ''}" data-act="tithe" ${tr ? '' : 'disabled'}>Collect</button></div>` : ''}</div>`;
 }
@@ -5813,6 +5997,7 @@ function renderChronicle() {
     ${healingTable(b)}
     <div class="statgrid">${[['Damage taken', fmt(b.taken || 0)], ['Party deaths', fmt(b.deaths || 0)], ['Damage absorbed', fmt(b.absorbed || 0)]].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
     ${deaths ? `<div class="section-h"><h3>Deaths by dungeon</h3><span class="label">All time</span></div><div class="skills">${deaths}</div>` : ''}
+    ${lastTL || C.tl ? `<div class="section-h"><h3>Timeline</h3><span class="label">${lastTL ? 'Your last run' : 'This run so far'} · hover the markers</span></div>${timelineHtml(lastTL || C.tl, true) || '<p class="empty">Fight a little longer to see the timeline.</p>'}` : ''}
     <div class="section-h"><h3>Achievements</h3><span class="label">${ACH.filter(a => S.ach && S.ach[a.id]).length} of ${ACH.length} · each grants a permanent bonus</span></div>
     <div class="achs">${ACH.map(a => { const done = S.ach && S.ach[a.id], pg = !done && a.prog ? a.prog() : null;
       return `<div class="ach ${done ? 'done' : ''}"><span class="am">${done ? '✓' : '◇'}</span><b>${a.name}</b><span>${a.desc}</span><small>${a.rw}</small>${pg ? `<i class="ap"><i style="width:${Math.min(100, 100 * pg[0] / pg[1])}%"></i></i>` : ''}</div>`; }).join('')}</div>
@@ -5881,6 +6066,7 @@ function updatePane() {
   }
   const dotFor = (sel, label, on) => { const tt = document.querySelector(sel); if (!!tt.querySelector('.dot') !== on) tt.innerHTML = label + (on ? '<span class="dot" aria-label="talents you can learn"></span>' : ''); };
   dotFor('[data-tab="talents"]', 'Talents', picksLeft() > 0 || cls().trees.some(t => t.nodes.some(n => canLearn(n) === true)));
+  dotFor('[data-tab="armory"]', 'Armory', bagFull() || S.inv.some(isUpgrade));
   dotFor('[data-tab="town"]', 'Town', !!(S.bounty && S.bounty.list.some(b => b.n >= b.goal)));
   dotFor('[data-tab="party"]', 'Party', PARTY.some((_, i) => canPromote(i) && S.gold >= promoCost(i)) || [0, 1, 2, 3].some(i => COMP_TREES[i].some(t => t.nodes.some(n => canLearn(n) === true))));
 }
@@ -6032,7 +6218,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty, exportSave, importSave, talTip, tipFor, townDetailHtml, setTownSel: id => { townSel = id; }, renderPane };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty, exportSave, importSave, talTip, tipFor, expedition, claimAway, townDetailHtml, setTownSel: id => { townSel = id; }, renderPane };
 addEventListener('hashchange', syncDev);
 syncDev();
 
@@ -6390,6 +6576,7 @@ function start(data) {
     if (away > 60) expedition(away);
   }
   log(loaded ? 'Welcome back. The party is ready.' : 'The party gathers at the sewer gate. Keep them alive.');
+  if (S.pendingAway) showAway();
   if (S.talentRefund) { delete S.talentRefund; log('<span class="x">The Cleric talent trees were redesigned: your points are refunded. You can also choose a healer class now.</span>'); toast('Talents redesigned: points refunded. Pick a healer class in Talents!'); }
   if (S.trainRefund) { log(`<span class="g">Training was replaced by promotions: ${fmt(S.trainRefund)} gold refunded.</span>`); toast(`Training is now Promotions. Refunded ${fmt(S.trainRefund)} gold.`); delete S.trainRefund; }
   renderPane();

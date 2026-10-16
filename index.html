@@ -4849,7 +4849,8 @@ function renderPane() {
   shopDirty = false; paneKey = key;
   const st = pane.scrollTop;
   ({ town: renderTown, party: renderParty, talents: renderTalents, armory: renderArmory, dungeons: renderDungeons, chronicle: renderChronicle })[tab]();
-  if (clsId() !== 'priest') pane.innerHTML = resWords(pane.innerHTML);
+  // swap the class's resource word into the text in place; rewriting innerHTML would replace elements (like the town map) and drop their listeners
+  if (clsId() !== 'priest') { const tw = document.createTreeWalker(pane, NodeFilter.SHOW_TEXT); for (let n = tw.nextNode(); n; n = tw.nextNode()) if (n.nodeValue.includes('Devotion')) n.nodeValue = resWords(n.nodeValue); }
   pane.scrollTop = st;
   updatePane();
 }

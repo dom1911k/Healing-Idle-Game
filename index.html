@@ -720,7 +720,8 @@ const ICONS = {
   s_flash:  ['....y.....','....y.....','...yyy....','.yyywyyy..','yyywwwyyy.','.yyywyyy..','...yyy....','....y.....','....y.....','..........'],
   s_renew:  ['.......nn.','.....nnnN.','....nnnNn.','...nnnNnn.','..nnnNnn..','..nnNnn...','..nNnn....','.N........','N.........','..........'],
   s_ward:   ['...uuuu...','..u....u..','.u..ss..u.','.u.ssss.u.','.u.ssss.u.','.u..ss..u.','..u....u..','...uuuu...','..........','..........'],
-  s_purify: ['....w...y.','...ww..yyy','...www..y.','..wwwww...','..wwcww...','..wcccw...','..wwcww...','...www....','..........','..........'],
+  s_poison: ['....w...y.','...ww..yyy','...www..y.','..wwwww...','..wwcww...','..wcccw...','..wwcww...','...www....','..........','..........'],
+  s_purify: ['...yyyy...','..y....y..','.y..cc..y.','y..cwwc..y','y.cwwwwc.y','y.cwwwwc.y','y..cwwc..y','.y..cc..y.','..y....y..','...yyyy...'],
   s_prayer: ['...yyyy...','..y....y..','.y.c..c.y.','.y......y.','.y.c..c.y.','..y....y..','...yyyy...','..........','..........','..........'],
   s_meditate:['....u.....','...uu.....','...uuu....','..uuuuu...','..uuwuu...','.uuuwuuu..','..uuuuu...','...uuu....','..........','..........'],
   s_sanctuary:['..........','...gggg...','..g....g..','.g..yy..g.','.g.yyyy.g.','.g......g.','gggggggggg','..........','..........','..........'],
@@ -841,7 +842,7 @@ const ABIL = {
     b.lunge = 0;
   } },
   wave: { name: 'Searing Wave', cast: 2.0, col: '#ff9f43', all: true, run(b) { aliveIdx().forEach(i => hit(i, eDmg(b) * 0.85)); fxWave(b); shake(); } },
-  bolt: { name: 'Shadow Bolt', cast: 1.6, col: '#b07ae0', pick: b => randomAlive(i => !PARTY[i].tank), run(b, t) { if (t != null) { hit(t, eDmg(b) * 2.6); afflict(t, 'hex', b.dmg * 0.15, 8, { healCut: 0.5 }); fxProj(b, t, '#b07ae0', 3); } } },
+  bolt: { name: 'Shadow Bolt', cast: 1.6, col: '#b07ae0', pick: b => randomAlive(i => !PARTY[i].tank), run(b, t) { if (t != null) { hit(t, eDmg(b) * 2.6); afflict(t, 'hex', b.dmg * 0.15, 6, { healCut: 0.3 }); fxProj(b, t, '#b07ae0', 3); } } },
   rot: { name: 'Festering Bite', cast: 1.0, col: '#a3c45c', pick: () => randomAlive(), run(b, t) {
     if (t == null) return;
     hit(t, eDmg(b) * 0.5); fxProj(b, t, '#a3c45c', 2);
@@ -886,7 +887,7 @@ const SPELLS = [
   { id: 'flash',     name: 'Flash Heal', cost: 20, cast: 0.6, cd: 0, desc: 'A fast, costly heal for emergencies.' },
   { id: 'renew',     name: 'Renew',      cost: 11, cast: 0,   cd: 0, desc: 'Heals one ally over 10 seconds. Overhealing jumps to the most injured ally.' },
   { id: 'ward',      name: 'Ward',       cost: 18, cast: 0,   cd: 8, desc: 'Shields one ally. While it holds, they resist new poisons and hexes.' },
-  { id: 'purify',    name: 'Purify',     cost: 12, cast: 0,   cd: 4, desc: 'Removes poisons, hexes and bleeds and heals. Refunds half its mana when it cleanses.' },
+  { id: 'purify',    name: 'Circle of Healing', cost: 22, cast: 0, cd: 8, desc: 'Instant: heals the three most injured allies.' },
   { id: 'meditate',  name: 'Meditate',   cost: 0,  cast: 0,   cd: 45, desc: 'Restores 35% of your mana over 5 seconds.', self: true },
   { id: 'prayer',    name: 'Prayer',     cost: 40, cast: 2.2, cd: 0, desc: 'Heals the whole party.', group: true },
   { id: 'sanctuary', name: 'Sanctuary',  cost: 35, cast: 0,   cd: 40, desc: 'The party takes 30% less damage for 6 seconds.', group: true },
@@ -899,7 +900,7 @@ const SP = Object.fromEntries(SPELLS.map(s => [s.id, s]));
    Major talents and new spells take one rank and cost more. fx values are per rank. */
 const TIER_GATE = 2;
 const T_ = (id, row, col, name, icon, max, per, fx, extra = {}) => ({ id, row, col, name, icon, max, per, fx, kind: max > 1 ? 'minor' : 'major', ...extra });
-const SP_NAMES = { flash: 'Flash Heal', renew: 'Renew', ward: 'Ward', purify: 'Purify', meditate: 'Meditate', prayer: 'Prayer', sanctuary: 'Sanctuary', blessing: 'Blessing' };
+const SP_NAMES = { flash: 'Flash Heal', renew: 'Renew', ward: 'Ward', purify: 'Circle of Healing', meditate: 'Meditate', prayer: 'Prayer', sanctuary: 'Sanctuary', blessing: 'Blessing' };
 // Cleric minor ranks cost 1 point for ranks 1-5, then 2 points each.
 const clericRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 5 ? 1 : 2;
 const compRankCost = (n, r) => n.kind !== 'minor' ? n.cost : r <= 3 ? 1 : 2;
@@ -926,7 +927,7 @@ const CLERIC_TREES = [
     T_('tank', 0, 0, 'Shieldbearer', 'shield', 3, 'Bram takes 4% less damage', { tankDR: 0.04 }),
     T_('fort', 0, 1, 'Fortify', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
     T_('keen', 0, 2, 'Keen Eye', 's_core', 3, '+3% critical heals', { crit: 3 }),
-    T_('pu_pow', 1, 0, 'Cleansing Light', 's_purify', 3, '+30% Purify healing and -1s Purify cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('pu_pow', 1, 0, 'Circle of Light', 's_purify', 3, '+30% Circle of Healing healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
     T_('camp', 1, 1, 'Campfire', 'bandage', 3, 'Resting between stages restores 8% more health and mana', { camp: 0.08 }),
     T_('innerlight', 1, 2, 'Inner Light', 's_ward', 1, 'Heal also shields its target for 20% of the amount healed', { heal_shield: 0.2 }, { cost: 2 }),
     T_('w_pow', 2, 0, 'Thick Glass', 's_ward', 3, '+15% Ward absorb', { ward_pow: 0.15 }, { needs: 'ward' }),
@@ -982,7 +983,7 @@ const DRUID_TREES = [
     T_('d_well', 0, 0, 'Moonwell', 's_meditate', 3, '+10% max mana', { mana: 0.1 }),
     T_('d_still', 0, 1, 'Moonglow', 's_meditate', 3, '+10% mana regeneration', { regen: 0.1 }),
     T_('d_hide', 0, 2, 'Thick Hide', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
-    T_('d_rc', 1, 0, 'Improved Remove Corruption', 's_purify', 3, '+30% Remove Corruption healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('d_rc', 1, 0, 'Improved Nourish', 's_purify', 3, '+20% Nourish healing and Nourish casts 0.15s faster', { purify_pow: 0.2, purify_cast: 0.15 }, { needs: 'purify' }),
     T_('d_seed', 1, 1, 'Living Seed', 's_meditate', 1, 'Heal-over-time ticks restore twice as much mana', { hot_mana: 1 }, { cost: 2 }),
     T_('d_omen', 1, 2, 'Omen of Clarity', 's_core', 3, '4% chance a spell costs no mana', { clarity: 0.04 }),
     T_('d_inn', 2, 0, 'Improved Innervate', 's_meditate', 3, 'Innervate restores 8% more of your mana', { med_amt: 0.08 }, { needs: 'meditate' }),
@@ -1022,7 +1023,7 @@ const OCC_TREES = [
     T_('o_haste', 1, 1, 'Quickened Curses', 'scroll', 3, 'Your own attacks are 15% faster', { you_spd: 0.15 }),
     T_('o_crit', 1, 2, 'Malice', 's_core', 3, '+3% critical heals', { crit: 3 }),
     T_('o_drain', 2, 0, 'Soul Drain', 's_heal', 1, 'Drain Life and Leech Seed deal 60% more damage', { drain_dmg: 0.6 }, { cost: 2 }),
-    T_('o_corr', 2, 1, 'Corruption', 's_purify', 1, 'Your own attacks poison their target', { you_poison: 1 }, { cost: 2 }),
+    T_('o_corr', 2, 1, 'Corruption', 's_poison', 1, 'Your own attacks poison their target', { you_poison: 1 }, { cost: 2 }),
     T_('o_weak', 2, 2, 'Curse of Weakness', 'scroll', 3, 'Enemies deal 4% less damage', { foe_weak: 0.04 }),
     T_('o_harv', 3, 0, 'Improved Soul Harvest', 's_prayer', 3, '+12% Soul Harvest healing', { prayer_pow: 0.12 }, { needs: 'prayer' }),
     T_('o_haunt', 3, 1, 'Haunt', 's_core', 1, 'Siphon Life heals the two most injured allies', { siphon_two: 1 }, { cost: 2 }),
@@ -1034,7 +1035,7 @@ const OCC_TREES = [
     T_('o_vit', 0, 0, 'Vitality', 'shield', 3, '+6% party health', { partyHp: 0.06 }),
     T_('o_pact', 0, 1, 'Thick Blood', 's_core', 3, 'Blood Pact costs 20% less health', { pact_eff: 0.2 }),
     T_('o_tank', 0, 2, 'Bone Armor', 'shield', 3, 'Bram takes 4% less damage', { tankDR: 0.04 }),
-    T_('o_purge', 1, 0, 'Improved Purge', 's_purify', 3, '+30% Purge healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
+    T_('o_purge', 1, 0, 'Improved Death Coil', 's_purify', 3, '+30% Death Coil healing and -1s cooldown', { purify_pow: 0.3, purify_cd: 1 }, { needs: 'purify' }),
     T_('o_vamp', 1, 1, 'Vampiric Embrace', 's_heal', 1, '10% of all damage the party deals heals the party', { vamp: 0.1 }, { cost: 2 }),
     T_('o_trans', 1, 2, 'Transfusion', 's_flash', 3, '+15% Blood Bolt healing', { flash_pow: 0.15 }, { needs: 'flash' }),
     T_('o_bone', 2, 0, 'Improved Bone Shield', 's_ward', 3, '+15% Bone Shield absorb', { ward_pow: 0.15 }, { needs: 'ward' }),
@@ -1057,7 +1058,7 @@ const OCC_TREES = [
     T_('o_fear', 1, 1, 'Terror', 'scroll', 3, 'Enemies attack 5% slower', { foe_slow: 0.05 }),
     T_('o_cl', 1, 2, 'Dark Clarity', 's_core', 3, '4% chance a spell costs no mana', { clarity: 0.04 }),
     T_('o_dpcd', 2, 0, 'Quick Pact', 'scroll', 3, '-8s Dark Pact cooldown', { med_cd: 8 }, { needs: 'meditate' }),
-    T_('o_agony', 2, 1, 'Agony', 's_purify', 1, 'Poisoned or burning enemies take 15% more damage', { dot_vuln: 0.15 }, { cost: 2 }),
+    T_('o_agony', 2, 1, 'Agony', 's_poison', 1, 'Poisoned or burning enemies take 15% more damage', { dot_vuln: 0.15 }, { cost: 2 }),
     T_('o_dev', 2, 2, 'Fanaticism', 's_core', 3, 'Devotion fades 12% slower', { devo_slow: 0.12 }),
     T_('o_sil', 3, 0, 'Silence', 'scroll', 1, 'Enemy casts take 25% longer', { slowcast: 0.25 }, { cost: 2 }),
     T_('o_spd', 3, 1, 'Frenzied Thralls', 'sword', 3, 'Companions attack 5% faster', { partySpd: 0.05 }),
@@ -1075,17 +1076,17 @@ const CLASSES = {
       prayer: 'Heals the whole party, 25% more for each Holy Power it spends. Instant at 3 Holy Power.', ward: 'Shields one ally; while it holds they resist new poisons and hexes. At 3 Holy Power it also shields the rest of the party for half.' } },
   druid: { name: 'Druid', res: 'Harmony', crest: 'resto', col: '#8fdc6a', trees: DRUID_TREES, tag: 'Stacking heals over time and nature magic',
     passive: ['Living Seed', 'Rejuvenation stacks twice on one ally, and every heal-over-time tick restores a little mana. Swiftmend eats your heals over time, so plant them first'],
-    names: { heal: 'Regrowth', flash: 'Swiftmend', renew: 'Rejuvenation', ward: 'Barkskin', purify: 'Remove Corruption', meditate: 'Innervate', prayer: 'Wild Growth', sanctuary: 'Tranquility', blessing: 'Tree of Life' },
-    descs: { heal: 'Heals now and a little more over 6 seconds. Instant in Tree of Life form.', flash: 'Instant: consumes the strongest heal over time on the ally and heals for everything it had left plus 30%. Weak without one.',
+    names: { heal: 'Regrowth', flash: 'Swiftmend', renew: 'Rejuvenation', ward: 'Barkskin', purify: 'Nourish', meditate: 'Innervate', prayer: 'Wild Growth', sanctuary: 'Tranquility', blessing: 'Tree of Life' },
+    descs: { purify: 'A slower, efficient heal: 30% stronger for each of your heals over time on the target.', heal: 'Heals now and a little more over 6 seconds. Instant in Tree of Life form.', flash: 'Instant: consumes the strongest heal over time on the ally and heals for everything it had left plus 30%. Weak without one.',
       blessing: 'Become a Tree of Life for 15 seconds: heals over time heal 40% more, Regrowth is instant and the party deals 15% more damage.', renew: 'Heals over 10 seconds. Stacks on the same ally.',
       ward: 'The target takes 35% less damage for 8 seconds.', prayer: 'Instant: a heal over time on the whole party.', sanctuary: 'Heals the whole party for 6% of their health every second for 5 seconds.' } },
   occultist: { name: 'Occultist', res: 'Dread', crest: 'afflict', col: '#c43a5a', trees: OCC_TREES, tag: 'Healing by draining your enemies',
     passive: ['Siphon Life', 'You heal by hurting. Your own attacks hit 4× harder and heal the most injured ally for half the damage. Every enemy that dies gives you a Soul (up to 5) for Soul Harvest, and each Soul restores 3% of your mana. Blood Pact: without enough mana, spells cost your health instead'],
-    names: { heal: 'Drain Life', flash: 'Blood Bolt', renew: 'Leech Seed', ward: 'Bone Shield', purify: 'Purge', meditate: 'Dark Pact', prayer: 'Soul Harvest', sanctuary: 'Unholy Ground', blessing: 'Bloodlust' },
+    names: { heal: 'Drain Life', flash: 'Blood Bolt', renew: 'Leech Seed', ward: 'Bone Shield', purify: 'Death Coil', meditate: 'Dark Pact', prayer: 'Soul Harvest', sanctuary: 'Unholy Ground', blessing: 'Bloodlust' },
     descs: { heal: 'Channel for 3 seconds: drain the front enemy and pour it into the ally you chose. Finishing the channel grants a Soul. Does nothing with no enemy in reach.',
       flash: 'Instant and nearly free: costs 6% of your own health. Heals one ally and strikes the front enemy.',
       renew: 'Plants a seed on an enemy: it takes damage every second for 10 seconds and the ally you chose heals just as much. An enemy that dies seeded gives a Soul and heals the party.',
-      purify: 'Tears poisons, hexes and bleeds off an ally and hurls them at the front enemy.',
+      purify: 'Instant: hurl a coil of death at the front enemy, and the ally you chose is healed for even more.',
       meditate: 'Instantly trade 15% of your health for 35% of your mana.', prayer: 'Spends every Soul: heals the whole party, far stronger with more Souls. Weak with none.',
       sanctuary: 'For 6 seconds every enemy takes damage each second (Siphon Life turns it into healing) and the party takes 15% less damage.' } },
 };
@@ -1157,13 +1158,13 @@ const COMP_TREES = [
       T_('mastery', 2, 1, 'Archery', 'sword', 5, '+5% damage', { dmg: 0.05 }),
       T_('markt', 3, 0, 'Mark for Death', 'scroll', 1, "Vess's critical hits mark the enemy: it takes 12% more damage from everyone for 4s", { markCrit: 0.12 }, { cost: 2 }) ] },
     { id: 'poison', name: 'Venom', col: '#a3c45c', desc: 'Vess tips his arrows with poison', nodes: [
-      T_('envenom', 0, 0, 'Envenom', 's_purify', 5, 'Arrows poison the target for 6% of the hit every second for 5s (stacks up to 5)', { poison: 0.06 }),
+      T_('envenom', 0, 0, 'Envenom', 's_poison', 5, 'Arrows poison the target for 6% of the hit every second for 5s (stacks up to 5)', { poison: 0.06 }),
       T_('agility', 0, 1, 'Agility', 'hands', 5, '+4% attack speed', { spd: 0.04 }),
-      T_('virulence', 1, 0, 'Virulence', 's_purify', 5, '+10% poison damage', { poisonPow: 0.1 }, { req: 'envenom' }),
-      T_('toxic', 1, 1, 'Toxic Cloud', 's_purify', 1, 'Poison also spreads to every other enemy at 30% strength', { toxic: 1 }, { cost: 2, req: 'envenom' }),
-      T_('deep', 2, 0, 'Deep Wounds', 's_purify', 1, 'Poison stacks up to 10', { deepwounds: 1 }, { cost: 2, req: 'virulence' }),
+      T_('virulence', 1, 0, 'Virulence', 's_poison', 5, '+10% poison damage', { poisonPow: 0.1 }, { req: 'envenom' }),
+      T_('toxic', 1, 1, 'Toxic Cloud', 's_poison', 1, 'Poison also spreads to every other enemy at 30% strength', { toxic: 1 }, { cost: 2, req: 'envenom' }),
+      T_('deep', 2, 0, 'Deep Wounds', 's_poison', 1, 'Poison stacks up to 10', { deepwounds: 1 }, { cost: 2, req: 'virulence' }),
       T_('evasion', 2, 1, 'Evasion', 'hands', 5, '-2% damage taken', { dr: 0.02 }),
-      T_('festering', 3, 0, 'Festering Wounds', 's_purify', 3, 'Poisoned enemies take 5% more damage from the whole party', { vulnPoison: 0.05 }) ] } ],
+      T_('festering', 3, 0, 'Festering Wounds', 's_poison', 3, 'Poisoned enemies take 5% more damage from the whole party', { vulnPoison: 0.05 }) ] } ],
   [ { id: 'inferno', name: 'Fire', col: '#ff9f43', desc: 'Ilda builds to enormous fireballs', nodes: [
       T_('kindling', 0, 0, 'Kindling', 's_blessing', 5, '+6% damage', { dmg: 0.06 }),
       T_('searing', 0, 1, 'Searing', 's_blessing', 5, '+3% critical chance', { crit: 0.03 }),
@@ -1193,7 +1194,7 @@ const CABIL = {
             xName: 'Decapitate', xDesc: 'Mortal Strike deals triple damage to enemies below 35% health' },
   aimed:  { i: 2, tree: 'assassin', name: 'Aimed Shot',    icon: 'scroll',     cd: 9,  step: 0.5, col: '#f3ead8', learn: 'Every 9s, Vess fires a critical shot for 300% damage',
             xName: 'Piercing Shot', xDesc: 'Aimed Shot passes through and hits every other enemy for 60%' },
-  volley: { i: 2, tree: 'poison',   name: 'Venom Volley',  icon: 's_purify',   cd: 11, step: 0.7, col: '#a3c45c', learn: 'Every 11s, Vess rains arrows on every enemy for 80% damage, adding 2 poison stacks',
+  volley: { i: 2, tree: 'poison',   name: 'Venom Volley',  icon: 's_poison',   cd: 11, step: 0.7, col: '#a3c45c', learn: 'Every 11s, Vess rains arrows on every enemy for 80% damage, adding 2 poison stacks',
             xName: 'Rain of Arrows', xDesc: 'Venom Volley fires a second wave' },
   flame:  { i: 3, tree: 'inferno',  name: 'Flamestrike',   icon: 's_blessing', cd: 12, step: 0.8, col: '#ff9f43', learn: 'Every 12s, Ilda engulfs every enemy for 110% damage, and they burn for 20% each second for 4s',
             xName: 'Wildfire', xDesc: 'Flamestrike burns twice as hot' },
@@ -1243,7 +1244,7 @@ const TOWN_MAX = 12;
 const MATS = ['Rat Tails', 'Bog Moss', 'Grave Dust', 'Cinder Shards', 'Heartwood', 'Iron Links', 'Drowned Pearls', 'Starlight', 'Spider Silk', 'Prism Shards', 'Rime Crystals', 'Crown Fragments'];
 const TOWN = [
   { id: 'cloister', name: 'Acolyte Cloister', icon: 'acolyte', gold: 40,
-    perks: [[3, 'Cleansing Hands', 'the Acolyte removes a debuff from an ally every 8 seconds'], [5, 'Guardian Prayer', 'the Acolyte shields Bram every 15 seconds']],
+    perks: [[3, 'Mending Hands', 'every 8 seconds the Acolyte lays a heal over time on the most injured ally'], [5, 'Guardian Prayer', 'the Acolyte shields Bram every 15 seconds']],
     intro: 'Hire an Acolyte who heals the party in the background and leads expeditions while you are away.',
     fx: L => `the Acolyte heals for ${30 + 10 * (L - 1)}% of your Heal every ${(3.2 - 0.15 * (L - 1)).toFixed(2)}s; expeditions run at ${20 + 5 * (L - 1)}% of your active pace` },
   { id: 'infirmary', name: 'Infirmary', icon: 'infirmary', gold: 60,
@@ -1476,7 +1477,7 @@ const ACH = [
   { id: 'flawless', name: 'Not On My Watch', desc: 'Clear a dungeon without anyone falling', ok: () => (S.stats.flawless || 0) >= 1, fx: { healAll: 0.02 }, rw: '+2% healing' },
   { id: 'fast', name: 'Swift Pilgrimage', desc: 'Clear a dungeon in under 2 minutes of fighting', ok: () => (S.stats.fast || 0) >= 1, fx: { partyDps: 0.03 }, rw: '+3% party damage' },
   { id: 'devout', name: 'True Believer', desc: 'Defeat a boss with Devotion at ×2 or more', ok: () => (S.stats.devout || 0) >= 1, fx: { greed: 0.03 }, rw: '+3% gold find' },
-  { id: 'cleanse', name: 'Clean Hands', desc: 'Cleanse 50 debuffs', ok: () => (S.stats.cleansed || 0) >= 50, prog: () => [S.stats.cleansed || 0, 50], fx: { mana: 0.03 }, rw: '+3% max mana' },
+  { id: 'cleanse', name: 'Iron Will', desc: 'Absorb 25,000 damage with shields', ok: () => (S.stats.absorbed || 0) >= 25000, prog: () => [Math.floor(S.stats.absorbed || 0), 25000], fx: { mana: 0.03 }, rw: '+3% max mana' },
   { id: 'clutch', name: 'Just In Time', desc: 'Heal an ally below 10% health 25 times', ok: () => (S.stats.clutch || 0) >= 25, prog: () => [S.stats.clutch || 0, 25], fx: { regen: 0.03 }, rw: '+3% mana regeneration' },
   { id: 'elites', name: 'Elite Hunter', desc: 'Slay 10 elite monsters', ok: () => (S.stats.elites || 0) >= 10, prog: () => [S.stats.elites || 0, 10], fx: { partyDps: 0.03 }, rw: '+3% party damage' },
   { id: 'bosses', name: 'Kingslayer', desc: 'Defeat five different bosses', ok: () => S.dun.clears.filter(c => c > 0).length >= 5, prog: () => [S.dun.clears.filter(c => c > 0).length, 5], fx: { pts: 1 }, rw: '+1 Cleric talent point' },
@@ -1692,7 +1693,7 @@ function recalc() {
     flash:     { amt: 1.4 * (1 + t('flash_pow')), cost: (1 - t('flash_cost')) * (1 - 0.06 * K('flashm')), crit: t('flash_crit') },
     renew:     { amt: 0.36 * (1 + t('renew_pow')) * (1 + 0.08 * K('renewm')), dur: 10 + t('renew_dur'), bloom: t('renew_bloom') },
     ward:      { amt: 3.0 * (1 + t('ward_pow')) * (1 + 0.08 * K('wardm')), cd: t('ward_nocd') ? 0 : 8 - t('ward_cd'), cost: 1 + t('ward_costUp'), mend: t('ward_mend') },
-    purify:    { amt: 1.2 * (1 + t('purify_pow')), cd: 4 - t('purify_cd') },
+    purify:    { amt: 1.1 * (1 + t('purify_pow')), cd: 8 - t('purify_cd') },
     meditate:  { amt: 0.35 + t('med_amt'), cd: 45 - t('med_cd') },
     prayer:    { amt: 0.85 * (1 + t('prayer_pow')) * (1 + 0.06 * K('prayerm')), cast: 2.2 - t('prayer_cast'), cost: 1 - t('prayer_cost') },
     sanctuary: { amt: 0.3 + t('sanct_amt'), dur: 6 + t('sanct_dur') },
@@ -1700,8 +1701,8 @@ function recalc() {
   };
   D.sp.renew.cost = 1 - t('renew_cost'); D.sp.renew.amt *= 1 + D.hotPow;
   if (t('prayer_instant')) D.sp.prayer.cast = 0;
-  if (cl === 'druid') { D.sp.prayer.cast = 0; D.sp.prayer.cd = 8; D.sp.blessing = { amt: 0.15 + t('bless_amt'), dur: 15, cd: 60 }; }
-  if (cl === 'occultist') { D.sp.heal.cost *= 0.75; D.sp.flash.cost *= 0.15; D.sp.prayer.cast = 1.2; D.sp.sanctuary.amt *= 0.5; }
+  if (cl === 'druid') { D.sp.purify.cast = 1.6 - t('purify_cast'); D.sp.purify.cd = 0; D.sp.purify.cost = 0.6; D.sp.prayer.cast = 0; D.sp.prayer.cd = 8; D.sp.blessing = { amt: 0.15 + t('bless_amt'), dur: 15, cd: 60 }; }
+  if (cl === 'occultist') { D.sp.purify.cd = 6 - t('purify_cd'); D.sp.purify.cost = 0.8; D.sp.heal.cost *= 0.75; D.sp.flash.cost *= 0.15; D.sp.prayer.cast = 1.2; D.sp.sanctuary.amt *= 0.5; }
   if (pk(YOU, 6)) {
     const boost = cl === 'priest' ? ['heal', 'prayer'] : cl === 'druid' ? ['heal', 'renew'] : ['heal'];
     boost.forEach(id => { D.sp[id].amt *= 1.2; D.sp[id].cost = (D.sp[id].cost ?? 1) * 0.7; });
@@ -1922,7 +1923,7 @@ function enterDungeon(d) {
   C.mana = D.maxMana * (modIs('fatigue') ? 0.6 : 1);
   C.cds = {}; C.medi = null; C.abT = {}; C.pips = 0; C.treeForm = 0; C.unholy = 0; C.slamT = 0; C.peril = perilOf(d); C.angelUsed = false;
   C.meter = { d: PARTY.map(() => 0), t: 0 };
-  C.rstats = { spell: {}, taken: 0, deaths: 0, cleansed: 0, d };
+  C.rstats = { spell: {}, taken: 0, deaths: 0, absorbed: 0, d };
   C.dev = Math.max(C.dev, 8 * lvl('chapel')); C.potions = lvl('garden') + (prosFx().potion || 0); C.acoT = 1.5; C.acoCleanT = 8; C.acoWardT = 15;
   C.draughts = perk('garden', 7) ? 2 : perk('garden', 3) ? 1 : 0; C.bell = perk('chapel', 3);
   S.stats.runs++;
@@ -1978,7 +1979,7 @@ function hit(i, amt) {
   if (a > 0) {
     m.shield -= a; amt -= a; floatTxt(i, 'absorb ' + fmt(Math.round(a)), 'abs');
     // damage a Ward soaks counts as healing that mattered
-    trackHeal('ward', a, 0); C.devQuiet = 0; C.dev = Math.min(100, C.dev + 1.5 * (1 - C.dev / 110));
+    trackHeal('ward', a, 0); trackStat('absorbed', a); C.devQuiet = 0; C.dev = Math.min(100, C.dev + 1.5 * (1 - C.dev / 110));
     if (m.wardSize && D.wardReflect) { const fr = front(); if (fr) { C.noSiph = true; dealFoe(fr, a * D.wardReflect, '', YOU); C.noSiph = false; } }
     if (m.shield <= 0.5 && m.wardSize) { const ws = m.wardSize; m.wardSize = 0; m.shield = 0;
       if (D.boneShatter) { const p = HERO_POS[i]; burst(p.x, p.y - 10, '#e8e2d4', 20, 18); fxLabel(i, 'Shatter!', '#e8e2d4'); liveFoes().forEach(f => dealFoe(f, ws * D.boneShatter, '', YOU)); } if (D.sp.ward.mend) { C.healSrc = 'ward'; heal(i, ws * D.sp.ward.mend); C.healSrc = null; } }
@@ -2018,7 +2019,7 @@ function heal(i, amt, critBonus = 0, npc = false) {
   if (!npc && D.overflow && amt > m.max - m.hp) { const cap = m.max * 0.2; if (m.shield < cap) m.shield = Math.min(cap, m.shield + (amt - (m.max - m.hp)) * D.overflow); }
   const eff = Math.min(amt, m.max - m.hp);
   if (!npc && D.lowWard && m.hp / m.max < 0.4 && eff > 0) m.shield = Math.min(m.max * 0.3, m.shield + eff * 0.2);
-  if (!npc && wasLow && eff > 0) S.stats.clutch = (S.stats.clutch || 0) + 1;
+  if (!npc && wasLow && eff > 0) { S.stats.clutch = (S.stats.clutch || 0) + 1; bountyEvent('clutch'); }
   m.hp += eff;
   S.stats.healed += eff; S.stats.overheal += amt - eff;
   trackHeal(npc ? 'acolyte' : C.healSrc || 'other', eff, amt - eff);
@@ -2052,14 +2053,9 @@ const RUN_SPELL = {
     fxLeaves(t);
   },
   ward: t => { const m = C.party[t]; const v = D.heal * D.sp.ward.amt; m.shield = Math.max(m.shield, v); m.wardSize = v; fxRingAt(t, '#d3dbff'); },
-  purify: t => {
-    const m = C.party[t], n = m.dots.length;
-    m.dots = []; heal(t, D.heal * D.sp.purify.amt); fxRingAt(t, '#f3ead8');
-    if (n) {
-      // cleansing something is always worth it: half the mana back and full Devotion credit
-      C.mana = Math.min(D.maxMana, C.mana + spellCost(SP.purify) * 0.5); C.castEff = Math.max(C.castEff, C.castAmt);
-      trackStat('cleansed', n); bountyEvent('cleanse', n); floatTxt(t, 'cleansed', 'free');
-    }
+  purify: () => {
+    // Circle of Healing: the three most injured allies
+    aliveIdx().sort((x, y) => C.party[x].hp / C.party[x].max - C.party[y].hp / C.party[y].max).slice(0, 3).forEach(i => { heal(i, D.heal * D.sp.purify.amt); fxRingAt(i, '#fff2a8'); });
   },
   meditate: () => { C.medi = { left: 5, rate: D.maxMana * D.sp.meditate.amt / 5 }; },
   prayer: () => { aliveIdx().forEach(i => { heal(i, D.heal * D.sp.prayer.amt); if (D.prayerHot) setHot(i, 'hymn', D.heal * D.sp.prayer.amt * D.prayerHot, 6); }); fxRing(); },
@@ -2069,7 +2065,7 @@ const RUN_SPELL = {
 function setHot(t, kind, total, dur) { const m = C.party[t]; if (!m || !m.alive) return; m.hots = m.hots.filter(h => h.kind !== kind).concat({ kind, rate: total / dur, left: dur, acc: 0 }); }
 const HOT_INFO = {
   renew: () => [SP.renew.name, clsId() === 'occultist' ? 'leech' : 'renew'], rejuv: () => ['Rejuvenation', 'rejuv'], regrowth: () => [SP.heal.name, 'regrowth'],
-  wild: () => [SP.prayer.name, 'wild'], hymn: () => ['Divine Hymn', 'hymn'], seed: () => [SP.renew.name, 'leech'], barkbloom: () => ['Bark Bloom', 'bark'],
+  wild: () => [SP.prayer.name, 'wild'], hymn: () => ['Divine Hymn', 'hymn'], seed: () => [SP.renew.name, 'leech'], barkbloom: () => ['Bark Bloom', 'bark'], aco: () => ['Acolyte', 'renew'],
 };
 const lowestOther = t => aliveIdx().filter(k => k !== t).sort((a, b) => C.party[a].hp / C.party[a].max - C.party[b].hp / C.party[b].max)[0];
 function addRejuv(t) {
@@ -2123,6 +2119,7 @@ const CLASS_RUN = {
       if (best) { amt = base + best.rate * best.left * 1.3; m.hots.splice(m.hots.indexOf(best), 1); }
       heal(t, amt, D.sp.flash.crit); fxStar(t); if (D.smRej) addRejuv(t);
     },
+    purify: t => { const m = C.party[t]; heal(t, D.heal * D.sp.purify.amt * 1.4 * (1 + 0.3 * m.hots.length)); fxLeaves(t); },
     blessing: () => { C.treeForm = 15; C.buff.bless = 15; const p = HERO_POS[YOU]; burst(p.x, p.y - 12, '#8fdc6a', 24, 20); fxLabel(YOU, 'Tree of Life', '#9be06a'); },
     renew: t => { addRejuv(t); if (D.rejDouble) { const o = lowestOther(t); if (o != null) addRejuv(o); } },
     ward: t => { C.party[t].bark = D.barkDur; fxRingAt(t, '#a8763a'); },
@@ -2141,8 +2138,10 @@ const CLASS_RUN = {
       burst(f.x, f.y - f.h / 2, '#ff8a9a', 8); fxLeaves(t);
     },
     purify: t => {
-      const n = C.party[t].dots.length; RUN_SPELL.purify(t);
-      const f = front(); if (n && f) { dealFoe(f, D.heal * D.sp.purify.amt * n * 1.5, 'poison', YOU); fxProj(f, t, '#a3c45c', 2); }
+      // Death Coil: strike the front enemy, heal the chosen ally for more
+      const f = front(), a = D.heal * D.sp.purify.amt;
+      if (f) { C.noSiph = true; dealFoe(f, a * 1.2, '', YOU); C.noSiph = false; fxProj(f, t, '#8a5ac0', 3); burst(f.x, f.y - f.h / 2, '#8a5ac0', 10); }
+      heal(t, a * 1.6);
     },
     sanctuary: () => { C.buff.sanct = D.sp.sanctuary.dur; C.unholy = D.sp.sanctuary.dur; C.unholyT = 0; },
     meditate: () => { const m = C.party[YOU], c = m.max * 0.15; if (m.hp > c + 1) { m.hp -= c; floatTxt(YOU, '-' + fmt(Math.round(c)), 'dmg'); } C.mana = Math.min(D.maxMana, C.mana + D.maxMana * D.sp.meditate.amt); fxRingAt(YOU, '#c43a5a'); },
@@ -2229,7 +2228,7 @@ function finishCast(sp, t) {
 }
 
 // Debuffs on the party: poison ramps up each tick, hex halves healing taken, bleed is short and sharp.
-// A Ward that's still holding blocks new debuffs; Purify removes them all.
+// A Ward that's still holding blocks new debuffs; otherwise they run their course (shields soak their damage).
 const DEBUFF = { plague: { name: 'Plague', cls: 'plague' }, poison: { name: 'Poisoned', cls: 'rot' }, hex: { name: 'Hexed', cls: 'hex' }, bleed: { name: 'Bleeding', cls: 'bleed' } };
 function afflict(t, kind, rate, left, extra = {}) {
   const m = C.party[t]; if (!m || !m.alive) return;
@@ -2237,11 +2236,11 @@ function afflict(t, kind, rate, left, extra = {}) {
   if (kind === 'poison' && modIs('venom') && extra.ramp) extra = { ...extra, ramp: extra.ramp * 2 };
   m.dots = m.dots.filter(x => x.kind !== kind).concat({ kind, rate, left, acc: 0, n: 0, ...extra });
 }
-// an uncleansed Plague bursts and hits the whole party
+// a Plague that isn't cured in time bursts and hits the whole party
 function plagueBurst(i, e) {
   const p = HERO_POS[i]; burst(p.x, p.y - 10, '#8fdc6a', 30, 24); shake(); fxLabel(i, 'Plague burst!', '#8fdc6a');
   C.hitLabel = 'Plague burst'; aliveIdx().forEach(k => hit(k, e.burst)); C.hitLabel = null;
-  log('<span class="x">The Plague burst. Cleanse it next time, or Ward the target before it lands.</span>');
+  log('<span class="x">The Plague burst. Heal the target to full to cure it next time, or Ward them before it lands.</span>');
 }
 const healCut = m => m.dots.reduce((c, d) => Math.max(c, d.healCut || 0), 0);
 function tickEffects(m, i, dt) {
@@ -2263,7 +2262,9 @@ function tickEffects(m, i, dt) {
     }
   }
   m.hots = m.hots.filter(e => e.left > 0);
-  for (const e of m.dots) if (e.kind === 'plague' && e.left <= 0 && m.alive) plagueBurst(i, e);
+  // a Plague is cured by healing its target to (nearly) full health before it bursts
+  for (const e of m.dots) if (e.kind === 'plague' && m.alive && e.left > 0 && m.hp >= m.max * 0.95) { e.left = 0; e.cured = true; floatTxt(i, 'cured', 'free'); fxRingAt(i, '#8fdc6a'); }
+  for (const e of m.dots) if (e.kind === 'plague' && e.left <= 0 && !e.cured && m.alive) plagueBurst(i, e);
   m.dots = m.dots.filter(e => e.left > 0);
 }
 
@@ -2296,7 +2297,7 @@ function foeAct(e, dt) {
         if (A.pick && t != null && t !== 0 && pk(0, 2) && C.party[0].alive && Math.random() < 0.35) { t = 0; floatTxt(0, 'Intercept!', 'abs'); fxLabel(0, 'Intercept!', '#7ba3ee'); } C.hitLabel = A.name; A.run(e, t); C.hitLabel = null; }
       else {
         const t = randomAlive(); if (t == null) return;
-        if (e.spell.dot) { afflict(t, 'hex', e.dmg * 0.3, 8, { healCut: 0.5 }); fxProj(e, t, e.spell.col, 2); }
+        if (e.spell.dot) { afflict(t, 'hex', e.dmg * 0.3, 6, { healCut: 0.3 }); fxProj(e, t, e.spell.col, 2); }
         else { C.hitLabel = e.spell.name; hit(t, eDmg(e) * e.spell.mult); C.hitLabel = null; fxProj(e, t, e.spell.col, 3); }
       }
     }
@@ -2335,8 +2336,8 @@ function stepFight(dt) {
       if (t != null) { heal(t, D.heal * D.aco.pow, 0, true); fxAco(t); }
     }
     if (perk('cloister', 3) && (C.acoCleanT = (C.acoCleanT ?? 8) - dt) <= 0) {
-      const t = aliveIdx().find(i => C.party[i].dots.length);
-      if (t != null) { C.party[t].dots.shift(); C.acoCleanT = 8; fxAco(t); floatTxt(t, 'cleansed', 'free'); } else C.acoCleanT = 0.5;
+      const t = lowestOther(-1);
+      if (t != null && C.party[t].hp < C.party[t].max) { setHot(t, 'aco', D.heal * D.aco.pow * 2, 6); C.acoCleanT = 8; fxAco(t); } else C.acoCleanT = 0.5;
     }
     if (perk('cloister', 5) && (C.acoWardT = (C.acoWardT ?? 15) - dt) <= 0) {
       C.acoWardT = 15; const m = C.party[0];
@@ -2742,14 +2743,14 @@ function dungeonCleared() {
 const CAUSE_TIP = {
   'Doom': 'Doom is telegraphed by a red marker: Ward its target or top them up before it lands.',
   'Searing Wave': 'Searing Wave hits everyone: cast Sanctuary or start a Prayer as it begins.',
-  'Shadow Bolt': 'Shadow Bolt also hexes its target: Purify them so your heals land in full.',
-  'Hex': 'A hex halves the healing its target receives: Purify it, or Ward the target to block it.',
-  'Poison': 'Poison ramps up every tick: Purify it early.', 'Bleeding': 'Bleeds ramp up: Purify them, or Renew the target.',
+  'Shadow Bolt': 'Shadow Bolt also hexes its target: Ward allies before it lands, or heal through the hex.',
+  'Hex': 'A hex weakens the healing its target receives for a few seconds: Ward the target to block it.',
+  'Poison': 'Poison ramps up every tick: Ward the target to block new poisons, and keep a heal over time on them.', 'Bleeding': 'Bleeds ramp up: Renew or shield the target until they wear off.',
   'Cleave': 'Cleave hits Bram hard and splashes an ally: keep Bram topped up and Ward Bram before the cast lands.',
-  'Festering Bite': 'Festering Bite poisons: Purify the target.', 'Scorching Air': 'Scorching Air hurts everyone every 4 seconds: Renew and Prayer keep up with it.',
+  'Festering Bite': 'Festering Bite poisons: Ward the target before it lands.', 'Scorching Air': 'Scorching Air hurts everyone every 4 seconds: Renew and Prayer keep up with it.',
   'Fireball': 'Imps throw Fireballs at random allies: watch their cast bars.',
 };
-const spellWords = str => resWords(str).replace(/\b(Ward|Purify|Sanctuary|Prayer|Renew|Meditate|Flash Heal)\b/g, w => (SP[w === 'Flash Heal' ? 'flash' : w.toLowerCase()] || {}).name || w);
+const spellWords = str => resWords(str).replace(/\b(Ward|Sanctuary|Prayer|Renew|Meditate|Flash Heal)\b/g, w => (SP[w === 'Flash Heal' ? 'flash' : w.toLowerCase()] || {}).name || w);
 function wipeReport() {
   const r = C.rstats || {}, out = [], dg = DUNGEONS[S.dun.current];
   const deaths = r.deathLog || [];
@@ -4209,7 +4210,11 @@ function incomingHeals() {
   let amt = 0;
   if (id === 'heal') amt = h * D.sp.heal.amt * (cl === 'druid' ? 0.7 : 1);
   else if (id === 'flash') amt = h * D.sp.flash.amt;
-  else if (id === 'purify') amt = h * D.sp.purify.amt;
+  else if (id === 'purify') {
+    if (cl === 'priest') { aliveIdx().sort((x, y) => C.party[x].hp / C.party[x].max - C.party[y].hp / C.party[y].max).slice(0, 3).forEach(i => { out[i] = h * D.sp.purify.amt; }); }
+    else if (cl === 'druid') amt = h * D.sp.purify.amt * 1.4 * (1 + 0.3 * (C.party[c.t] ? C.party[c.t].hots.length : 0));
+    else amt = h * D.sp.purify.amt * 1.6;
+  }
   else if (id === 'prayer' && cl !== 'druid') { const k = cl === 'priest' ? 1 + 0.25 * pips : cl === 'occultist' ? 0.45 + 0.35 * pips : 1; aliveIdx().forEach(i => { out[i] = h * D.sp.prayer.amt * k; }); }
   if (amt && C.party[c.t] && C.party[c.t].alive) out[c.t] = amt;
   return out.map((a, i) => { const m = C.party[i]; if (!a || !m) return 0; let v = a * (1 - healCut(m)) * (C.bossThorns ? 0.8 : 1); if (m.necro) v = Math.max(0, v - m.necro); return v; });
@@ -5060,7 +5065,7 @@ function itemTip(it, cmp) {
 }
 let tipEl = null;
 function showTip(html, ev) {
-  if (!tipEl) tipEl = $('#tip');
+  if (!tipEl) tipEl = $('#tip'); if (!tipEl) return;
   if (!html) { tipEl.hidden = true; return; }
   tipEl.innerHTML = html; tipEl.hidden = false;
   const w = tipEl.offsetWidth, h = tipEl.offsetHeight;
@@ -5586,7 +5591,7 @@ const BOUNTY_KINDS = {
   kill:    { w: 3, make: d => ({ d, goal: 30 + 10 * Math.floor(Math.random() * 4) }), txt: b => `Defeat ${b.goal} enemies in ${DUNGEONS[b.d].name}` },
   elite:   { w: 2, make: d => ({ d: -1, goal: 3 + Math.floor(Math.random() * 3) }), txt: b => `Defeat ${b.goal} elites anywhere` },
   boss:    { w: 2, make: d => ({ d, goal: 1 + Math.floor(Math.random() * 2) }), txt: b => `Defeat ${BOSSES[b.d].name} ${b.goal > 1 ? b.goal + ' times' : ''}` },
-  cleanse: { w: 2, make: d => ({ d: -1, goal: 10 + 5 * Math.floor(Math.random() * 3) }), txt: b => `Cleanse ${b.goal} debuffs` },
+  clutch:  { w: 2, make: d => ({ d: -1, goal: 3 + Math.floor(Math.random() * 4) }), txt: b => `Save ${b.goal} allies who are below 10% health` },
   flawless:{ w: 2, make: d => ({ d: -1, goal: 4 + Math.floor(Math.random() * 4) }), txt: b => `Clear ${b.goal} stages without anyone falling` },
   class:   { w: 1, make: d => ({ d, goal: 1, cls: pick(Object.keys(CLASSES)) }), txt: b => `Clear ${DUNGEONS[b.d].name} as a ${CLASSES[b.cls].name}` },
 };
@@ -5601,7 +5606,7 @@ function newBounty() {
   b.gear = Math.random() < 0.2;
   return b;
 }
-function bountyState() { if (!S.bounty) S.bounty = { list: [] }; while (S.bounty.list.length < 3 + (prosFx().bounty || 0)) S.bounty.list.push(newBounty()); return S.bounty; }
+function bountyState() { if (!S.bounty) S.bounty = { list: [] }; S.bounty.list = S.bounty.list.filter(b => BOUNTY_KINDS[b.kind]); while (S.bounty.list.length < 3 + (prosFx().bounty || 0)) S.bounty.list.push(newBounty()); return S.bounty; }
 function bountyEvent(kind, n = 1, extra = {}) {
   if (!S.bounty) return;
   S.bounty.list.forEach(b => {
@@ -5806,7 +5811,7 @@ function renderChronicle() {
   pane.innerHTML = `<div class="section-h"><h3>Healing by spell</h3>
       <div class="seg" role="group" aria-label="Period"><button class="chipbtn" data-chron="run" aria-pressed="${chronScope === 'run'}">This run</button><button class="chipbtn" data-chron="all" aria-pressed="${chronScope === 'all'}">All time</button></div></div>
     ${healingTable(b)}
-    <div class="statgrid">${[['Damage taken', fmt(b.taken || 0)], ['Party deaths', fmt(b.deaths || 0)], ['Debuffs cleansed', fmt(b.cleansed || 0)]].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
+    <div class="statgrid">${[['Damage taken', fmt(b.taken || 0)], ['Party deaths', fmt(b.deaths || 0)], ['Damage absorbed', fmt(b.absorbed || 0)]].map(([k, v]) => `<div class="stat"><span>${k}</span><b class="num">${v}</b></div>`).join('')}</div>
     ${deaths ? `<div class="section-h"><h3>Deaths by dungeon</h3><span class="label">All time</span></div><div class="skills">${deaths}</div>` : ''}
     <div class="section-h"><h3>Achievements</h3><span class="label">${ACH.filter(a => S.ach && S.ach[a.id]).length} of ${ACH.length} · each grants a permanent bonus</span></div>
     <div class="achs">${ACH.map(a => { const done = S.ach && S.ach[a.id], pg = !done && a.prog ? a.prog() : null;
@@ -6036,7 +6041,7 @@ const HINTS = {
   start: () => C.phase === 'fight' && 'Click a party frame (or a hero in the scene) to target them, then press <b>1</b> to cast Heal. Keep everyone standing. On a phone, <b>hold a frame</b> for a quick-cast ring of your spells.',
   devotion: () => C.dev >= 25 && 'Your <b>Devotion</b> is rising. Healing that matters multiplies gold, experience and loot. Overhealing and idling drain it.',
   plea: () => C.plea && `<b>${PARTY[C.plea.i].name}</b> is pleading for help. Heal them within 6 seconds for a random reward.`,
-  debuff: () => C.party.some(m => m.alive && m.dots.length) && (known('purify') ? 'A <b>debuff</b>! Poison ramps up and hexes halve healing. <b>Purify</b> removes them.' : 'A <b>debuff</b>! Poison ramps up and hexes halve healing. You can learn <b>Purify</b> from a first dungeon clear.'),
+  debuff: () => C.party.some(m => m.alive && m.dots.length) && 'A <b>debuff</b>! Poison and bleeds ramp up and hexes weaken your healing until they wear off. A Ward blocks new ones while it holds, and shields soak their damage.',
   telegraph: () => C.foes.some(f => f.alive && f.boss && f.cast && f.cast.t != null) && 'The boss is casting at someone. The <b>red marker</b> shows who: get them healthy or Ward them before it lands.',
   mana: () => lowMana() && 'Running low on <b>mana</b>. Meditate and Mana Potions glow on the action bar when they can help.',
   talent: () => pointsOf('cleric') > 0 && 'You have a <b>talent point</b>. Spend it in the Talents tab.',
@@ -6045,7 +6050,7 @@ const HINTS = {
   elite: () => C.foes.some(f => f.alive && f.elite) && 'An <b>elite</b>! Tougher, with a special trait (shown under the enemy name), and it always drops loot.',
   phase: () => C.foes.some(f => f.boss && f.p2) && '<b>Phase 2!</b> Bosses change at half health. Each dungeon card tells you what to expect.',
   peril: () => DUNGEONS.some((_, d) => maxPeril(d) > 0) && 'You can raise the <b>Peril</b> of cleared dungeons in the Dungeons tab: harder enemies, better loot and more materials.',
-  plague: () => C.party.some(m => m.alive && m.dots.some(d => d.kind === 'plague')) && '<b>Plague!</b> Cleanse it within 7 seconds or it bursts on the whole party. A Ward on the target blocks it before it lands.',
+  plague: () => C.party.some(m => m.alive && m.dots.some(d => d.kind === 'plague')) && '<b>Plague!</b> Heal the target to full health within 7 seconds to cure it, or it bursts on the whole party. A Ward on the target blocks it before it lands.',
   necro: () => C.party.some(m => m.alive && m.necro > 0) && '<b>Necrotic Grip</b> soaks up the next heals on that ally. Heal through it before they take more damage.',
   crush: () => C.foes.some(f => f.alive && f.cast && f.cast.id === 'crush') && '<b>Skull Crusher</b> is coming for Bram: a huge hit in 3 seconds. Shield him or top him up now.',
   chain: () => C.chain && '<b>Soul Chain!</b> Two allies are linked: half of the damage one takes also hits the other. Keep both topped up.',

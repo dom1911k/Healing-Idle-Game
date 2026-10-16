@@ -13,7 +13,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Mana.** Spell costs grow with your Cleric's level and average item level. Spell power makes each point of mana heal more, and regeneration buys more casts. Mana is loose on dungeons you've outgeared, and you'll feel it when pushing into a new one. Trying to cast without enough mana shows a quiet blue *Not enough mana* on the mana bar, and when you're running low, Meditate and the Mana Potion glow blue on the action bar.
 - **Dungeons.** The Dungeons tab is a map of the descent: each dungeon has a painted banner with its boss, its rule, your progress through its stages, and how hard it is for your party's level. Twelve dungeons in two acts, each 5–10 stages of monster packs ending in a boss. Health and mana carry over between stages, with a short rest. Every dungeon has a rule of its own (poison, a silenced spell, scorching air, weaker healing, low mana, an early berserk timer). Each new dungeon is much harder than the last, so you farm until you're ready, then choose to push on.
 - **Readable battlefield text.** Banners, ability names, level-ups, boss name cards and town labels use a crisp pixel font with an outline.
-- **Debuffs.** Poison ramps up with every tick, a hex halves the healing its target receives, and wolves cause short bleeds. Purify removes all of them. A Ward that is still holding makes its target resist new poisons and hexes.
+- **Debuffs.** Poison ramps up with every tick, a hex cuts the healing its target receives by 30% for 6 seconds, and wolves cause short bleeds. There are no cleansing spells: debuffs run their course. A Ward that is still holding makes its target resist new poisons and hexes, and shields soak the damage debuffs deal.
 - **Act II: The Hollow Crown.** Beating the Eclipse Seraph opens four deeper dungeons with new monsters (cave spiders that poison, wraiths that wither, crystal golems that pound the tank, gargoyles), new scenery, new music and new materials:
 
   | Dungeon | Rule | Boss | Boss checks |
@@ -30,7 +30,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   - **Ascension challenges.** Before you ascend, you can curse the next cycle: Broken Wards (your shield spell is sealed), Wrath (bosses start in phase 2), Frail Guardian (Bram has 40% less health), Dim Light (20% weaker healing), Swarm (one more enemy per pack) and Fury (enemies attack 20% faster). Each curse adds 15–25% to the Echoes that cycle pays when you ascend again.
   - **Cosmetics.** Spend Echoes once on a Golden or Void aura under the party, Azure or Ember spell effects, a war banner for Bram, a floating crown for your healer, or glowing footsteps. Switch them on and off any time.
 - **Bosses test the healer.** Bosses act more often the deeper you go, and from the second dungeon on they bring checks you have to answer:
-  - **Plague** (green countdown badge): cleanse it within 7 seconds or it bursts on the whole party. A Ward or Bone Shield on the target blocks it before it lands.
+  - **Plague** (green countdown badge): heal the target to full health within 7 seconds to cure it, or it bursts on the whole party. A Ward or Bone Shield on the target blocks it before it lands.
   - **Necrotic Grip**: soaks up the next heals on that ally (the badge shows how much is left), so you have to heal through it.
   - **Skull Crusher**: a slow, telegraphed blow on Bram for five times a normal hit. Shield him, Barkskin him or top him up before it lands.
 - **Boss telegraphs.** When a boss starts a big ability, the cast bar names the target, a red marker hovers over that hero and their party frame pulses red. Wave attacks mark the whole party. Later bosses add **Doom**, a slow cast that hits one ally for a huge amount: shield them with Ward or top them up in time.
@@ -59,15 +59,17 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 ## Why heal actively
 
 - **Devotion.** Each heal that lands builds Devotion. Overhealing, or leaving hurt allies unhealed, drains it. Devotion scales the gold from every kill and the experience and loot from every stage, from ×0.5 when you idle up to ×3. It fades slowly on its own and gains less the higher it gets, so steady, efficient healing holds it around ×1.5–2. Reaching ×3 takes a lot of work.
-- **Ward, Purify and Renew pull their weight.** Damage a Ward soaks counts as effective healing for Devotion. Purify refunds half its mana whenever it removes something and always counts as a useful cast. Renew is cheaper and stronger, and its overhealing jumps to the most injured ally at half strength.
+- **Ward and Renew pull their weight.** Damage a Ward soaks counts as effective healing for Devotion. Renew is cheaper and stronger, and its overhealing jumps to the most injured ally at half strength.
 - **Pleas.** Every minute or so, a companion glows gold and pleads for help. Heal them within 6 seconds for a random reward: a gold windfall, a ×5 Gold Frenzy, ×2 party damage, a burst of experience, a rare-or-better relic, or (rarely) a talent point.
 
 ## Spells
 
-- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in your class's trees (for the Priest: Flash Heal, Purify and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing).
+- You start with only **Heal**. The other eight spells don't cost talent points: the **first clear of each dungeon** lets you choose one of three new spells. The ones you pass on stay on offer for your next first clear. Spells come up in the order their talents open in your class's trees (for the Priest: Flash Heal, Circle of Healing and Renew first, then Ward and Meditate, then Prayer, then Sanctuary and Blessing).
 - With *Repeat dungeon* on, the next run waits until you've chosen. You can also choose from the Talents tab, which always shows which spells your next first clear will offer.
 
 ## Healer classes and talents
+
+- **No more cleansing.** The old cleanse spells (Purify, Remove Corruption, Purge) are gone. That spell slot is now a heal for each class: the Priest's **Circle of Healing** (instant, heals the three most injured allies, 8-second cooldown), the Druid's **Nourish** (a 1.6-second efficient heal, 30% stronger for each of your heals over time on the target) and the Occultist's **Death Coil**. Their talents were reworked to match (Circle of Light, Improved Nourish, Improved Death Coil). The Clean Hands achievement became Iron Will (absorb 25,000 damage with shields), and the cleanse bounty became saving allies below 10% health.
 
 - Pick a healer class in the Talents tab, in the spirit of Mini Healer's Priest, Druid and Occultist trees. Switching is free. **Each class keeps its own talents and its own spell choices**: a class you haven't played yet starts with one spell pick per dungeon you've already cleared, so you choose its spells from that class's offer. Switching back restores that class's setup. Each class renames and reworks your spells, has its own passive, its own look, its own reward resource (Devotion, Harmony or Dread) and three talent trees of its own:
 
@@ -75,7 +77,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   |---|---|---|
   | **Priest** | **Holy Power** (up to 3) | Heal and Flash Heal build Holy Power. Prayer spends it for +25% healing per point and is instant at 3. A Ward cast at 3 also shields the rest of the party for half. Radiant Overflow turns 30% of overhealing into shields. |
   | **Druid** | Heals over time | Plant Rejuvenation (stacks twice) and Regrowth, then **Swiftmend eats the strongest one** to heal for everything it had left plus 30%. **Tree of Life** (replaces Mark of the Wild): 15 seconds where heals over time heal 40% more, Regrowth is instant and the party deals 15% more damage, and you turn into a tree. Barkskin, instant Wild Growth, Tranquility. Heal-over-time ticks restore mana. |
-  | **Occultist** | **Souls** (up to 5) | You heal by hurting. **Drain Life is a 3-second channel** that drains the front enemy and pours it into the ally you chose; it does nothing with no enemy in reach. **Leech Seed goes on an enemy** and heals your chosen ally every second as it damages. **Blood Bolt** costs your own health instead of mana. **Purge** throws cleansed debuffs at the enemy. Every kill and every finished Drain Life gives a Soul, and **Soul Harvest** spends them all (weak with none, huge with five). **Unholy Ground** damages every enemy each second, and Siphon Life turns that into healing. Blood Pact pays for spells with health when you're out of mana. |
+  | **Occultist** | **Souls** (up to 5) | You heal by hurting. **Drain Life is a 3-second channel** that drains the front enemy and pours it into the ally you chose; it does nothing with no enemy in reach. **Leech Seed goes on an enemy** and heals your chosen ally every second as it damages. **Blood Bolt** costs your own health instead of mana. **Death Coil** (instant, 6-second cooldown) strikes the front enemy and heals the ally you chose for even more. Every kill and every finished Drain Life gives a Soul, and **Soul Harvest** spends them all (weak with none, huge with five). **Unholy Ground** damages every enemy each second, and Siphon Life turns that into healing. Blood Pact pays for spells with health when you're out of mana. |
 
 - Holy Power and Souls show as pips under the cast bar.
 
@@ -156,7 +158,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
 - **Merchant.** Once you build a Market, the Armory sells sealed items for the deepest dungeon you've reached: a Supply Crate (any rarity), a Gilded Coffer (rare or better) and a Royal Reliquary (epic or better, 20% legendary).
 - **Elixirs.** As the Herb Garden grows, the Dungeons tab sells three elixirs (+25% party damage, 15% less damage taken, +40% mana regeneration). Each lasts 10 minutes of fighting and stacks up to an hour. Their price scales with your deepest dungeon.
 - **Achievements.** Fifteen achievements, such as clearing a dungeon without a death, slaying ten elites, wearing a full set or clearing at Peril 3. Each grants a small permanent bonus: healing, damage, gold, experience, mana or a talent point. They're listed in the Chronicle with progress bars.
-- **Chronicle.** Healing by spell for this run or all time, with share, overheal and casts, plus damage taken, party deaths, debuffs cleansed and deaths per dungeon.
+- **Chronicle.** Healing by spell for this run or all time, with share, overheal and casts, plus damage taken, party deaths, damage absorbed by shields and deaths per dungeon.
 - **Crafting with materials.** The Smithy turns materials into gear upgrades. Every item uses the materials of the dungeon its item level comes from:
   - **Salvage** (Smithy 1): break a bag item into materials.
   - **Empower** (Smithy 1): raise an item one rarity, up to Legendary. Its stats grow and it gains new ones.
@@ -175,13 +177,13 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | 56 | Great City | one more mana potion per run, +10% gold find |
   | 72 | Capital | expeditions last up to 12 hours, and festival lights over the street |
   | 90 | Jewel of the Realm | +20% party damage and a golden fountain |
-- **Bounty Board.** The Town shows three bounties at a time, such as "Defeat 40 enemies in the Cinder Pit", "Defeat 4 elites", "Cleanse 15 debuffs", "Clear 5 stages without anyone falling" or "Clear the Hollow Crypt as an Occultist". Finished bounties pay gold and materials, and one in five also gives an epic item. Reroll one you don't like for gold. The Town tab shows a dot when one is ready to claim.
+- **Bounty Board.** The Town shows three bounties at a time, such as "Defeat 40 enemies in the Cinder Pit", "Defeat 4 elites", "Save 4 allies who are below 10% health", "Clear 5 stages without anyone falling" or "Clear the Hollow Crypt as an Occultist". Finished bounties pay gold and materials, and one in five also gives an epic item. Reroll one you don't like for gold. The Town tab shows a dot when one is ready to claim.
 - **Item mastery.** Every item teaches a skill. Clear stages with it equipped to master it, and the skill is yours for good.
 - **The Town.** Every stage drops materials from its dungeon (Rat Tails, Bog Moss and so on), with more at high Devotion. The Town tab shows your town as a pixel-art map with eight plots. Click a plot to see what it would do, and build it: the building rises out of the ground and stays on the map, gaining a banner at level 4 and gold trim at level 8. Buildings go up to level 12 and cost gold plus materials. Level 1 uses materials from the first dungeon, level 2 from the second, and so on, so pushing deeper (including Act II) unlocks the next tier:
 
   | Building | Every level | Unlocks |
   |---|---|---|
-  | Acolyte Cloister | A stronger Acolyte and faster expeditions | Lv 3 the Acolyte cleanses debuffs · Lv 5 the Acolyte shields Bram |
+  | Acolyte Cloister | A stronger Acolyte and faster expeditions | Lv 3 the Acolyte lays a heal over time on the most injured ally every 8 seconds · Lv 5 the Acolyte shields Bram |
   | Infirmary | Better resting; fallen allies return with more health | Lv 3 Triage: allies below 25% take less damage · Lv 6 Second Wind: once per stage the first ally to fall gets back up |
   | Herb Garden | One more mana potion per run | Lv 2/4/6 the three elixirs · Lv 3 Healing Draught (heals the party for 25%, on F) · Lv 7 a second draught |
   | Chapel | Start with Devotion; Devotion fades slower | Lv 3 Chapel Bell (+35 Devotion once per run, on R) · Lv 6 Devotion never falls below 20% |

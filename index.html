@@ -1345,6 +1345,16 @@ const PROMO_PERKS = [
    ['Divine Favor', '+10% critical heals'], ['Ascension', 'Prayer heals 20% more and costs 30% less']],
 ];
 const pk = (i, r) => promoRank(i) >= r;
+// Your healer's promotion perks follow your class, and each touches spells every class always has
+const CLASS_PROMO = {
+  priest: [['Devout', 'Devotion builds 15% faster'], ['Halo', '10% chance a spell costs no mana'], ['Guardian Angel', 'Once per run, an ally who would die is fully healed instead'],
+    ['Radiance', 'Heal also heals the next most injured ally for 25%'], ['Divine Favor', '+10% critical heals'], ['Ascension', 'Heal and Prayer heal 20% more and cost 30% less']],
+  druid: [['Attuned', 'Harmony builds 15% faster'], ['Clearcasting', '10% chance a spell costs no mana'], ["Nature's Guardian", 'Once per run, an ally who would die is fully healed instead'],
+    ['Lifebinder', 'Regrowth also plants Rejuvenation on the most injured other ally'], ["Nature's Focus", '+10% critical heals'], ['Ancient of Lore', 'Regrowth and Rejuvenation heal 20% more and cost 30% less']],
+  occultist: [['Dread Pact', 'Dread builds 15% faster'], ['Dark Bargain', '10% chance a spell costs no mana'], ['Soul Anchor', 'Once per run, an ally who would die is fully healed instead'],
+    ['Hungering Drain', 'Drain Life also heals the next most injured ally for 25% of each pulse'], ['Malice', '+10% critical heals'], ['Lich Form', 'Drain Life drains and heals 20% more and costs 30% less']],
+};
+const promoPerks = i => i === YOU ? CLASS_PROMO[clsId()] : PROMO_PERKS[i];
 const promoRank = i => (S.promo && S.promo[i]) || 0;
 const promoCost = i => Math.round((i === YOU ? 150 : 120) * Math.pow(6, promoRank(i)) * (1 - 0.06 * lvl('barracks')));
 const promoMul = i => Math.pow(i === YOU ? 1.08 : 1.12, promoRank(i));
@@ -1563,7 +1573,7 @@ const xpNeed = lv => Math.round(40 * Math.pow(1.22, lv - 1));
 const lvMult = i => Math.pow(1.07, S.heroes[i].lv - 1);
 const skillPoints = () => pointsOf('cleric');
 // Training: small additive bonuses per rank, costs that grow like Cookie Clicker buildings
-const memberMax = i => (i === 0 && curse('frail') ? 0.6 : 1) * Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * D.cs[i].hpMul);
+const memberMax = i => (i === 0 && curse('frail') ? 0.6 : 1) * Math.round(PARTY[i].hp * D.partyHp * lvMult(i) * promoMul(i) * D.cs[i].hpMul);
 const modIs = (...m) => m.includes(DUNGEONS[S.dun.current].mod);
 const berserkAt = () => modIs('tide') ? 70 : 120;
 const HP_STEP = 3.5, DMG_STEP = 3.0; // how much tougher each dungeon is
@@ -1600,6 +1610,9 @@ function compGear(i, over) {
 }
 function makeCs(i, over) {
   const p = PARTY[i], c = i === YOU ? {} : sumFx(i), gf = k => c[k] || 0, ge = compGear(i, over);
+  // a baseline from the party's item level, so a missing or outdated piece costs some power instead of nearly all of it
+  // (and your healer, who has no companion gear, keeps up in health and damage)
+  const pil = Math.max(1, partyIlvl()); ge.atk = Math.max(ge.atk, (i === YOU ? 40 : 15) * g(pil)); ge.hpp = Math.max(ge.hpp, (i === YOU ? 30 : 9) * g(pil));
   const o = { ...c, dmg: p.dmg * lvMult(i) * (i === YOU ? 1 : promoMul(i)) * Math.max(0.1, 1 + gf('dmg')) * D.partyDps * (1 + ge.atk / 100),
     spd: gf('spd') + ge.spd / 100 + (i === YOU ? 0 : D.partySpd || 0), crit: 0.05 + gf('crit') + ge.crit / 100, critDmg: 1.5 + gf('critDmg') + ge.critd / 100,
     dr: gf('dr'), hpMul: (1 + gf('hp')) * (1 + ge.hpp / 100), poisonPow: gf('poisonPow'),
@@ -1689,7 +1702,10 @@ function recalc() {
   if (t('prayer_instant')) D.sp.prayer.cast = 0;
   if (cl === 'druid') { D.sp.prayer.cast = 0; D.sp.prayer.cd = 8; D.sp.blessing = { amt: 0.15 + t('bless_amt'), dur: 15, cd: 60 }; }
   if (cl === 'occultist') { D.sp.heal.cost *= 0.75; D.sp.flash.cost *= 0.15; D.sp.prayer.cast = 1.2; D.sp.sanctuary.amt *= 0.5; }
-  if (pk(YOU, 6)) { D.sp.prayer.amt *= 1.2; D.sp.prayer.cost *= 0.7; }
+  if (pk(YOU, 6)) {
+    const boost = cl === 'priest' ? ['heal', 'prayer'] : cl === 'druid' ? ['heal', 'renew'] : ['heal'];
+    boost.forEach(id => { D.sp[id].amt *= 1.2; D.sp[id].cost = (D.sp[id].cost ?? 1) * 0.7; });
+  }
   C.party.forEach((m, i) => {
     const nm = memberMax(i);
     if (m.alive) m.hp = m.hp * nm / m.max;
@@ -1975,7 +1991,7 @@ function hit(i, amt) {
   pnumFx(i, '-', amt, '#ff8a7a');
   heroAnim[i].flash = 0.12;
   if (m.hp <= 0 && i === 0 && pk(0, 4) && !C.bramSave) { C.bramSave = true; m.hp = 1; m.shield = Math.max(m.shield, m.max * 0.25); floatTxt(0, 'Unyielding', 'abs'); fxLabel(0, 'Unyielding!', '#7ba3ee'); }
-  if (m.hp <= 0 && pk(YOU, 3) && !C.angelUsed) { C.angelUsed = true; m.hp = m.max; fxBeam(i, '#fff2a8'); fxLabel(i, 'Guardian Angel', '#fff2a8'); log(`Guardian Angel saved <b>${PARTY[i].name}</b>.`); }
+  if (m.hp <= 0 && pk(YOU, 3) && !C.angelUsed) { C.angelUsed = true; m.hp = m.max; fxBeam(i, '#fff2a8'); fxLabel(i, promoPerks(YOU)[2][0], '#fff2a8'); log(`${promoPerks(YOU)[2][0]} saved <b>${PARTY[i].name}</b>.`); }
   if (m.hp <= 0 && D.lastRites && !C.ritesUsed) { m.hp = 1; C.ritesUsed = true; floatTxt(i, 'Last Rites', 'heal'); fxRingAt(i, '#fff2a8'); log(`Last Rites kept <b>${PARTY[i].name}</b> standing.`); }
   if (m.hp <= 0) {
     m.hp = 0; m.alive = false; m.hots = []; m.dots = []; m.shield = 0; m.necro = 0;
@@ -2079,7 +2095,7 @@ const CLASS_CHAN = {
         const f = front(); if (!f) return;
         const a = D.heal * D.sp.heal.amt * 1.7 / 6, who = C.party[t].alive ? t : lowestOther(-1);
         C.noSiph = true; dealFoe(f, a * (1 + D.drainDmg), 'drain', YOU); C.noSiph = false;
-        if (who != null) { heal(who, a); fxProj(f, who, '#e0605a', 2); }
+        if (who != null) { heal(who, a); fxProj(f, who, '#e0605a', 2); if (pk(YOU, 4)) { const o = lowestOther(who); if (o != null) heal(o, a * 0.25); } }
       },
       done: () => gainPip() },
   },
@@ -2100,7 +2116,7 @@ const CLASS_RUN = {
     },
   },
   druid: {
-    heal: t => { const a = D.heal * D.sp.heal.amt; heal(t, a * 0.7); setHot(t, 'regrowth', a * 0.5 * (1 + D.hotPow), 6 + D.hotDur); fxLeaves(t); },
+    heal: t => { const a = D.heal * D.sp.heal.amt; heal(t, a * 0.7); setHot(t, 'regrowth', a * 0.5 * (1 + D.hotPow), 6 + D.hotDur); fxLeaves(t); if (pk(YOU, 4)) { const o = lowestOther(t); if (o != null) addRejuv(o); } },
     flash: t => {
       const m = C.party[t], best = m.hots.slice().sort((a, b) => b.rate * b.left - a.rate * a.left)[0], base = D.heal * D.sp.flash.amt;
       let amt = base * 0.6;
@@ -2195,7 +2211,7 @@ function finishCast(sp, t) {
   if (!canPay(cost)) { oomNotice(); return; }
   if (!sp.group && !sp.self && !C.party[t].alive) return;
   if (cost > 0 && Math.random() < D.clarity) { cost = 0; floatTxt(YOU, 'Clarity', 'free'); }
-  else if (cost > 0 && pk(YOU, 2) && Math.random() < 0.1) { cost = 0; floatTxt(YOU, 'Halo', 'free'); }
+  else if (cost > 0 && pk(YOU, 2) && Math.random() < 0.1) { cost = 0; floatTxt(YOU, promoPerks(YOU)[1][0], 'free'); }
   pay(cost);
   stopCastSfx(); if (sp.id === 'ward') sfx('shield'); else if (!['heal', 'flash', 'prayer', 'purify'].includes(sp.id)) sfx('release');
   heroAnim[YOU].release = 0.35;
@@ -5195,7 +5211,7 @@ function renderParty() {
   if (tSel && !tSel.startsWith(i + '|')) tSel = null;
   const pr = promoRank(i), per = comp ? '+12% damage and health' : '+8% healing and max mana';
   const ladder = PROMO_TITLE.map((t, k) => `<span class="rung ${k <= pr ? 'on' : ''} ${k === pr + 1 ? 'next' : ''}" style="--tc:${TIER_COL[k]}">${portraitImg(i, 'rg', k)}<b>${t}</b><small>${k ? 'Lv ' + PROMO_LV[k - 1] : 'start'}</small></span>`).join('');
-  const perks = PROMO_PERKS[i].map(([n, dsc], k) => `<li class="${pr > k ? 'on' : k === pr ? 'next' : ''}" style="--tc:${TIER_COL[k + 1]}"><span class="pt">${PROMO_TITLE[k + 1]}</span><b>${n}</b> ${dsc}</li>`).join('');
+  const perks = promoPerks(i).map(([n, dsc], k) => `<li class="${pr > k ? 'on' : k === pr ? 'next' : ''}" style="--tc:${TIER_COL[k + 1]}"><span class="pt">${PROMO_TITLE[k + 1]}</span><b>${n}</b> ${dsc}</li>`).join('');
   pane.innerHTML = `
     <div class="pcards" role="group" aria-label="Party members">${PARTY.map((q, k) => `<button class="pcard" style="--rc:${ROLE_COL[k]};--tc:${TIER_COL[promoRank(k)]}" data-comp="${k}" aria-pressed="${k === i}">${portraitImg(k)}<b>${q.name}</b><small>${PROMO_TITLE[promoRank(k)]} ${k === YOU ? cls().name : q.role}<br>Lv ${S.heroes[k].lv}</small><span class="stars">${'★'.repeat(promoRank(k))}</span>${canPromote(k) && S.gold >= promoCost(k) ? '<span class="pup" title="Promotion ready">▲</span>' : ''}${k !== YOU && pointsOf(k) > 0 ? `<span class="pts">${pointsOf(k)}</span>` : ''}</button>`).join('')}</div>
     ${perk('barracks', 2) ? `<div class="stances"><span class="label">Battle stance</span>${Object.entries(STANCES).map(([k, v]) => `<button class="chipbtn" data-stance="${k}" aria-pressed="${stance() === k}" title="${v.desc}">${v.name}</button>`).join('')}<span class="label sub">${STANCES[stance()].desc}</span></div>` : ''}
@@ -5210,7 +5226,7 @@ function renderParty() {
     <div class="promo" style="--rc:${ROLE_COL[i]}"><div class="ladder">${ladder}</div>
       ${pr >= PROMO_MAX ? `<p class="lvl">${p.name} has reached the highest rank.</p>` : `<div class="pnext" style="--tc:${TIER_COL[pr + 1]}">
         <div class="pvs">${portraitImg(i, 'lg', pr)}<span>→</span>${portraitImg(i, 'lg glow', pr + 1)}</div>
-        <div><h4>${PROMO_TITLE[pr + 1]}: ${PROMO_PERKS[i][pr][0]}</h4><p>${PROMO_PERKS[i][pr][1]}.</p><p class="sub">Plus ${per} (×${promoMul(i).toFixed(2)} → ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}) and ${stageOf(pr + 1) > stageOf(pr) ? '<b>a whole new set of gear</b>' : pr + 1 === 6 ? 'wings of light' : 'a cape or a shining gem'}.</p>
+        <div><h4>${PROMO_TITLE[pr + 1]}: ${promoPerks(i)[pr][0]}</h4><p>${promoPerks(i)[pr][1]}.</p><p class="sub">Plus ${per} (×${promoMul(i).toFixed(2)} → ×${(promoMul(i) * (comp ? 1.12 : 1.08)).toFixed(2)}) and ${stageOf(pr + 1) > stageOf(pr) ? '<b>a whole new set of gear</b>' : pr + 1 === 6 ? 'wings of light' : 'a cape or a shining gem'}.</p>
         <div class="actions"><button class="btn primary" data-promo="${i}">Promote to ${PROMO_TITLE[pr + 1]}</button><span class="cost" data-pcost></span></div></div></div>`}
       <ul class="perklist">${perks}</ul></div>
     ${comp ? `
@@ -6131,21 +6147,55 @@ const SFX_GAP = { coin: 50, hit: 90, heal: 60, tick: 160, shield: 120 };
 function sfx(n) {
   if (S.mute || document.hidden || DEV.speed > 1) return;
   const now = performance.now(); if (sfxLast[n] && now - sfxLast[n] < (SFX_GAP[n] || 40)) return; sfxLast[n] = now;
-  if (!audio()) return; try { SFX[n](); } catch (e) {}
+  if (!audio()) return; try { SFX[n](); } catch (e) { if (location.hash === '#dev') console.error('sfx', n, e); }
 }
 ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { audio(); if (AC && AC.state === 'suspended') AC.resume(); }, { capture: true }));
-let castVoice = null;
+/* Casting sounds by class fantasy, all on one bus so a finished or cancelled cast can fade out at once:
+   Priest: a choir swelling on a major chord with chimes; Druid: wind through leaves, a breathy wooden flute and wind chimes;
+   Occultist: a low droning chant, a dissonant whisper and a slow heartbeat. */
+let castBus = null;
 function castSfx(dur) {
   if (S.mute || document.hidden || DEV.speed > 1 || !audio()) return;
   try {
-    if (castVoice) { castVoice.g.gain.cancelScheduledValues(AC.currentTime); castVoice.g.gain.setValueAtTime(0, AC.currentTime); }
-    const t0 = AC.currentTime, o = AC.createOscillator(), g = AC.createGain(), base = { priest: 392, druid: 330, occultist: 196 }[clsId()];
-    o.type = 'triangle'; o.frequency.setValueAtTime(base, t0); o.frequency.exponentialRampToValueAtTime(base * 2, t0 + dur);
-    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(0.035, t0 + Math.min(0.3, dur)); g.gain.linearRampToValueAtTime(0.05, t0 + dur); g.gain.linearRampToValueAtTime(0, t0 + dur + 0.05);
-    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + 0.1); castVoice = { o, g };
-  } catch (e) {}
+    stopCastSfx();
+    const t0 = AC.currentTime, end = t0 + dur, bus = AC.createGain(); bus.gain.value = 1; bus.connect(master); castBus = bus;
+    const osc = (type, f, vol, { at = t0, until = end, swell = 0.35, vib = 0, vibRate = 5, lp = 0, slideTo = 0 } = {}) => {
+      const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(f, at); if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, until);
+      if (vib) { const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = vibRate; lg.gain.value = vib; lfo.connect(lg); lg.connect(o.frequency); lfo.start(at); lfo.stop(until + 0.3); }
+      g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(vol, at + Math.min(swell, Math.max(0.05, until - at))); g.gain.setValueAtTime(vol, until); g.gain.linearRampToValueAtTime(0, until + 0.25);
+      let n = o; if (lp) { const fl = AC.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = lp; o.connect(fl); n = fl; }
+      n.connect(g); g.connect(bus); o.start(at); o.stop(until + 0.3);
+    };
+    const air = (vol, freq, q, type = 'bandpass', sweepTo = 0) => {
+      const n = Math.floor(AC.sampleRate * (dur + 0.3)), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0); for (let k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
+      const src = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = AC.createGain(); fl.type = type; fl.Q.value = q; fl.frequency.setValueAtTime(freq, t0); if (sweepTo) fl.frequency.exponentialRampToValueAtTime(sweepTo, end);
+      g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(vol, t0 + Math.min(0.4, dur)); g.gain.setValueAtTime(vol, end); g.gain.linearRampToValueAtTime(0, end + 0.25);
+      src.buffer = buf; src.connect(fl); fl.connect(g); g.connect(bus); src.start(t0); src.stop(end + 0.3);
+    };
+    const cl = clsId();
+    if (cl === 'priest') {
+      // a soft choir: detuned voices on a major triad, rising a little, with bell chimes stepping up the chord
+      [[261.6, 0], [329.6, 3], [392, -3], [523.2, 2]].forEach(([f, det], k) => { osc('sawtooth', f * Math.pow(2, det / 1200), 0.018, { swell: dur * 0.7, vib: 3, vibRate: 4.5 + k * 0.3, lp: 1400, slideTo: f * 1.06 }); osc('sine', f, 0.02, { swell: dur * 0.6 }); });
+      air(0.02, 2400, 1.2);
+      const steps = Math.max(2, Math.floor(dur / 0.28)); for (let k = 0; k < steps; k++) { const at = t0 + k * dur / steps; osc('sine', [1046, 1318, 1568, 2093][k % 4], 0.03, { at, until: at + 0.18, swell: 0.01 }); }
+    } else if (cl === 'druid') {
+      // wind through leaves, a breathy wooden flute and wind chimes on a pentatonic scale
+      air(0.035, 800, 0.7, 'bandpass', 2600);
+      osc('triangle', 392, 0.045, { swell: 0.25, vib: 6, vibRate: 5.5, lp: 2200, slideTo: 587 });
+      air(0.012, 1800, 6);
+      const penta = [784, 880, 1046, 1175, 1318, 1568]; const steps = Math.max(3, Math.floor(dur / 0.18));
+      for (let k = 0; k < steps; k++) { const at = t0 + k * dur / steps + Math.random() * 0.05; osc('triangle', penta[Math.floor(Math.random() * penta.length)], 0.028, { at, until: at + 0.35, swell: 0.005 }); }
+    } else {
+      // a low chant: a drone and its dissonant neighbour opening up, a whisper and a slow heartbeat
+      osc('sawtooth', 73.4, 0.06, { swell: dur * 0.5, lp: 380, slideTo: 82 });
+      osc('sawtooth', 77.8, 0.035, { swell: dur * 0.8, lp: 300 });
+      osc('sine', 146.8, 0.04, { swell: dur * 0.6, vib: 4, vibRate: 3 });
+      air(0.03, 1100, 2.5, 'bandpass', 1700);
+      for (let at = t0 + 0.05; at < end; at += 0.62) { osc('sine', 62, 0.11, { at, until: at + 0.1, swell: 0.01, slideTo: 40 }); osc('sine', 58, 0.07, { at: at + 0.16, until: at + 0.25, swell: 0.01, slideTo: 38 }); }
+    }
+  } catch (e) { if (location.hash === '#dev') console.error('castSfx', e); }
 }
-function stopCastSfx() { if (castVoice && AC) { try { castVoice.g.gain.cancelScheduledValues(AC.currentTime); castVoice.g.gain.setValueAtTime(0, AC.currentTime); } catch (e) {} castVoice = null; } }
+function stopCastSfx() { if (castBus && AC) { const b = castBus; castBus = null; try { b.gain.cancelScheduledValues(AC.currentTime); b.gain.setValueAtTime(b.gain.value, AC.currentTime); b.gain.linearRampToValueAtTime(0, AC.currentTime + 0.08); setTimeout(() => { try { b.disconnect(); } catch (e) {} }, 400); } catch (e) {} } }
 function syncMute() { const mb = $('#musicBtn'); mb.setAttribute('aria-pressed', S.music !== false); mb.classList.toggle('off', S.music === false); const b = $('#muteBtn'); b.textContent = S.mute ? '🔇' : '🔊'; b.setAttribute('aria-pressed', !S.mute); $('#volume').value = Math.round((S.vol ?? 0.6) * 100); }
 $('#musicBtn').addEventListener('click', () => { S.music = S.music === false; audio(); syncMute(); });
 $('#muteBtn').addEventListener('click', () => { S.mute = !S.mute; audio(); syncMute(); });

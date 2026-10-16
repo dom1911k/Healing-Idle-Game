@@ -187,7 +187,7 @@ Open `index.html` in a browser. Progress saves to your browser's local storage e
   | Barracks | Cheaper promotions | Lv 2 Battle Stances (Aggressive, Balanced or Defensive, in the Party tab) · Lv 4 +20% experience |
   | Market | Cheaper sealed items | Lv 1/3/5 Supply Crates, Gilded Coffers and Royal Reliquaries |
 
-  Clicking a building shows its milestones, with what's unlocked and what comes next.
+  Click a building on the map (anywhere on it, including its annex) or pick it from the building bar under the map to see its milestones, with what's unlocked and what comes next.
 
   The Town tab also sells one-time blessings for gold.
 - **Expeditions.** Once you build the Acolyte Cloister, an Acolyte heals the party in the background (weakly at first). While the game is closed or in another tab, the Acolyte leads the party through the dungeon you're in, if you've cleared it, otherwise your deepest clear. They run at 20–55% of your active pace for up to 8 hours and bring back gold, experience, materials and items.

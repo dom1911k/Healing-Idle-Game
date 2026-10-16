@@ -302,6 +302,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .milestones{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}.milestones li{font-size:.76rem;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 7px;opacity:.65}.milestones li.on{opacity:1;color:var(--ink);border-color:#a8803a;background:#e4b75c12}.milestones b{color:var(--gold);font-family:var(--mono);margin-right:4px}.milestones span{display:block}
 .tithe{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:.84rem;border-top:1px dashed var(--line);padding-top:9px}
 .daypill{display:inline-block;font-size:.76rem;padding:4px 10px;border-radius:999px;border:1px solid}.daypill.day{color:#ffd36b;border-color:#a8803a;background:#ffd36b14}.daypill.night{color:#bfd0ff;border-color:#5a6aa8;background:#7a8aff14}
+.bsel{display:flex;flex-wrap:wrap;gap:6px}.bsel b{font-family:var(--mono);color:var(--gold);margin-left:3px}
 .actsep{font-family:var(--display);font-size:1.05rem;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 0 4px;margin-top:6px;letter-spacing:.04em}.actsep b{color:var(--gold);margin-right:8px}.actsep.act2 b{color:#c48bfb}
 .dcard{position:relative;border-radius:10px;overflow:visible;background:var(--surface-2);border:1px solid var(--line)}
 .dcard+.dcard::before{content:'';position:absolute;left:34px;top:-19px;height:18px;border-left:2px dashed #5a5070}
@@ -4837,7 +4838,7 @@ const availableUpgrades = () => UPGRADES.filter(u => !has(u.id) && u.req()).sort
 const findItem = id => S.inv.find(x => x.id === id);
 function renderPane() {
   const itemsKey = S.inv.map(i => i.id).join(',') + ':' + [...Object.values(S.equip), ...S.cequip.flatMap(e => Object.values(e))].map(i => i ? i.id + '.' + i.up + '.' + i.mp : '-').join(',');
-  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + tithesReady() + (S.bounty ? S.bounty.list.map(b => b.kind + b.d + b.goal + b.gold + (b.n >= b.goal)).join() : '') + townSel + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
+  const key = tab + '|' + (tab === 'town' ? JSON.stringify(S.town) + tithesReady() + (S.bounty ? S.bounty.list.map(b => b.kind + b.d + b.goal + b.gold + (b.n >= b.goal)).join() : '') + !!D.aco + availableUpgrades().map(u => u.id).join(',') + S.dun.unlocked + S.dun.rec.filter(Boolean).length + ':' + S.dun.current
     : tab === 'armory' ? itemsKey + lvl('market') + lvl('smithy') + (S.lootFilter || 0) + !!S.autoGear + (sel ? sel.where + sel.id + sel.ci + sel.slot : '') + confirmSell + S.dun.current + JSON.stringify(S.skills)
     : tab === 'talents' ? clsId() + JSON.stringify(S.tree) + skillPoints() + talTree + S.spells.join(',') + picksLeft() + S.dun.clears.join(',')
     : tab === 'dungeons' ? JSON.stringify(S.town) + JSON.stringify(S.dun) + (C.phase === 'fight' || C.phase === 'rest') + elixirCost() + avgLv() + confirmAscend + (S.echoes || 0) + JSON.stringify(S.echoUp || {}) + (S.cycle || 0) + pickCurses.join() + JSON.stringify(S.cosmo || {})
@@ -5440,10 +5441,20 @@ function drawPlot(X, Y, t, hot) {
   const a = hot ? 1 : 0.5 + 0.4 * Math.sin(t * 3);
   P.globalAlpha = a; r(X - 1, Y - 23, 2, 6, '#e4b75c'); r(X - 3, Y - 21, 6, 2, '#e4b75c'); P.globalAlpha = 1;
 }
+// the nearest building to the pointer, measured to the middle of its body (wide upgraded buildings and annexes count too)
 function plotAt(px, py) {
-  let hit = null;
-  for (const id in PLOTS) { const p = PLOTS[id]; if (px > p.x - 24 && px < p.x + 24 && py > p.y - p.top - 4 && py < p.y + 4) hit = id; }
+  let hit = null, best = 1e9;
+  for (const id in PLOTS) {
+    const p = PLOTS[id], cy = p.y - p.top / 2, dx = (px - p.x) / 34, dy = (py - cy) / (p.top / 2 + 10), d = dx * dx + dy * dy;
+    if (d < 1 && d < best) { best = d; hit = id; }
+  }
   return hit;
+}
+function selectBuilding(id) {
+  if (!TOWNB[id]) return; townSel = id;
+  const d = $('#townDetail'); if (d) d.innerHTML = townDetailHtml();
+  pane.querySelectorAll('[data-bsel]').forEach(b => b.setAttribute('aria-pressed', b.dataset.bsel === id));
+  updatePane();
 }
 // mix two #rrggbb colors
 const mixC = (a, b, k) => { const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), ch = sh => Math.round(((pa >> sh) & 255) * (1 - k) + ((pb >> sh) & 255) * k); return '#' + ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1); };
@@ -5551,7 +5562,7 @@ function wireTown() {
   const at = e => { const rc = tc.getBoundingClientRect(); return plotAt((e.clientX - rc.left) / rc.width * TW, (e.clientY - rc.top) / rc.height * TH); };
   tc.addEventListener('mousemove', e => { townHover = at(e); tc.style.cursor = townHover ? 'pointer' : 'default'; });
   tc.addEventListener('mouseleave', () => { townHover = null; });
-  tc.addEventListener('pointerdown', e => { const id = at(e); if (id) { townSel = id; const d = $('#townDetail'); if (d) d.innerHTML = townDetailHtml(); updatePane(); } });
+  tc.addEventListener('pointerdown', e => { const id = at(e); if (id) selectBuilding(id); });
 }
 /* ---------- Bounty Board: three rotating goals that pay gold, materials and sometimes gear ---------- */
 const BOUNTY_KINDS = {
@@ -5626,6 +5637,7 @@ function renderTown() {
     <div class="section-h"><h3>Town</h3><span class="label">Click a plot to build. Each level needs materials from a deeper dungeon</span></div>
     <div class="town"><canvas id="townCv" width="${TW}" height="${TH}" aria-label="Your town. Click a building or empty plot to see it."></canvas>
       <div class="tdetail" id="townDetail">${townDetailHtml()}</div></div>
+    <div class="bsel" role="group" aria-label="Buildings">${TOWN.map(b => `<button class="chipbtn" data-bsel="${b.id}" aria-pressed="${b.id === townSel}">${b.name} <b>${lvl(b.id) || '·'}</b></button>`).join('')}</div>
     ${prosperHtml()}
     ${bountyHtml()}
     <div class="section-h"><h3>Materials</h3><span class="label">Dropped by every stage; more with high Devotion</span></div>
@@ -5855,6 +5867,7 @@ pane.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t || t.disabled) return;
   const d = t.dataset;
   if (d.pick) { learnSpell(d.pick); return; }
+  if (d.bsel) { selectBuilding(d.bsel); return; }
   if (d.bclaim != null) { claimBounty(+d.bclaim); return; }
   if (d.curse) { pickCurses = pickCurses.includes(d.curse) ? pickCurses.filter(x => x !== d.curse) : pickCurses.concat(d.curse); shopDirty = true; return; }
   if (d.breroll != null) { rerollBounty(+d.breroll); return; }
@@ -5997,7 +6010,7 @@ $('#dev').addEventListener('click', e => {
   else if (a === 'mana') DEV.mana = !DEV.mana;
   shopDirty = true; syncDev();
 });
-if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty, exportSave, importSave, talTip, tipFor };
+if (location.hash === '#dev') window.__mw = { get S() { return S; }, tryCast, makeFoes, startStage, maxPeril, promote, promoCost, canPromote, openCoffer, buyElixir, COFFERS, cofferCost, elixirCost, learnSpell, spellOffer, picksLeft, C, D, recalc, enterDungeon, genItem, autoEquip, addToBag, pointsOf, TNODE, canLearn, learnTal, TOWN, townCost, lvl, isUpgrade, spellCost, SP, partyIlvl, sumFx, memberDps, DUNGEONS, ABIL, hit, heal, switchClass, tankDown, ascend, echoGain, buyEcho, avgLv, bountyEvent, claimBounty, exportSave, importSave, talTip, tipFor, townDetailHtml, setTownSel: id => { townSel = id; }, renderPane };
 addEventListener('hashchange', syncDev);
 syncDev();
 
